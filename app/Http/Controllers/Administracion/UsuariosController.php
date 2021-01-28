@@ -73,6 +73,7 @@ class UsuariosController extends Controller {
             return[
                 'usuario'=>$Usuario
             ];
+            
         }
         else{
             return[
