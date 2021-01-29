@@ -377,7 +377,7 @@ export default {
         axios.get(ruta, {
             params: {
               'nIdRol'   :   IdRol,
-              'bEdit'   :   false
+              'nActivos'   :   true
             }
         }).then( response => {
             this.permisosRol = response.data.permisosbyrol;

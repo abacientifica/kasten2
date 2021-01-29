@@ -61,6 +61,7 @@ class UsuariosController extends Controller {
             $Usuario->Cargo = $Datos['cCargo'];
             $Usuario->Email = $Datos['cCorreo'];
             $Usuario->IdRol = $Datos['nIdRol'];
+
             if(isset($Datos['cImagen']) && $Datos['cImagen']!=''){
                 $imageInfo = explode(";base64,", $Datos['cImagen']); 
                 $imgExt = str_replace('data:image/', '', $imageInfo[0]); 
@@ -73,11 +74,49 @@ class UsuariosController extends Controller {
             return[
                 'usuario'=>$Usuario
             ];
-            
+
         }
         else{
             return[
                 'error'=>'No se puedo actualizar'
+            ];
+        }
+    }
+
+    public function ActivarUsuario(Request $request){
+        if(!$request->ajax()) return redirect("/");
+        try{
+            $Usuario = User::findOrFail($request->id);
+            if($Usuario){
+                $Usuario->Inactivo =0;
+                $Usuario->save();
+            }
+            return[
+                'status'=>201
+            ];
+        }
+        catch(Exception $e){
+            return[
+                'error'=>$e->getMessage()
+            ];
+        }
+
+    }
+    public function InaActivarUsuario(Request $request){
+        if(!$request->ajax()) return redirect("/");
+        try{
+            $Usuario = User::findOrFail($request->id);
+            if($Usuario){
+                $Usuario->Inactivo =1;
+                $Usuario->save();
+            }
+            return[
+                'status'=>201
+            ];
+        }
+        catch(Exception $e){
+            return[
+                'error'=>$e->getMessage()
             ];
         }
     }

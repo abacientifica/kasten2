@@ -36,7 +36,6 @@ class RolesController extends Controller
             DB::beginTransaction();
             $listPermisos= $request->listPermisosFilter;
             if(sizeof($listPermisos)>0){
-                DB::select($strSql);
                 foreach($listPermisos as $key=>$value){
                     if($value['checked']){
                         $RolPermisoNew = new RolesPermisos();
@@ -112,11 +111,18 @@ class RolesController extends Controller
     public function getListarPermisosByRol(Request $request){
         $nIdRol = $request->nIdRol==''? 0:$request->nIdRol;
         $cNombre = $request->cNombre ==''? '':$request->cNombre;
-        $Edit = ($request->bEdit) == false ? false: $request->bEdit;
+        $Activos = isset($request->nActivos) ? $request->nActivos :false;
+        
         $Sql =" select    permiso.id,permiso.`nombre`,permiso.slug,if(rol_permiso.id_rol is not null , 1,0) as checked
                 from permisos as permiso 
-                LEFT OUTER JOIN roles_permisos  as rol_permiso on permiso.id = rol_permiso.id_permiso
-                where  if(".$nIdRol." > 0 ,(rol_permiso.id_rol = ".$nIdRol." or  if(".$Edit."=1 ,rol_permiso.id_rol  is null,'' )),1) ";
+                LEFT OUTER JOIN roles_permisos  as rol_permiso on permiso.id = rol_permiso.id_permiso";
+        if($nIdRol >0){
+            $Sql.= " and rol_permiso.id_rol = ".$nIdRol;
+        }
+        $Sql.=" where 1 ";
+        if($Activos){
+            $Sql.="  and rol_permiso.id_rol = ".$nIdRol;
+        }
         if($cNombre !=''){
             $Sql.= " and nombre like '%".$cNombre."%'";
         }

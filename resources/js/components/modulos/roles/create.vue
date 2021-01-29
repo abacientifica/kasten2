@@ -207,15 +207,15 @@
             },
 
             getListarPermisosByRol(){
-                let url = "/roles/getListarPermisosByRol";
+                let url = "/permisos/lista";
                 axios.get(url,{
                     params:{
-                        cNombre:this.filtroPermiso
+                        cNombre:this.filtroPermiso,
                     }
                 })
                 .then((response) => {
-                    this.listPermisos = response.data.permisosbyrol;
-                    if(response.data.permisosbyrol.length >0){
+                    this.listPermisos = response.data.permisos;
+                    if(response.data.permisos.length >0){
                         this.filterPermisosByRol();
                     }
                     else{

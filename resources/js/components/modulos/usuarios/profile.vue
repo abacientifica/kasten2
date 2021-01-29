@@ -7,14 +7,25 @@
             <div class="card card-primary card-outline">
               <div class="card-body box-profile">
                 <div class="text-center">
-                  <img class="profile-user-img img-fluid img-circle"
+                  <template>
+                    <div v-if="ImagenProfile!=null">
+                      <img class="profile-user-img img-fluid img-circle"
                        :src="ImagenProfile"
+                       alt="prueba">
+                    </div>
+                    <div v-else>
+                      <img class="profile-user-img img-fluid img-circle"
+                       src="/img/avatar.png"
                        alt="User profile picture">
+                    </div>
+                  </template>
+                  
                 </div>
 
                 <h3 class="profile-username text-center" v-text="nombreCompleto"></h3>
 
-                <p class="text-muted text-center" v-text="'Rol :'+ NmRolActual+' Cargo:'+fillUsuario.cCargo"></p>
+                <p class="text-muted text-center" v-text="'Rol '+ NmRolActual"></p><hr>
+                <p class="text-muted text-center" v-text="'Cargo '+fillUsuario.cCargo"></p>
               </div>
               <!-- /.card-body -->
             </div>
@@ -168,6 +179,7 @@ export default {
               this.fillUsuario.cCorreo = User.Email;
               this.fillUsuario.cImagen = User.Imagen;
               this.fillUsuario.cCargo = User.Cargo;
+              this.fillUsuario.nIdRol = User.IdRol;
               this.ImagenProfile = User.imagen;
               this.NmRolActual = response.data.rol;
           });
@@ -192,8 +204,8 @@ export default {
 
             //El evento onload se dispara despues de ejecutar readAsDataURL
             leerImagen.onload = (e)=>{
-                this.ImagenPerfil = e.target.result;
-                this.fillUsuario.cImagen = this.ImagenPerfil;
+                this.fillUsuario.cImagen = e.target.result;
+                this.ImagenProfile = e.target.result;
             }
             leerImagen.readAsDataURL(file);
         },
@@ -254,19 +266,9 @@ export default {
             })
         },
 
-        getRolByUser(Id){
-            let url = "/administracion/roles/ObtenerRolByUsuario/"+Id;
-            console.log(Id);
-            axios.get(url).then((response)=>{
-                if(response.data.rol.length >0){
-                    this.NmRolActual= response.data.rol[0].name;
-                }
-            })
-        }
     },
     mounted() {
         this.obtenerUsuario(this.$attrs.id);
-        this.getRolByUser(this.$attrs.id)
     },
 }
 </script>

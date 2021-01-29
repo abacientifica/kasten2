@@ -4415,15 +4415,15 @@ __webpack_require__.r(__webpack_exports__);
     getListarPermisosByRol: function getListarPermisosByRol() {
       var _this2 = this;
 
-      var url = "/roles/getListarPermisosByRol";
+      var url = "/permisos/lista";
       axios.get(url, {
         params: {
           cNombre: this.filtroPermiso
         }
       }).then(function (response) {
-        _this2.listPermisos = response.data.permisosbyrol;
+        _this2.listPermisos = response.data.permisos;
 
-        if (response.data.permisosbyrol.length > 0) {
+        if (response.data.permisos.length > 0) {
           _this2.filterPermisosByRol();
         } else {
           _this2.listPermisosFilter = [];
@@ -4575,10 +4575,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      opsel: 'Seleccionar Todos:',
+      sel: false,
+      filtroPermiso: '',
       fillEditarRol: {
         nIdRol: this.$attrs.id,
         cNombre: '',
@@ -4649,9 +4655,11 @@ __webpack_require__.r(__webpack_exports__);
       axios.get(ruta, {
         params: {
           'nIdRol': this.fillEditarRol.nIdRol,
-          'bEdit': true
+          'bEdit': true,
+          'cNombre': this.filtroPermiso
         }
       }).then(function (response) {
+        _this2.listPermisos = [];
         _this2.listPermisos = response.data.permisosbyrol;
 
         _this2.filterPermisosByRol();
@@ -4669,6 +4677,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     filterPermisosByRol: function filterPermisosByRol() {
       var me = this;
+      me.listPermisosFilter = [];
       me.listPermisos.map(function (x, y) {
         me.listPermisosFilter.push({
           'id': x.id,
@@ -4760,6 +4769,13 @@ __webpack_require__.r(__webpack_exports__);
         timer: 1500
       });
       this.fullscreenLoading = false;
+    },
+    SeleccionarPermisos: function SeleccionarPermisos() {
+      var op = this.sel;
+      this.listPermisosFilter.map(function (x, y) {
+        x.checked = op;
+      });
+      this.sel = !this.sel;
     }
   }
 });
@@ -5143,7 +5159,7 @@ __webpack_require__.r(__webpack_exports__);
       axios.get(ruta, {
         params: {
           'nIdRol': IdRol,
-          'bEdit': false
+          'nActivos': true
         }
       }).then(function (response) {
         _this3.permisosRol = response.data.permisosbyrol;
@@ -5180,6 +5196,8 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_0__);
 //
 //
 //
@@ -5461,6 +5479,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -5660,6 +5679,38 @@ __webpack_require__.r(__webpack_exports__);
         _this2.cerrarModal();
       });
     },
+    ActivarUsuario: function ActivarUsuario(usuario) {
+      var _this3 = this;
+
+      var url = "/usuarios/activar/" + usuario.Usuario;
+      axios.put(url).then(function (response) {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.fire({
+          position: 'top-center',
+          icon: 'success',
+          title: 'Usuario : ' + usuario.Nombres + " Activo",
+          showConfirmButton: false,
+          timer: 1500
+        });
+
+        _this3.listarUsuarios();
+      });
+    },
+    InActivarUsuario: function InActivarUsuario(usuario) {
+      var _this4 = this;
+
+      var url = "/usuarios/inactivar/" + usuario.Usuario;
+      axios.put(url).then(function (response) {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.fire({
+          position: 'top-center',
+          icon: 'success',
+          title: 'Usuario : ' + usuario.Nombres + " Inactivo",
+          showConfirmButton: false,
+          timer: 1500
+        });
+
+        _this4.listarUsuarios();
+      });
+    },
 
     /**
      * op 1 = usuarios nuevo,2 =editar usuario
@@ -5718,14 +5769,14 @@ __webpack_require__.r(__webpack_exports__);
      * Obtiene la imagen del input file 
      */
     CargarImagen: function CargarImagen(file) {
-      var _this3 = this;
+      var _this5 = this;
 
       //FileReader me permite leer archivos
       var leerImagen = new FileReader(); //El evento onload se dispara despues de ejecutar readAsDataURL
 
       leerImagen.onload = function (e) {
-        _this3.ImagenPerfil = e.target.result;
-        _this3.fillCrearUsuario.cImagen = _this3.ImagenPerfil;
+        _this5.ImagenPerfil = e.target.result;
+        _this5.fillCrearUsuario.cImagen = _this5.ImagenPerfil;
       };
 
       leerImagen.readAsDataURL(file);
@@ -5735,12 +5786,12 @@ __webpack_require__.r(__webpack_exports__);
      * Carga los roles del combo rol usuario
      */
     getListRoles: function getListRoles() {
-      var _this4 = this;
+      var _this6 = this;
 
       var url = "/roles/lista";
       axios.get(url).then(function (response) {
         if (response.data.roles.length > 0) {
-          _this4.listRoles = response.data.roles;
+          _this6.listRoles = response.data.roles;
         }
       });
     }
@@ -5763,6 +5814,17 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
 /* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_0__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -5934,6 +5996,7 @@ __webpack_require__.r(__webpack_exports__);
         _this.fillUsuario.cCorreo = User.Email;
         _this.fillUsuario.cImagen = User.Imagen;
         _this.fillUsuario.cCargo = User.Cargo;
+        _this.fillUsuario.nIdRol = User.IdRol;
         _this.ImagenProfile = User.imagen;
         _this.NmRolActual = response.data.rol;
       });
@@ -5957,8 +6020,8 @@ __webpack_require__.r(__webpack_exports__);
       var leerImagen = new FileReader(); //El evento onload se dispara despues de ejecutar readAsDataURL
 
       leerImagen.onload = function (e) {
-        _this2.ImagenPerfil = e.target.result;
-        _this2.fillUsuario.cImagen = _this2.ImagenPerfil;
+        _this2.fillUsuario.cImagen = e.target.result;
+        _this2.ImagenProfile = e.target.result;
       };
 
       leerImagen.readAsDataURL(file);
@@ -6014,22 +6077,10 @@ __webpack_require__.r(__webpack_exports__);
       axios.get(url).then(function (response) {
         EventBus.$emit('verrifyAutenticathedUser', response.data);
       });
-    },
-    getRolByUser: function getRolByUser(Id) {
-      var _this3 = this;
-
-      var url = "/administracion/roles/ObtenerRolByUsuario/" + Id;
-      console.log(Id);
-      axios.get(url).then(function (response) {
-        if (response.data.rol.length > 0) {
-          _this3.NmRolActual = response.data.rol[0].name;
-        }
-      });
     }
   },
   mounted: function mounted() {
     this.obtenerUsuario(this.$attrs.id);
-    this.getRolByUser(this.$attrs.id);
   }
 });
 
@@ -108068,7 +108119,51 @@ var render = function() {
               _vm._v(" "),
               _c("div", { staticClass: "col-md-7" }, [
                 _c("div", { staticClass: "card card-info" }, [
-                  _vm._m(2),
+                  _c("div", { staticClass: "card-header" }, [
+                    _c("h3", { staticClass: "card-title" }, [
+                      _vm._v("Listar Permisos "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.filtroPermiso,
+                            expression: "filtroPermiso"
+                          }
+                        ],
+                        staticClass: "form-control form-control-navbar",
+                        attrs: {
+                          type: "search",
+                          placeholder: "Buscar ",
+                          "aria-label": "Search"
+                        },
+                        domProps: { value: _vm.filtroPermiso },
+                        on: {
+                          keyup: function($event) {
+                            if (
+                              !$event.type.indexOf("key") &&
+                              _vm._k(
+                                $event.keyCode,
+                                "enter",
+                                13,
+                                $event.key,
+                                "Enter"
+                              )
+                            ) {
+                              return null
+                            }
+                            return _vm.getListarPermisosByRol()
+                          },
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.filtroPermiso = $event.target.value
+                          }
+                        }
+                      })
+                    ])
+                  ]),
                   _vm._v(" "),
                   _c(
                     "div",
@@ -108076,6 +108171,53 @@ var render = function() {
                     [
                       _vm.listPermisosFilter.length
                         ? [
+                            _c("div", [
+                              _c("b", {
+                                domProps: { textContent: _vm._s(_vm.opsel) }
+                              }),
+                              _c("input", {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: _vm.sel,
+                                    expression: "sel"
+                                  }
+                                ],
+                                attrs: { type: "checkbox" },
+                                domProps: {
+                                  checked: Array.isArray(_vm.sel)
+                                    ? _vm._i(_vm.sel, null) > -1
+                                    : _vm.sel
+                                },
+                                on: {
+                                  click: function($event) {
+                                    $event.preventDefault()
+                                    return _vm.SeleccionarPermisos()
+                                  },
+                                  change: function($event) {
+                                    var $$a = _vm.sel,
+                                      $$el = $event.target,
+                                      $$c = $$el.checked ? true : false
+                                    if (Array.isArray($$a)) {
+                                      var $$v = null,
+                                        $$i = _vm._i($$a, $$v)
+                                      if ($$el.checked) {
+                                        $$i < 0 && (_vm.sel = $$a.concat([$$v]))
+                                      } else {
+                                        $$i > -1 &&
+                                          (_vm.sel = $$a
+                                            .slice(0, $$i)
+                                            .concat($$a.slice($$i + 1)))
+                                      }
+                                    } else {
+                                      _vm.sel = $$c
+                                    }
+                                  }
+                                }
+                              })
+                            ]),
+                            _vm._v(" "),
                             _c("div", { staticClass: "scrollTable" }, [
                               _c(
                                 "table",
@@ -108084,7 +108226,7 @@ var render = function() {
                                     "table table-hover table-head-fixed text-nowrap projects"
                                 },
                                 [
-                                  _vm._m(3),
+                                  _vm._m(2),
                                   _vm._v(" "),
                                   _c(
                                     "tbody",
@@ -108144,7 +108286,7 @@ var render = function() {
                               )
                             ])
                           ]
-                        : [_vm._m(4)]
+                        : [_vm._m(3)]
                     ],
                     2
                   )
@@ -108232,14 +108374,6 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "card-header" }, [
       _c("h3", { staticClass: "card-title" }, [_vm._v("Formulario Editar Rol")])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card-header" }, [
-      _c("h3", { staticClass: "card-title" }, [_vm._v("Listar Permisos")])
     ])
   },
   function() {
@@ -109499,8 +109633,7 @@ var render = function() {
                                                     "btn btn-success btn-sm",
                                                   on: {
                                                     click: function($event) {
-                                                      return _vm.OpcionActivar(
-                                                        1,
+                                                      return _vm.ActivarUsuario(
                                                         user
                                                       )
                                                     }
@@ -109524,8 +109657,7 @@ var render = function() {
                                                     "btn btn-danger btn-sm",
                                                   on: {
                                                     click: function($event) {
-                                                      return _vm.OpcionActivar(
-                                                        0,
+                                                      return _vm.InActivarUsuario(
                                                         user
                                                       )
                                                     }
@@ -110245,12 +110377,31 @@ var render = function() {
       _c("div", { staticClass: "col-md-3" }, [
         _c("div", { staticClass: "card card-primary card-outline" }, [
           _c("div", { staticClass: "card-body box-profile" }, [
-            _c("div", { staticClass: "text-center" }, [
-              _c("img", {
-                staticClass: "profile-user-img img-fluid img-circle",
-                attrs: { src: _vm.ImagenProfile, alt: "User profile picture" }
-              })
-            ]),
+            _c(
+              "div",
+              { staticClass: "text-center" },
+              [
+                [
+                  _vm.ImagenProfile != null
+                    ? _c("div", [
+                        _c("img", {
+                          staticClass: "profile-user-img img-fluid img-circle",
+                          attrs: { src: _vm.ImagenProfile, alt: "prueba" }
+                        })
+                      ])
+                    : _c("div", [
+                        _c("img", {
+                          staticClass: "profile-user-img img-fluid img-circle",
+                          attrs: {
+                            src: "/img/avatar.png",
+                            alt: "User profile picture"
+                          }
+                        })
+                      ])
+                ]
+              ],
+              2
+            ),
             _vm._v(" "),
             _c("h3", {
               staticClass: "profile-username text-center",
@@ -110259,10 +110410,14 @@ var render = function() {
             _vm._v(" "),
             _c("p", {
               staticClass: "text-muted text-center",
+              domProps: { textContent: _vm._s("Rol " + _vm.NmRolActual) }
+            }),
+            _c("hr"),
+            _vm._v(" "),
+            _c("p", {
+              staticClass: "text-muted text-center",
               domProps: {
-                textContent: _vm._s(
-                  "Rol :" + _vm.NmRolActual + " Cargo:" + _vm.fillUsuario.cCargo
-                )
+                textContent: _vm._s("Cargo " + _vm.fillUsuario.cCargo)
               }
             })
           ])

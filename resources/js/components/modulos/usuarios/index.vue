@@ -140,12 +140,12 @@
                                         <i class="fas fa-key"> </i> Permiso
                                     </router-link>
                                     <template v-if="user.Inactivo == 1">
-                                    <button class="btn btn-success btn-sm" @click="OpcionActivar(1,user)">
+                                    <button class="btn btn-success btn-sm" @click="ActivarUsuario(user)">
                                         <i class="fas fa-check"> </i>Activar
                                     </button>
                                     </template>
                                     <template v-else>
-                                    <button class="btn btn-danger btn-sm" @click="OpcionActivar(0,user)">
+                                    <button class="btn btn-danger btn-sm" @click="InActivarUsuario(user)">
                                         <i class="fas fa-times-circle"> </i>Inactivar
                                     </button>
                                     </template>
@@ -280,6 +280,7 @@
     </div>
 </template>
 <script>
+import Swal from 'sweetalert2'
 export default {
     data() {
         return {
@@ -469,6 +470,36 @@ export default {
             .then((response) => {
                 this.listarUsuarios();
                 this.cerrarModal();
+            })
+        },
+
+        ActivarUsuario(usuario){
+            let url = "/usuarios/activar/"+usuario.Usuario;
+            axios.put(url)
+            .then((response) => {
+                Swal.fire({
+                    position: 'top-center',
+                    icon: 'success',
+                    title: 'Usuario : '+usuario.Nombres+" Activo",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                this.listarUsuarios();
+            })
+        },
+
+        InActivarUsuario(usuario){
+            let url = "/usuarios/inactivar/"+usuario.Usuario;
+            axios.put(url)
+            .then((response) => {
+                Swal.fire({
+                    position: 'top-center',
+                    icon: 'success',
+                    title: 'Usuario : '+usuario.Nombres+" Inactivo",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                this.listarUsuarios();
             })
         },
 

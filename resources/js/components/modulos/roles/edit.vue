@@ -60,10 +60,13 @@
                             <div class="col-md-7">
                                 <div class="card card-info">
                                     <div class="card-header">
-                                        <h3 class="card-title">Listar Permisos</h3>
+                                        <h3 class="card-title">Listar Permisos <input class="form-control form-control-navbar" type="search" v-model="filtroPermiso" @keyup.enter="getListarPermisosByRol()" placeholder="Buscar " aria-label="Search"></h3>
                                     </div>
                                     <div class="card-body table-responsive">
                                         <template v-if="listPermisosFilter.length">
+                                            <div>
+                                                <b v-text="opsel"></b><input type="checkbox" v-model="sel" @click.prevent="SeleccionarPermisos()">
+                                            </div>
                                             <div class="scrollTable">
                                                 <table class="table table-hover table-head-fixed text-nowrap projects">
                                                     <thead>
@@ -124,6 +127,9 @@ import Swal from 'sweetalert2'
     export default {
         data(){
             return {
+                opsel:'Seleccionar Todos:',
+                sel : false,
+                filtroPermiso:'',
                 fillEditarRol: {
                     nIdRol: this.$attrs.id,
                     cNombre: '',
@@ -188,10 +194,12 @@ import Swal from 'sweetalert2'
                 var ruta = '/roles/getListarPermisosByRol'
                 axios.get(ruta, {
                     params: {
-                        'nIdRol'   :   this.fillEditarRol.nIdRol,
-                        'bEdit'   :   true
+                        'nIdRol'  :   this.fillEditarRol.nIdRol,
+                        'bEdit'   :   true,
+                        'cNombre' :this.filtroPermiso,
                     }
                 }).then( response => {
+                    this.listPermisos = [];
                     this.listPermisos = response.data.permisosbyrol;
                     this.filterPermisosByRol();
                 }).catch(error => {
@@ -205,6 +213,7 @@ import Swal from 'sweetalert2'
             },
             filterPermisosByRol() {
                 let me = this;
+                me.listPermisosFilter =[];
                 me.listPermisos.map(function(x, y){
                     me.listPermisosFilter.push({
                         'id'        :   x.id,
@@ -294,6 +303,14 @@ import Swal from 'sweetalert2'
                 });
                 this.fullscreenLoading = false;
             },
+
+            SeleccionarPermisos(){
+                let op = this.sel;
+                this.listPermisosFilter.map(function(x,y){
+                    x.checked = op;
+                });
+                this.sel = !this.sel;
+            }
         }
     }
 </script>

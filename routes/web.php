@@ -16,6 +16,8 @@ Route::get('/usuarios/lista','Administracion\UsuariosController@index');
 Route::get('/usuarios/getUsuario/{id?}','Administracion\UsuariosController@getUsuario');
 Route::put('/usuarios/editar','Administracion\UsuariosController@ActualizarUsuario');
 Route::post('/usuarios/registrarImagenPerfil','FilesController@GuardarImagenPerfil');
+Route::put('/usuarios/inactivar/{id?}','Administracion\UsuariosController@InaActivarUsuario');
+Route::put('/usuarios/activar/{id?}','Administracion\UsuariosController@ActivarUsuario');
 
 //Lista rutas roles
 Route::get('/roles/lista','Administracion\RolesController@index');
