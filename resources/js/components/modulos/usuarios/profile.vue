@@ -222,6 +222,7 @@ export default {
                 'fillCrearUsuario' : this.fillUsuario,
             })
             .then((response) => {
+                this.getRefrescarUsuarioAutentificado();
                 Swal.fire({
                 position: 'top-center',
                 icon: 'success',

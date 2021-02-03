@@ -12,11 +12,24 @@
         <!-- Sidebar user (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
-            <img src="/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+                <template v-if="usuario.imagen ==''">
+                    <img src="/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image"> 
+                </template>
+                <template v-else>
+                    <img :src="usuario.imagen" class="img-circle elevation-2" alt="User Image"> 
+                </template>
             </div>
             <div class="info">
-            <a href="#" class="d-block">Diego Osorio</a>
+                <router-link :to="{name:'usuario.perfil',params:{id:usuario.Usuario}}" :usuario="usuario" class="d-block">
+                    {{usuario.Nombres}}
+                </router-link>
             </div>
+
+        </div>
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <a class="info" @click.prevent="logout()" href="#" v-loading.fullscreen.lock="fullscreenloading">
+                <i class="fas fa-sign-out-alt"></i>Cerrar Sesión
+            </a>
         </div>
 
         <!-- Sidebar Menu -->
@@ -30,33 +43,42 @@
                     <p>Home</p>
                 </router-link>
             </li>
-            
-            <li class="nav-header">MOVIMIENTOS</li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-cash-register"></i>
-                    <p> Pedidos <span class="badge badge-info right"></span></p>
-                </a>
-            </li>
-            <li class="nav-header">CONFIGURACIÓN</li>
-            <li class="nav-item">
-                <router-link :to="'/usuarios'" class="nav-link">
-                    <i class="nav-icon fas fa-users"></i>
-                    <p>Usuarios</p>
-                </router-link>
-            </li>
-            <li class="nav-item">
-                <router-link :to="'/roles'" class="nav-link">
-                    <i class="nav-icon fas fa-user-tag"></i>
-                    <p>Roles</p>
-                </router-link>
-            </li>
-            <li class="nav-item">
-                <router-link :to="'/permisos'" class="nav-link">
-                    <i class="nav-icon fas fa-key"></i>
-                    <p>Permisos</p>
-                </router-link>
-            </li>
+            <template v-if="listPermisos.includes('pedidos.index')">
+                <li class="nav-header">MOVIMIENTOS</li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                    <i class="nav-icon fas fa-cash-register"></i>
+                        <p> Pedidos <span class="badge badge-info right"></span></p>
+                    </a>
+                </li>
+            </template>
+            <template v-if="listPermisos.includes('usuarios.index','roles.index','permisos.index')">
+                <li class="nav-header">ADMINISTRACIÓN</li>
+                <template v-if="listPermisos.includes('usuarios.index')">
+                    <li class="nav-item">
+                        <router-link :to="'/usuarios'" class="nav-link">
+                            <i class="nav-icon fas fa-users"></i>
+                            <p>Usuarios</p>
+                        </router-link>
+                    </li>
+                </template>
+                <template v-if="listPermisos.includes('roles.index')">
+                    <li class="nav-item">
+                        <router-link :to="'/roles'" class="nav-link">
+                            <i class="nav-icon fas fa-user-tag"></i>
+                            <p>Roles</p>
+                        </router-link>
+                    </li>
+                </template>
+                <template v-if="listPermisos.includes('permisos.index')">
+                    <li class="nav-item">
+                        <router-link :to="'/permisos'" class="nav-link">
+                            <i class="nav-icon fas fa-key"></i>
+                            <p>Permisos</p>
+                        </router-link>
+                    </li>
+                </template>
+            </template>
             </ul>
         </nav>
         <!-- /.sidebar-menu -->
@@ -65,3 +87,38 @@
     </aside>
     </div>
 </template>
+<script>
+export default {
+    props: ['ruta', 'usuario','listPermisos' ],
+    data() {
+        return {
+            fullscreenloading:false,
+            rutas:''
+        }
+    },
+    methods: {
+        logout(){
+            this.fullscreenLoading = true;
+            var url = '/authenticated/logout'
+            axios.post(url).then(response => {
+                if (response.data.code == 204) {
+                    this.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                    this.fullscreenLoading = false;
+                }
+            }).catch(error => {
+                if (error.response.status == 401) {
+                    this.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                    this.fullscreenLoading = false;
+                }
+            })
+        }
+    },
+    mounted() {
+        this.rutas = this.ruta
+    },
+}
+</script>

@@ -7,13 +7,17 @@
 require('./bootstrap');
 
 window.Vue = require('vue');
+export const EventBus = new Vue();
+window.EventBus = EventBus;
 Vue.component('App', require('./components/App.vue').default);
 Vue.component('sidebar', require('./components/plantilla/Sidebar.vue').default);
 Vue.component('navbar', require('./components/plantilla/Navbar.vue').default);
 Vue.component('Footer', require('./components/plantilla/Footer.vue').default);
+Vue.component('Auth', require('./components/Auth.vue').default);
 import router from './routes.js';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
+
 window.Vue.use(ElementUI); //Con esta declaracion lo utilizamos en todo el sitio
 const app = new Vue({
     el: '#app',

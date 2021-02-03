@@ -136,7 +136,7 @@
                                     <button class="btn btn-info btn-sm" @click="abrirModal(1,user)">
                                     <i class="fas fa-pencil-alt"> </i>Editar
                                     </button>
-                                    <router-link :to="{name:'usuario.permisos',params:{id:user.id}}"  class="btn btn-success btn-sm">
+                                    <router-link :to="'/usuario/permiso/'+user.Usuario"  class="btn btn-success btn-sm">
                                         <i class="fas fa-key"> </i> Permiso
                                     </router-link>
                                     <template v-if="user.Inactivo == 1">
