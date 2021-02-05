@@ -179,6 +179,13 @@ export default {
                         timer: 1500
                     })
                     this.$router.push('/usuarios');
+                }).catch(error =>{
+                    if(error.response.status ==401){
+                        this.$router.push({name: 'login'})
+                        location.reload();
+                        sessionStorage.clear();
+                        this.fullscreenLoading = false;
+                    }
                 });
                 
             },
@@ -210,6 +217,13 @@ export default {
                 }},)
                 .then((response) => {
                     this.listPermisos = response.data.permisosbyrol;
+                }).catch(error =>{
+                    if(error.response.status ==401){
+                        this.$router.push({name: 'login'})
+                        location.reload();
+                        sessionStorage.clear();
+                        this.fullscreenLoading = false;
+                    }
                 });
             },
 
@@ -221,7 +235,13 @@ export default {
                     }
                 }).then( response => {
                     this.listPermisosRolAsignado = response.data.permisosbyrol;
-                }).catch(error => {
+                }).catch(error =>{
+                    if(error.response.status ==401){
+                        this.$router.push({name: 'login'})
+                        location.reload();
+                        sessionStorage.clear();
+                        this.fullscreenLoading = false;
+                    }
                 })
             },
 
@@ -235,6 +255,13 @@ export default {
                         this.IdRol = Datos.IdRol;
                         this.getPermisosByUser();
                         this.getListarPermisosByRolAsignado(Datos.id);
+                    }
+                }).catch(error =>{
+                    if(error.response.status ==401){
+                        this.$router.push({name: 'login'})
+                        location.reload();
+                        sessionStorage.clear();
+                        this.fullscreenLoading = false;
                     }
                 })
             },
@@ -250,6 +277,13 @@ export default {
                     let Datos = response.data;
                     this.listaPermisosByUser = Datos.permisos;
                     this.filterPermisosByUsuario();
+                }).catch(error =>{
+                    if(error.response.status ==401){
+                        this.$router.push({name: 'login'})
+                        location.reload();
+                        sessionStorage.clear();
+                        this.fullscreenLoading = false;
+                    }
                 })
             },
 
@@ -262,6 +296,13 @@ export default {
                         'slug':x.slug,
                         'checked': (x.checked == 1) ? true : false
                     });
+                }).catch(error =>{
+                    if(error.response.status ==401){
+                        this.$router.push({name: 'login'})
+                        location.reload();
+                        sessionStorage.clear();
+                        this.fullscreenLoading = false;
+                    }
                 })
             },
 
@@ -276,8 +317,10 @@ export default {
             },
 
             filterListRolPermisosByUsuario(){
-                let usrActual = sessionStorage.getItem('authUser');
-                if(usrActual.Usuario == this.Usuario){
+                let usrActual = JSON.parse(sessionStorage.getItem('authUser'));
+                console.log(usrActual.Usuario)
+                if(usrActual.Usuario == this.IdUsuario){
+                    
                     let me = this;
                     me.listaPermisosByUser.map(function(x,y){
                         if(x.slug != null){
@@ -298,6 +341,13 @@ export default {
                     let Datos = response.data;
                     this.listaPermisosByUser = Datos.permisos;
                     this.filterListRolPermisosByUsuario();
+                }).catch(error =>{
+                    if(error.response.status ==401){
+                        this.$router.push({name: 'login'})
+                        location.reload();
+                        sessionStorage.clear();
+                        this.fullscreenLoading = false;
+                    }
                 })
             },
         },

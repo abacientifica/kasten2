@@ -182,6 +182,13 @@ export default {
               this.fillUsuario.nIdRol = User.IdRol;
               this.ImagenProfile = User.imagen;
               this.NmRolActual = response.data.rol;
+          }).catch(error =>{
+              if(error.response.status ==401){
+                  this.$router.push({name: 'login'})
+                  location.reload();
+                  sessionStorage.clear();
+                  this.fullscreenLoading = false;
+              }
           });
         },
 
@@ -230,6 +237,13 @@ export default {
                 showConfirmButton: false,
                 timer: 1500
                 });
+            }).catch(error =>{
+                if(error.response.status ==401){
+                    this.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                    this.fullscreenLoading = false;
+                }
             })
         },
 
@@ -264,6 +278,13 @@ export default {
             let url = "/authenticated/getRefrescarUsaurioAutentificado";
             axios.get(url).then((response)=>{
                 EventBus.$emit('verrifyAutenticathedUser',response.data)
+            }).catch(error =>{
+                if(error.response.status ==401){
+                    this.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                    this.fullscreenLoading = false;
+                }
             })
         },
 

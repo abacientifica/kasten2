@@ -12,11 +12,12 @@ import RolesEditar from './components/modulos/roles/edit.vue';
 import Permisos from './components/modulos/permisos/index.vue';
 import PermisosCrear from './components/modulos/permisos/create.vue';
 import PermisosEditar from './components/modulos/permisos/edit.vue';
+import Pagina404 from './components/plantilla/404.vue';
 
 function verificarAcceso(to, from, next) {
     let authUser = JSON.parse(sessionStorage.getItem('authUser'));
     if (authUser) {
-        /*let listaPermisosByUser = JSON.parse(sessionStorage.getItem('listPermisosFilterByRolUser'));
+        let listaPermisosByUser = JSON.parse(sessionStorage.getItem('listPermisosFilterByRolUser'));
         if (listaPermisosByUser.includes(to.name)) {
             next();
         } else {
@@ -31,7 +32,7 @@ function verificarAcceso(to, from, next) {
             } else {
                 next(from.path);
             }
-        }*/
+        }
         next();
     } else {
         next('/login')
@@ -92,9 +93,9 @@ export default new Router({
             component: UsuariosPerfil,
             name: 'usuario.perfil',
             props: true,
-            beforeEnter: (to, from, next) => {
+            /*beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);
-            }
+            }*/
         },
         {
             path: '/roles',
@@ -145,6 +146,12 @@ export default new Router({
             beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);
             }
+        },
+
+        {
+            path: '*',
+            component: Pagina404,
+            name: '404.index'
         },
 
     ],

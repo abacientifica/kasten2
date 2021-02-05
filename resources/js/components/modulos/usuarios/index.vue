@@ -19,11 +19,13 @@
         <div class="content container-fluid">
             <div class="card">
                 <div class="card-header">
-                <div class="card-tools">
-                    <button class="btn btn-info btn-sm" @click.prevent="abrirModal(1)" data-toggle="modal">
-                    <i class="fas fa-plus-square"></i> Nuevo Usuario
-                    </button>
-                </div>
+                    <template v-if="listPermisosFilterByRolUser.includes('usuario.crear')">
+                        <div class="card-tools">
+                            <button class="btn btn-info btn-sm" @click.prevent="abrirModal(1)" data-toggle="modal">
+                            <i class="fas fa-plus-square"></i> Nuevo Usuario
+                            </button>
+                        </div>
+                    </template>
                 </div>
                 <div class="card-body">
                 <div class="container-fluid">
@@ -133,21 +135,31 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <button class="btn btn-info btn-sm" @click="abrirModal(1,user)">
-                                    <i class="fas fa-pencil-alt"> </i>Editar
-                                    </button>
-                                    <router-link :to="'/usuario/permiso/'+user.Usuario"  class="btn btn-success btn-sm">
-                                        <i class="fas fa-key"> </i> Permiso
-                                    </router-link>
+                                    <template v-if="listPermisosFilterByRolUser.includes('usuario.editar') || listPermisosFilterByRolUser.includes('usuario.administrador')">
+                                        <button class="btn btn-info btn-sm" @click="abrirModal(1,user)">
+                                        <i class="fas fa-pencil-alt"> </i>Editar
+                                        </button>
+                                    </template>
+                                    
+                                    <template v-if="listPermisosFilterByRolUser.includes('usuario.asignarpermisos') || listPermisosFilterByRolUser.includes('usuario.administrador')">
+                                        <router-link :to="'/usuario/permiso/'+user.Usuario"  class="btn btn-success btn-sm">
+                                            <i class="fas fa-key"> </i> Permiso
+                                        </router-link>
+                                    </template>
+
                                     <template v-if="user.Inactivo == 1">
-                                    <button class="btn btn-success btn-sm" @click="ActivarUsuario(user)">
-                                        <i class="fas fa-check"> </i>Activar
-                                    </button>
+                                        <template v-if="listPermisosFilterByRolUser.includes('usuario.activar') || listPermisosFilterByRolUser.includes('usuario.administrador')">
+                                            <button class="btn btn-success btn-sm" @click="ActivarUsuario(user)">
+                                                <i class="fas fa-check"> </i>Activar
+                                            </button>
+                                        </template>
                                     </template>
                                     <template v-else>
-                                    <button class="btn btn-danger btn-sm" @click="InActivarUsuario(user)">
-                                        <i class="fas fa-times-circle"> </i>Inactivar
-                                    </button>
+                                        <template v-if="listPermisosFilterByRolUser.includes('usuario.inactivar') || listPermisosFilterByRolUser.includes('usuario.administrador')">
+                                            <button class="btn btn-danger btn-sm" @click="InActivarUsuario(user)">
+                                                <i class="fas fa-times-circle"> </i>Inactivar
+                                            </button>
+                                        </template>
                                     </template>
                                     <router-link :to="{name:'usuario.perfil',params:{id:user.Usuario}}"  class="btn btn-info btn-sm">
                                         <i class="fas fa-eye"> </i> Perfil
@@ -287,6 +299,7 @@ export default {
             Form: new FormData(),
             //Al cambiar a true muestra el loading
             fullscreenLoading:false,
+            listPermisosFilterByRolUser:[],
             //Objeto usuario para realizar consultas de usuarios.
             filtUsuario:{
                 nIdentificacion:0,
@@ -385,6 +398,13 @@ export default {
                 if(response.data.usuarios.length){
                     this.listUsuarios = response.data.usuarios;
                 }
+            }).catch(error =>{
+                if(error.response.status ==401){
+                    this.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                    this.fullscreenLoading = false;
+                }
             })
         },
 
@@ -470,6 +490,13 @@ export default {
             .then((response) => {
                 this.listarUsuarios();
                 this.cerrarModal();
+            }).catch(error =>{
+                if(error.response.status ==401){
+                    this.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                    this.fullscreenLoading = false;
+                }
             })
         },
 
@@ -485,6 +512,13 @@ export default {
                     timer: 1500
                 });
                 this.listarUsuarios();
+            }).catch(error =>{
+                if(error.response.status ==401){
+                    this.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                    this.fullscreenLoading = false;
+                }
             })
         },
 
@@ -500,6 +534,13 @@ export default {
                     timer: 1500
                 });
                 this.listarUsuarios();
+            }).catch(error =>{
+                if(error.response.status ==401){
+                    this.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                    this.fullscreenLoading = false;
+                }
             })
         },
 
@@ -578,11 +619,19 @@ export default {
                 if(response.data.roles.length >0){
                     this.listRoles = response.data.roles;
                 }
+            }).catch(error =>{
+                if(error.response.status ==401){
+                    this.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                    this.fullscreenLoading = false;
+                }
             });
         },
     },
     mounted() {
         this.listarUsuarios();
+        this.listPermisosFilterByRolUser = sessionStorage.getItem('listPermisosFilterByRolUser');
     },
 
 }

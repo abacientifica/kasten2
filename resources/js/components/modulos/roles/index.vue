@@ -22,9 +22,11 @@
           <div class="card">
             <div class="card-header">
               <div class="card-tools">
-                <router-link class="btn btn-info btn-sm" :to="'/roles/crear'">
-                    <i class="fas fa-plus-square"></i> Nuevo Rol
-                </router-link>
+                <template v-if="listPermisosFilterByRolUser.includes('rol.crear') || listPermisosFilterByRolUser.includes('administrador.sistema')">
+                  <router-link class="btn btn-info btn-sm" :to="'/roles/crear'">
+                      <i class="fas fa-plus-square"></i> Nuevo Rol
+                  </router-link>
+                </template>
               </div>
             </div>
             <div class="card-body">
@@ -96,12 +98,17 @@
                               <td v-text="rol.nombre"></td>
                               <td v-text="rol.slug"></td>
                               <td>
-                                <button class="btn btn-primary btn-sm"  @click="abrirModal(3,rol)">
-                                  <i class="fas fa-eye"> </i> Ver
-                                </button>
-                                <router-link class="btn btn-info btn-sm" :to="'/roles/editar/'+rol.id">
-                                    <i class="fas fa-pencil-alt"></i> Editar
-                                </router-link>
+                                <template v-if="listPermisosFilterByRolUser.includes('rol.ver') || listPermisosFilterByRolUser.includes('administrador.sistema')">
+                                  <button class="btn btn-primary btn-sm"  @click="abrirModal(3,rol)">
+                                    <i class="fas fa-eye"> </i> Ver
+                                  </button>
+                                </template>
+                                
+                                <template v-if="listPermisosFilterByRolUser.includes('rol.editar') || listPermisosFilterByRolUser.includes('administrador.sistema')">
+                                  <router-link class="btn btn-info btn-sm" :to="'/roles/editar/'+rol.id">
+                                      <i class="fas fa-pencil-alt"></i> Editar
+                                  </router-link>
+                                </template>
                               </td>
                             </tr>
                           </tbody>
@@ -230,6 +237,7 @@ export default {
           showModal: false,
           Form: new FormData(),
           fullscreenLoading: false,
+          listPermisosFilterByRolUser:[],
       };
   },
 
@@ -296,6 +304,13 @@ export default {
               
           }
           this.fullscreenLoading = false;
+        }).catch(error =>{
+            if(error.response.status ==401){
+                this.$router.push({name: 'login'})
+                location.reload();
+                sessionStorage.clear();
+                this.fullscreenLoading = false;
+            }
         });
         
     },
@@ -369,6 +384,13 @@ export default {
         })
         .then((response) => {
           this.getListRoles();
+        }).catch(error =>{
+            if(error.response.status ==401){
+                this.$router.push({name: 'login'})
+                location.reload();
+                sessionStorage.clear();
+                this.fullscreenLoading = false;
+            }
         });
     },
 
@@ -381,7 +403,13 @@ export default {
             }
         }).then( response => {
             this.permisosRol = response.data.permisosbyrol;
-        }).catch(error => {
+        }).catch(error =>{
+            if(error.response.status ==401){
+                this.$router.push({name: 'login'})
+                location.reload();
+                sessionStorage.clear();
+                this.fullscreenLoading = false;
+            }
         })
     },
 
@@ -396,6 +424,13 @@ export default {
       .then((response) => {
         this.cerrarModal();
         this.getListRoles();
+      }).catch(error =>{
+          if(error.response.status ==401){
+              this.$router.push({name: 'login'})
+              location.reload();
+              sessionStorage.clear();
+              this.fullscreenLoading = false;
+          }
       })
     },
 
@@ -406,6 +441,7 @@ export default {
 
   mounted() {
     this.getListRoles();
+    this.listPermisosFilterByRolUser = sessionStorage.getItem('listPermisosFilterByRolUser');
   },
 };
 </script>

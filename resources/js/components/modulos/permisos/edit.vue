@@ -130,6 +130,13 @@ import Swal from 'sweetalert2'
                     });
                     this.fullscreenLoading = false;
                     this.$router.push('/permisos');
+                }).catch(error =>{
+                    if(error.response.status ==401){
+                        this.$router.push({name: 'login'})
+                        location.reload();
+                        sessionStorage.clear();
+                        this.fullscreenLoading = false;
+                    }
                 });
             },
 

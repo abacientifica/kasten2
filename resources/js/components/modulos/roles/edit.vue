@@ -151,7 +151,8 @@ import Swal from 'sweetalert2'
                 error: 0,
                 mensajeError: [],
                 listaPermisosByUser:[],
-                listPermisosUserFilter:[]
+                listPermisosUserFilter:[],
+                oUsuarioAct:[],
             }
         },
         computed: {
@@ -159,6 +160,7 @@ import Swal from 'sweetalert2'
         mounted() {
             this.getListarRoles();
             this.getListarPermisosByRol();
+            this.oUsuarioAct = JSON.parse(sessionStorage.getItem('authUser'));
         },
         methods: {
             limpiarCriterios(){
@@ -240,8 +242,8 @@ import Swal from 'sweetalert2'
                     'cUrl'                 :   this.fillEditarRol.cUrl,
                     'listPermisosFilter'    :   this.listPermisosFilter
                 }).then(response => {
-                    //this.getListarRolPermisosByUser();
-                    //this.getListarRolPermisosByUsuario();
+                    this.getListarRolPermisosByUser();
+                    this.getListarRolPermisosByUsuario();
                     this.fullscreenLoading = false;
                     this.$router.push('/roles');
                 }).catch(error => {
@@ -278,9 +280,12 @@ import Swal from 'sweetalert2'
 
 
             getListarRolPermisosByUser(){
-                let url = "/administracion/permiso/LisRolObtenerPermisosByUsuario/";
+                let url = "/permiso/ObtenerPermisosUsuario";
                 this.listaPermisosByUser = [];
-                axios.get(url).then((response)=>{
+                axios.get(url,{params:{
+                    'cUsuario':this.oUsuarioAct.Usuario,
+                    'nIdRol':this.oUsuarioAct.IdRol,
+                }}).then((response)=>{
                     let Datos = response.data;
                     this.listaPermisosByUser = Datos.permisos;
                     this.filterListRolPermisosByUsuario();
@@ -288,19 +293,21 @@ import Swal from 'sweetalert2'
             },
 
             filterListRolPermisosByUsuario(){
-                let me = this;
-                me.listaPermisosByUser.map(function(x,y){
-                    me.listPermisosUserFilter.push(x.slug);
-                });
-                sessionStorage.setItem('listPermisosFilterByRolUser',JSON.stringify(this.listPermisosUserFilter));
-                EventBus.$emit("notififyRolPermisosByUser",me.listPermisosUserFilter);
-                Swal.fire({
-                    position: 'top-center',
-                    icon: 'success',
-                    title: 'Rol Actualizado',
-                    showConfirmButton: false,
-                    timer: 1500
-                });
+                if(this.$attrs.id == this.oUsuarioAct.IdRol){
+                    let me = this;
+                    me.listaPermisosByUser.map(function(x,y){
+                        me.listPermisosUserFilter.push(x.slug);
+                    });
+                    sessionStorage.setItem('listPermisosFilterByRolUser',JSON.stringify(this.listPermisosUserFilter));
+                    EventBus.$emit("notififyRolPermisosByUser",me.listPermisosUserFilter);
+                    Swal.fire({
+                        position: 'top-center',
+                        icon: 'success',
+                        title: 'Rol Actualizado',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
                 this.fullscreenLoading = false;
             },
 
@@ -311,7 +318,7 @@ import Swal from 'sweetalert2'
                 });
                 this.sel = !this.sel;
             }
-        }
+        },
     }
 </script>
 

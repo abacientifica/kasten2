@@ -43,7 +43,7 @@ class LoginController extends Controller
         else{
             return [
                 'code'=>401,
-                withErrors(['usuario'=>trans('auth.failed')])->withInput(['usuario'=>$request->usuario])
+                 withErrors(['usuario'=>trans('auth.failed')])->withInput(['usuario'=>$request->cUsuario])
                 
             ];
         }   

@@ -10,30 +10,36 @@ use Illuminate\Support\Facades\Storage;
 use App\User;
 
 class UsuariosController extends Controller {
+
     public function index( Request $request ) {
-        if(!$request->ajax()) return redirect("/");
-        $cUsuario = $request->cUsuario ;
-        $cNombre = $request->cNombre;
-        $cEmail = $request->cCorreo;
-        $cEstado = $request->cEstado;
-        $usuarios = User::where( 'Usuario', '<>', null);
-        if($cUsuario != ''){
-            $usuarios = $usuarios->where('Usuario','like','%'.$cUsuario.'%');
+        try{
+            if(!$request->ajax()) return redirect("/");
+            $cUsuario = $request->cUsuario ;
+            $cNombre = $request->cNombre;
+            $cEmail = $request->cCorreo;
+            $cEstado = $request->cEstado;
+            $usuarios = User::where( 'Usuario', '<>', null);
+            if($cUsuario != ''){
+                $usuarios = $usuarios->where('Usuario','like','%'.$cUsuario.'%');
+            }
+            if($cNombre != ''){
+                $usuarios = $usuarios->where('Nombres','like','%'.$cNombre.'%');
+            }
+            if($cEmail != ''){
+                $usuarios = $usuarios->where('Email','like','%'.$cEmail.'%');
+            }
+            if($cEstado != ''){
+                $usuarios = $usuarios->where('Inactivo',$cEstado);
+            }
+            $usuarios = $usuarios->get();
+            return [
+                'usuarios'=>$usuarios,
+                'status'=>$cNombre
+            ];
         }
-        if($cNombre != ''){
-            $usuarios = $usuarios->where('Nombres','like','%'.$cNombre.'%');
+        catch(Exception $e){
+
         }
-        if($cEmail != ''){
-            $usuarios = $usuarios->where('Email','like','%'.$cEmail.'%');
-        }
-        if($cEstado != ''){
-            $usuarios = $usuarios->where('Inactivo',$cEstado);
-        }
-        $usuarios = $usuarios->get();
-        return [
-            'usuarios'=>$usuarios,
-            'status'=>$cNombre
-        ];
     }
 
     public function getUsuario(Request $request){
@@ -55,7 +61,9 @@ class UsuariosController extends Controller {
             $Usuario->Usuario = $Datos['cUsuario'];
             $Usuario->IdTercero = $Datos['nIdtercero'];
             $Usuario->Contrasena = $Datos['cContrasena'];
-            $Usuario->password = Hash::make($Datos['cContrasena']);
+            if($Datos['cContrasena'] !=''){
+                $Usuario->password = Hash::make($Datos['cContrasena']);
+            }
             $Usuario->Nombres = $Datos['cNombres'];
             $Usuario->Apellidos = $Datos['cApellidos'];
             $Usuario->Cargo = $Datos['cCargo'];

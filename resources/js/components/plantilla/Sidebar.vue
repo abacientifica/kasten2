@@ -2,18 +2,18 @@
     <div>
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <!-- Brand Logo -->
-        <a href="../../index3.html" class="brand-link">
-        <img src="/img/logos/icono_aba.jpg" alt="Logo Aba" class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">Kasten 2</span>
-        </a>
+        <router-link to="/" class="brand-link">
+            <img src="/img/logos/icono_aba.jpg" alt="Logo Aba" class="brand-image img-circle elevation-3" style="opacity: .8">
+            <span class="brand-text font-weight-light">Kasten 2</span>
+        </router-link>
 
         <!-- Sidebar -->
         <div class="sidebar">
         <!-- Sidebar user (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
-                <template v-if="usuario.imagen ==''">
-                    <img src="/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image"> 
+                <template v-if="usuario.imagen ==null">
+                    <img src="/img/avatar.png" class="img-circle elevation-2" alt="User Image"> 
                 </template>
                 <template v-else>
                     <img :src="usuario.imagen" class="img-circle elevation-2" alt="User Image"> 

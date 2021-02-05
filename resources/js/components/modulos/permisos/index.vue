@@ -22,9 +22,11 @@
         <div class="card">
             <div class="card-header">
             <div class="card-tools">
-                <router-link class="btn btn-info btn-sm" :to="'/permiso/crear'">
-                    <i class="fas fa-plus-square"></i> Nuevo Permiso
-                </router-link>
+                <template v-if="listPermisosFilterByRolUser.includes('permiso.crear') || listPermisosFilterByRolUser.includes('administrador.sistema')">
+                    <router-link class="btn btn-info btn-sm" :to="'/permiso/crear'">
+                        <i class="fas fa-plus-square"></i> Nuevo Permiso
+                    </router-link>
+                </template>
             </div>
             </div>
             <div class="card-body">
@@ -96,9 +98,11 @@
                             <td v-text="permiso.nombre"></td>
                             <td v-text="permiso.slug"></td>
                             <td>
-                                <router-link class="btn btn-info btn-sm" :to="'/permiso/editar/'+permiso.id">
-                                    <i class="fas fa-pencil-alt"></i> Editar
-                                </router-link>
+                                <template v-if="listPermisosFilterByRolUser.includes('permiso.editar') || listPermisosFilterByRolUser.includes('administrador.sistema')">
+                                    <router-link class="btn btn-info btn-sm" :to="'/permiso/editar/'+permiso.id">
+                                        <i class="fas fa-pencil-alt"></i> Editar
+                                    </router-link>
+                                </template>
                             </td>
                             </tr>
                         </tbody>
@@ -142,6 +146,7 @@ export default {
             perPage: 5,
             listPermisos:[],
             fullscreenLoading:false,
+            listPermisosFilterByRolUser:[],
         };
   },
 
@@ -201,14 +206,18 @@ export default {
                 },
                 })
                 .then((response) => {
-                this.inicializarPagination();
-                let permisos = response.data.permisos;
-                this.listPermisos = permisos;
-                this.fullscreenLoading = false;
-                }).catch(error=>{
-                console.log(error)
-                this.fullscreenLoading = false;
-            });
+                    this.inicializarPagination();
+                    let permisos = response.data.permisos;
+                    this.listPermisos = permisos;
+                    this.fullscreenLoading = false;
+                }).catch(error =>{
+                    if(error.response.status ==401){
+                        this.$router.push({name: 'login'})
+                        location.reload();
+                        sessionStorage.clear();
+                        this.fullscreenLoading = false;
+                    }
+                })
         },
 
         nextPage() {
@@ -230,6 +239,7 @@ export default {
 
     mounted() {
         this.getListarPermisos();
+        this.listPermisosFilterByRolUser = sessionStorage.getItem('listPermisosFilterByRolUser');
     },
 }
 </script>
