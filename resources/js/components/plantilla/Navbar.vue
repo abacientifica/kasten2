@@ -6,23 +6,31 @@
             <li class="nav-item">
                 <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
             </li>
-            <li class="nav-item d-none d-sm-inline-block">
-                <a href="../../index3.html" class="nav-link">Home</a>
-            </li>
-            <li class="nav-item d-none d-sm-inline-block">
-                <a href="#" class="nav-link">Contact</a>
-            </li>
+            <template v-if="listPermisos.includes('home.index')">
+                <li class="nav-item d-none d-sm-inline-block">
+                    <router-link class="nav-link" :to="{name: 'home.index'}">Inicio</router-link>
+                </li>
+            </template>
+            <template v-if="listPermisos.includes('pedido.index')">
+                <li class="nav-item d-none d-sm-inline-block">
+                    <router-link class="nav-link" :to="{name: 'pedido.index'}">Pedido</router-link>
+                </li>
+            </template>
             </ul>
 
             <!-- SEARCH FORM -->
             <form class="form-inline ml-3">
             <div class="input-group input-group-sm">
-                <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
-                <div class="input-group-append">
-                <button class="btn btn-navbar" type="submit">
-                    <i class="fas fa-search"></i>
-                </button>
-                </div>
+                <el-autocomplete
+                    class="inline-input"
+                    v-model="cBusqueda"
+                    :fetch-suggestions="querySearch"
+                    placeholder="Buscar ..."
+                    :trigger-on-focus="false"
+                    size="small"
+                    @select="handleSelect">
+                    <i class="el-icon-search el-input__icon" slot="suffix" ></i>
+                </el-autocomplete>
             </div>
             </form>
 
@@ -122,3 +130,80 @@
         </nav>
     </div>
 </template>
+<script>
+export default {
+    props:['ruta','usuario','listPermisos'],
+    data() {
+        return {
+            links: [],
+            cBusqueda: '',
+            listaPermisosByUser:[],
+            listPermisosFilterByRolUser:[],
+            oUsuario:[]
+        };
+    },
+    methods: {
+        querySearch(queryString, cb) {
+            var links = this.listPermisosFilterByRolUser;
+            var results = queryString ? links.filter(this.createFilter(queryString)) : links;
+            // call callback function to return suggestion objects
+            cb(results);
+        },
+        createFilter(queryString) {
+            return (link) => {
+                return (link.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+            };
+        },
+
+        //Este metodo se ejecuta despues de seleccionar el dato en el buscador
+        handleSelect(item) {
+            console.log(item);
+            if(this.$route.name != item.link){
+                this.$router.push({name : item.link});
+                this.cBusqueda ='';
+            }
+            else{
+                this.cBusqueda ='';
+            }
+        },
+        handleIconClick(ev) {
+            console.log(ev);
+        },
+
+        getListarRolPermisosByUser(){
+            let url = "/permiso/ObtenerPermisosUsuario";
+            axios.get(url,{params:{
+                'cUsuario':this.usuario.Usuario,
+                'nIdRol':this.usuario.IdRol
+            }}).then((response)=>{
+                let Datos = response.data;
+                this.listaPermisosByUser = Datos.permisos;
+                this.filterListRolPermisosByUsuario();
+            })
+        },
+
+
+        filterListRolPermisosByUsuario(){
+            let me = this;
+            me.listPermisosFilterByRolUser=[];
+            me.listaPermisosByUser.map(function(x,y){
+                //Aqui solamente incluimos los permisos que son de lista por ejemplo lista de pedidos, lista de usuarios.
+                if(x.slug.includes('index')){
+                    me.listPermisosFilterByRolUser.push({
+                        'value':x.nombre,
+                        'link':x.slug
+                    });
+                }
+            })
+        },
+
+    },
+    mounted() {
+        EventBus.$on('notififyRolPermisosByUser',data =>{
+            this.getListarRolPermisosByUser();
+        });
+        this.getListarRolPermisosByUser();
+    }
+    
+}
+</script>

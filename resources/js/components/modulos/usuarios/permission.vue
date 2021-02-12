@@ -218,7 +218,7 @@ export default {
                 .then((response) => {
                     this.listPermisos = response.data.permisosbyrol;
                 }).catch(error =>{
-                    if(error.response.status ==401){
+                    if(error.response.status != undefined && error.response.status ==401){
                         this.$router.push({name: 'login'})
                         location.reload();
                         sessionStorage.clear();
@@ -257,7 +257,7 @@ export default {
                         this.getListarPermisosByRolAsignado(Datos.id);
                     }
                 }).catch(error =>{
-                    if(error.response.status ==401){
+                    if(error.response.status != undefined && error.response.status ==401){
                         this.$router.push({name: 'login'})
                         location.reload();
                         sessionStorage.clear();
@@ -278,6 +278,7 @@ export default {
                     this.listaPermisosByUser = Datos.permisos;
                     this.filterPermisosByUsuario();
                 }).catch(error =>{
+                    console.log(error)
                     if(error.response.status ==401){
                         this.$router.push({name: 'login'})
                         location.reload();
@@ -296,13 +297,6 @@ export default {
                         'slug':x.slug,
                         'checked': (x.checked == 1) ? true : false
                     });
-                }).catch(error =>{
-                    if(error.response.status ==401){
-                        this.$router.push({name: 'login'})
-                        location.reload();
-                        sessionStorage.clear();
-                        this.fullscreenLoading = false;
-                    }
                 })
             },
 

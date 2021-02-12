@@ -1,6 +1,6 @@
 <template>
     <div>
-        <navbar :ruta="ruta" :usuario="authUser"></navbar>
+        <navbar :ruta="ruta" :usuario="authUser" :listPermisos ="listPermisosFilterByRolUser"></navbar>
         <sidebar :ruta="ruta" :usuario="authUser" :listPermisos ="listPermisosFilterByRolUser"></sidebar>
         <div class="content-wrapper">
             <transition name="slide" mode="out-in">
