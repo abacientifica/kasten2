@@ -12,13 +12,22 @@ import RolesEditar from './components/modulos/roles/edit.vue';
 import Permisos from './components/modulos/permisos/index.vue';
 import PermisosCrear from './components/modulos/permisos/create.vue';
 import PermisosEditar from './components/modulos/permisos/edit.vue';
+import PedidosDocumentos from './components/modulos/movimientos/pedidos/lista.vue';
+import PedidosIndex from './components/modulos/movimientos/pedidos/index.vue';
+import PedidosVer from './components/modulos/movimientos/pedidos/ver.vue';
+import PedidosCrear from './components/modulos/movimientos/pedidos/create.vue';
+
+
+//rutas configuracion documentos
+import ConfigurarDocumentos from './components/modulos/configuraciones/configdocumentos.vue';
+
 import Pagina404 from './components/plantilla/404.vue';
 
 function verificarAcceso(to, from, next) {
     let authUser = JSON.parse(sessionStorage.getItem('authUser'));
     if (authUser) {
         let listaPermisosByUser = JSON.parse(sessionStorage.getItem('listPermisosFilterByRolUser'));
-        if (listaPermisosByUser.includes(to.name)) {
+        if (listaPermisosByUser.includes(to.name) || listaPermisosByUser.includes('administrador.sistema')) {
             next();
         } else {
             let listRolPermisosByUsuarioFilter = [];
@@ -52,14 +61,16 @@ export default new Router({
                 }
             }*/
         },
+
         {
             path: '/',
             component: Home,
             name: 'home.index',
-            beforeEnter: (to, from, next) => {
+            /*beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);
-            }
+            }*/
         },
+
         {
             path: '/usuarios',
             component: Usuarios,
@@ -142,6 +153,59 @@ export default new Router({
             path: '/permiso/editar/:id',
             component: PermisosEditar,
             name: 'permiso.editar',
+            props: true,
+            beforeEnter: (to, from, next) => {
+                verificarAcceso(to, from, next);
+            }
+        },
+
+        /** RUTAS MOVIMIENTOS **/
+
+        {
+            path: '/pedidos/documentos/:tp',
+            component: PedidosDocumentos,
+            name: 'pedidos.documentos',
+            props: true,
+            beforeEnter: (to, from, next) => {
+                verificarAcceso(to, from, next);
+            }
+        },
+
+        {
+            path: '/pedidos/index',
+            component: PedidosIndex,
+            name: 'pedidos.index',
+            props: true,
+            beforeEnter: (to, from, next) => {
+                verificarAcceso(to, from, next);
+            }
+        },
+
+        {
+            path: '/pedidos/ver/:id',
+            component: PedidosVer,
+            name: 'pedidos.ver',
+            props: true,
+            beforeEnter: (to, from, next) => {
+                verificarAcceso(to, from, next);
+            }
+        },
+
+        {
+            path: '/pedidos/crear/:iddoc',
+            component: PedidosCrear,
+            name: 'pedidos.crear',
+            props: true,
+            beforeEnter: (to, from, next) => {
+                verificarAcceso(to, from, next);
+            }
+        },
+
+        //CONFIGURACION DOCUMENTOS
+        {
+            path: '/configuracion/documentos',
+            component: ConfigurarDocumentos,
+            name: 'configuraciondoc.index',
             props: true,
             beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);

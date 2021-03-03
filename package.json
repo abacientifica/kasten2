@@ -27,6 +27,7 @@
         "@fortawesome/fontawesome-free": "^5.15.2",
         "element-ui": "^2.15.0",
         "sweetalert2": "^10.13.0",
-        "vue-router": "^3.4.9"
+        "vue-router": "^3.4.9",
+        "vue-select": "^3.11.2"
     }
 }

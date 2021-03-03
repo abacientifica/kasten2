@@ -45,6 +45,33 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/permiso/ObtenerPermisosByUsuario','Administracion\PermisosController@ObtenerPermisosByUsuario');
     Route::post('/permiso/setActualizarPermisosByUsuario','Administracion\PermisosController@setActualizarPermisosByUsuario');
     Route::get('/permiso/ObtenerPermisosUsuario','Administracion\PermisosController@ObtenerPermisosUsuario');
+
+    //Lista rutas movimientos
+    Route::get('/movimientos/lista','Movimientos\MovimientosController@index');
+    Route::get('/movimiento/{IdMov}','Movimientos\MovimientosController@ObtenerMovimiento');
+    Route::post('/movimiento/nuevo','Movimientos\MovimientosController@RegistrarMovimiento');
+
+    //Lista rutas documentos
+    Route::get('/documentos/lista','Administracion\DocumentosController@index');
+
+    //Configuraciones Documentos
+    Route::post('/documentos/GuardarConfig', 'Administracion\DocumentosController@GuardarCampoConfiguracion')->name('config.save');
+    Route::get('/documentos/campos', 'Administracion\DocumentosController@CargarCamposconfiguracion')->name('campos.lista');
+    Route::put('/documentos/campos/delete', 'Administracion\DocumentosController@EliminarCampoconfiguracion')->name('campos.delete');    
+    Route::get('/conceptos/lista/{IdDoc}', 'ControladorGeneral@CargarConceptosDocumentos')->name('conceptos.lista');
+    Route::get('/formaspago/lista', 'ControladorGeneral@CargarFormasDePago')->name('formaspago.lista');
+    Route::get('/documentos/ObtenerDocTp', 'Administracion\DocumentosController@ObtenerDocumentosTp')->name('documentos.obtenertp');
+
+
+    //Listado de rutas terceros
+    Route::get('/terceros/lista', 'Administracion\TercerosController@index')->name('terceros.lista');
+
+    //Listado de rutas asesores
+    Route::get('/asesores/lista', 'ControladorGeneral@ObtenerAsesores')->name('asesores.lista');
+
+    //Listado de rutas Lista precios
+    Route::get('/listaprecios/lista', 'Administracion\ListaPreciosController@index')->name('listaprecios.lista');
+
 });
 Route::get('/{optional?}', function () {
 return view('app');

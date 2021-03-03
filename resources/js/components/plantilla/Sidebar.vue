@@ -1,6 +1,6 @@
 <template>
     <div>
-        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <aside class="main-sidebar sidebar-collapse sidebar-dark-primary elevation-4">
         <!-- Brand Logo -->
         <router-link to="/" class="brand-link">
             <img src="/img/logos/icono_aba.jpg" alt="Logo Aba" class="brand-image img-circle elevation-3" style="opacity: .8">
@@ -27,9 +27,11 @@
 
         </div>
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-            <a class="info" @click.prevent="logout()" href="#" v-loading.fullscreen.lock="fullscreenloading">
-                <i class="fas fa-sign-out-alt"></i>Cerrar Sesión
-            </a>
+            <div class="info">
+                <a class="d-block logout-form" @click.prevent="logout()" href="#" v-loading.fullscreen.lock="fullscreenloading">
+                    <i class="fas fa-sign-out-alt"></i>Cerrar Sesión
+                </a>
+            </div>
         </div>
 
         <!-- Sidebar Menu -->
@@ -45,12 +47,14 @@
             </li>
             <template v-if="listPermisos.includes('pedidos.index')">
                 <li class="nav-header">MOVIMIENTOS</li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                    <i class="nav-icon fas fa-cash-register"></i>
-                        <p> Pedidos <span class="badge badge-info right"></span></p>
-                    </a>
-                </li>
+                <template v-if="listPermisos.includes('pedidos.index')">
+                    <li class="nav-item">
+                        <router-link class="nav-link" :to="'/pedidos/index'">
+                            <i class="nav-icon fas fa-cash-register"></i>
+                            <p> Pedidos</p>
+                        </router-link>
+                    </li>
+                </template>
             </template>
             <template v-if="listPermisos.includes('usuarios.index','roles.index','permisos.index')">
                 <li class="nav-header">ADMINISTRACIÓN</li>
@@ -75,6 +79,15 @@
                         <router-link :to="'/permisos'" class="nav-link">
                             <i class="nav-icon fas fa-key"></i>
                             <p>Permisos</p>
+                        </router-link>
+                    </li>
+                </template>
+
+                <template v-if="listPermisos.includes('configuraciondoc.index') || listPermisos.includes('administrador.sistema')">
+                    <li class="nav-item">
+                        <router-link :to="'/configuracion/documentos'" class="nav-link">
+                            <i class="nav-icon fas fa-cogs"></i>
+                            <p>Config. Documentos</p>
                         </router-link>
                     </li>
                 </template>
