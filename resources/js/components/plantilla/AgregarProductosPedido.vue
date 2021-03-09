@@ -116,6 +116,7 @@
                                             <th>Opciones</th>
                                             <th>Codigo</th>
                                             <th>Nombre</th>
+                                            <th>Marca</th>
                                             <th>Precio</th>
                                             <th>Stock</th>
                                             <th>Estado</th>
@@ -131,6 +132,7 @@
                                             </td>
                                             <td v-text="articulo.Item"></td>
                                             <td v-text="articulo.Descripcion"></td>
+                                             <td v-text="articulo.NmMarca"></td>
                                             <td v-text="FormatoMoneda(articulo.Precio,2)"></td>
                                             <td v-text="articulo.Disponible"></td>
                                             <td>
@@ -228,7 +230,7 @@ export default {
             }}).then(function (response) {
                 let respuesta = response.data;
                 me.arrayArticulos = respuesta.productos;
-                this.inicializarPagination();
+                me.inicializarPagination();
             })
             .catch(function (error) {
                 console.log(error);
