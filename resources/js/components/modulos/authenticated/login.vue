@@ -15,7 +15,7 @@
                     </div>
                     <div class="form-group mb-4">
                         <span class="input-group-addon"><i class="fas fa-key"></i></span>
-                        <input type="password" name="password" id="password" class="form-control" @keyup.enter="login" v-model="fillLogin.cContrasena" placeholder="Password">
+                        <input type="password" name="password" id="password" class="form-control" @keyup.enter="login" v-model="fillLogin.cContrasena" placeholder="Password" required>
                         
                     </div>
                     <div class="row">
@@ -67,10 +67,10 @@ export default {
                 'cUsuario':this.fillLogin.cUsuario,
                 'cContrasena':this.fillLogin.cContrasena
             }).then(response=>{
-                if(response.data.code == 401){
+                if(response.data.status == 401){
                     this.loginFailed();
                 }
-                if(response.data.code == 200){
+                if(response.data.status == 200){
                     this.getListarRolPermisosByUser(response.data.authUser);
                     //this.filterListRolPermisosByUsuario();
                     sessionStorage.setItem('authUser',JSON.stringify(response.data.authUser));
@@ -103,6 +103,13 @@ export default {
             if(this.mensajeError.length){
                 this.error =1;
             }
+            Swal.fire({
+                position: 'top-center',
+                icon: 'error',
+                title: "Estas credenciales no coinciden con nuestros registros,intenta de nuevo",
+                showConfirmButton: false,
+                timer: 1800
+            });
             return this.error;
         },
         loginSucces(){

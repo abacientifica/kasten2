@@ -4,7 +4,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0 text-dark">Ver Pedido</h1>
+                    <h1 class="m-0 text-dark">Ver Pedido </h1>
                 </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -35,6 +35,13 @@
                     
                 </div>
                 <div class="card-body">
+                    <div class="col-md-12 btn-group-justified" v-if="fillMovimiento.cEstado == 'DIGITADA' || fillMovimiento.cEstado == 'AUTORIZADA'">
+                        <button class="btn btn-success " v-if="fillMovimiento.cEstado =='AUTORIZADA'" @click.prevent="NotificarPedido()"><i class="fas fa-bell"></i> Enviar Alerta Servicio Cliente</button>
+                        <button class="btn btn-success " v-if="fillMovimiento.cEstado == 'DIGITADA' && accionMovimiento==0" @click.prevent="Autorizar()"><i class="fas fa-check"></i> Autorizar</button>
+                        <button class="btn btn-primary " v-if="fillMovimiento.cEstado == 'DIGITADA' && accionMovimiento==0" @click.prevent="Editar()"><i class="fas fa-edit"></i> Editar</button>
+                        <button class="btn btn-success " v-if="fillMovimiento.cEstado == 'DIGITADA' && accionMovimiento==1" @click.prevent="ActualizarDatos()"><i class="fas fa-check"></i> Guardar Cambios</button>
+                        <button class="btn btn-warning " v-if="fillMovimiento.cEstado == 'DIGITADA' && accionMovimiento==1" @click.prevent="Editar()"><i class="fas fa-times-circle"></i> Cancelar Edición</button>
+                    </div><hr>
                     <div class="form-group row border">
                         <div class="col-md-3">
                             <div class="form-group">
@@ -123,11 +130,14 @@
                     
                     <div class="form-group row border">
                         <div class="table-responsive col-md-12">
-                            <table class="table table-bordered table-striped table-sm">
+                            <table class="table table-bordered table-striped table-sm" >
                                 <thead>
                                     <tr>
                                         <th>Codigo</th>
                                         <th>Artículo</th>
+                                        <th>Referencia</th>
+                                        <th>Marca</th>
+                                        <th>Invima</th>
                                         <th>Precio</th>
                                         <th>Cantidad</th>
                                         <th>Iva</th>
@@ -138,23 +148,27 @@
                                     <tr v-for="(detalle) in ListarMovimientosDetPaginate" :key="detalle.id">
                                         <td v-text="detalle.Id_Item"></td>
                                         <td v-text="detalle.item.Descripcion"></td>
+                                        <td v-text="detalle.item.listacostosdet.RefFabricante"></td>
+                                        <td v-text="detalle.item.listacostosdet.marca.NmMarca"></td>
+                                        <td v-text="detalle.item.listacostosdet.RegInvima"></td>
                                         <td v-text="FormatoMoneda(detalle.Precio,2)"></td>
-                                        <td v-text="detalle.Cantidad"></td>
+                                        <td v-text="detalle.Cantidad" v-if="accionMovimiento==0"></td>
+                                        <td v-else><input type="number" v-model="detalle.Cantidad" class="form-control"></td>
                                         <td v-text="detalle.PorIva"></td>
                                         <td v-text="FormatoMoneda(detalle.Precio * detalle.Cantidad)"> </td>
                                     </tr>
                                     
                                     
                                     <tr style="background-color: #CEECF5;">
-                                        <td colspan="5" align="right"><strong>Total Iva:</strong></td>
+                                        <td colspan="8" align="right"><strong>Total Iva:</strong></td>
                                         <td>$ {{FormatoMoneda(this.fillMovimiento.nVrIva ,2)}}</td>
                                     </tr>
                                     <tr style="background-color: #CEECF5;">
-                                        <td colspan="5" align="right"><strong>Sub Total:</strong></td>
+                                        <td colspan="8" align="right"><strong>Sub Total:</strong></td>
                                         <td>$ {{FormatoMoneda((this.fillMovimiento.nSubTotal),2)}}</td>
                                     </tr>
                                     <tr style="background-color: #CEECF5;">
-                                        <td colspan="5" align="right"><strong>Total:</strong></td>
+                                        <td colspan="8" align="right"><strong>Total:</strong></td>
                                         <td>$ {{FormatoMoneda((fillMovimiento.nTotal),2)}}</td>
                                     </tr>
                                 </tbody>  
@@ -164,6 +178,7 @@
                                     </tr>
                                 </tbody>                                 
                             </table>
+
                             <div class="card-footer clearfix">
                                 <ul class="pagination pagination-sm m-0 float-rigth">
                                     <li class="page-item" v-if="this.pageNumber > 0">
@@ -199,6 +214,7 @@ import Swal from 'sweetalert2'
 export default {
     data() {
         return {
+            accionMovimiento:0,
             listPermisosFilterByRolUser:[],
             fillMovimiento:{
                 nIdMovimiento: 0,
@@ -323,7 +339,100 @@ export default {
             this.fillDetallesMov = [];
         },
 
+        Autorizar(){
+            let me = this;
+            let url ="/movimiento/autorizar";
+            axios.put(url,{
+                params:{
+                    'nIdMovimiento':me.fillMovimiento.nIdMovimiento
+                }
+            }).then(response=>{    
+                let respuesta = response.data;
+                Swal.fire({
+                    position: 'top-center',
+                    icon: 'success',
+                    title: respuesta.msg,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                me.ListarMovimiento(me.fillMovimiento.nIdMovimiento);
 
+            }).catch(error =>{
+                if(error.response.status ==401){
+                    me.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                    this.fullscreenLoading = false;
+                }
+            })
+        },
+
+        Editar(){
+            this.accionMovimiento = !this.accionMovimiento;
+        },
+
+        ActualizarDatos(){
+            let me = this;
+            axios.put('/movimiento/editar',{
+                params:{
+                    'nIdMovimiento':this.fillMovimiento.nIdMovimiento,
+                    'arraryDetallesMovimiento':this.fillDetallesMov
+                }
+            }).then(function (response) {
+                var respuesta = response.data;
+                Swal.fire({
+                    position: 'top-center',
+                    icon: 'success',
+                    title: respuesta.msg,
+                    showConfirmButton: false,
+                    timer: 1300
+                });
+                me.ListarMovimiento(me.fillMovimiento.nIdMovimiento);
+                me.Editar();
+            })
+            .catch(function (error) {
+                console.log(error);
+                if (error.response.data.status == 401) {
+                    this.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                    this.fullscreenLoading = false;
+                }
+                if(error.response.data.status == 500){
+                    Swal.fire({
+                        icon :'danger',
+                        type :'danger',
+                        title :'',
+                        text:response.data.error
+                    })
+                }
+            });
+        },
+
+        NotificarPedido(){
+            let url ="/movimiento/notificar";
+            axios.put(url,{
+                params:{
+                    'nIdMovimiento':this.fillMovimiento.nIdMovimiento
+                }
+            }).then(response=>{    
+                let respuesta = response.data;
+                Swal.fire({
+                    position: 'top-center',
+                    icon: 'success',
+                    title: respuesta.msg,
+                    showConfirmButton: false,
+                    timer: 1800
+                });
+            }).catch(error =>{
+                if(error.response.status ==401){
+                    this.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                    this.fullscreenLoading = false;
+                }
+            })
+        },
         /*Inicio Metodos Paguinacion*/
         inicializarPagination() {
             this.pageNumber = 0;

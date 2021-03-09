@@ -50,6 +50,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/movimientos/lista','Movimientos\MovimientosController@index');
     Route::get('/movimiento/{IdMov}','Movimientos\MovimientosController@ObtenerMovimiento');
     Route::post('/movimiento/nuevo','Movimientos\MovimientosController@RegistrarMovimiento');
+    Route::put('/movimiento/autorizar','Movimientos\MovimientosController@Autorizar');
+    Route::put('/movimiento/editar','Movimientos\MovimientosController@ActualizarMovimiento');
+    Route::put('/movimiento/notificar','Movimientos\MovimientosController@NotificarMovimiento');
 
     //Lista rutas documentos
     Route::get('/documentos/lista','Administracion\DocumentosController@index');
@@ -71,6 +74,9 @@ Route::group(['middleware' => ['auth']], function () {
 
     //Listado de rutas Lista precios
     Route::get('/listaprecios/lista', 'Administracion\ListaPreciosController@index')->name('listaprecios.lista');
+
+    //Rutas dashboard
+    Route::get('/dashboard', 'ControladorGeneral@DashboardHome')->name('dashboard');
 
 });
 Route::get('/{optional?}', function () {

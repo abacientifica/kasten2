@@ -25,6 +25,7 @@
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^5.15.2",
+        "chart.js": "^2.9.4",
         "element-ui": "^2.15.0",
         "sweetalert2": "^10.13.0",
         "vue-router": "^3.4.9",

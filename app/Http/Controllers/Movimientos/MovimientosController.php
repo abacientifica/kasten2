@@ -33,9 +33,11 @@ class MovimientosController extends Controller
             if($Filtros->nIdDireccion){
                 $Movimientos = $Movimientos->where('IdDireccion',$Filtros->nIdDireccion );
             }
+            $Movimientos = $Movimientos->where('IdDireccion','<>','');
+            
             $Movimientos = $Movimientos->limit(100)->orderBy('FhAutoriza','DESC')->get();
             return[
-                'movimientos'=>$Movimientos,
+                'movimientos'=>$Movimientos
             ];
         }
     }
@@ -43,7 +45,7 @@ class MovimientosController extends Controller
     public function ObtenerMovimiento(Request $request){
         if(!$request->ajax()) return redirect("/");
         $Movimiento = Movimientos::with('documento','asesor','tercero','direccion','fpago')->where('IdMovimiento',$request->IdMov)->get();
-        $MovimientosDet = MovimientosDet::with('item')->where('IdMovimiento',$request->IdMov)->get();
+        $MovimientosDet = MovimientosDet::with('item','item.listacostosdet','item.listacostosdet.marca')->where('IdMovimiento',$request->IdMov)->get();
         return[
             'movimiento'=>$Movimiento,
             'movimientos_det'=>$MovimientosDet
@@ -155,5 +157,125 @@ class MovimientosController extends Controller
             ];
         } 
         
+    }
+
+    public function ActualizarMovimiento(Request $request){
+        if(!$request->ajax()) return redirect("/");
+        try{
+            DB::beginTransaction();
+            $nIdMovimiento = $request->params['nIdMovimiento'];
+            $DatosMovimientoDetalle = $request->params['arraryDetallesMovimiento'];
+
+            $arMovimiento = Movimientos::FindOrFail($nIdMovimiento);
+            $Doc =  Documentos::find($arMovimiento->IdDocumento);
+            $TotalIvaEnc =0;
+            $SubTotalEnc =0;
+            $TotalEnc = 0; 
+            foreach ( $DatosMovimientoDetalle as  $ep => $det ) {
+                $MovimientoDet = MovimientosDet::find($det['IdMovimientoDet']);
+                $MovimientoDet->Cantidad = $det['Cantidad'];
+                $MovimientoDet->CantFactor = $MovimientoDet->Cantidad;
+                $MovimientoDet->Estado ='DIGITADO';
+
+                //iva
+                $TotalIva = ((($MovimientoDet->Precio - $MovimientoDet->TotalDescuento) * $MovimientoDet->PorIva) / 100) * $MovimientoDet->Cantidad;
+                $TotalIvaEnc = $TotalIvaEnc + $TotalIva;
+                //subtotal.
+                $SubTotal = ($MovimientoDet->Precio * $MovimientoDet->Cantidad) - $MovimientoDet->TotalDescuento;
+                $SubTotalEnc = $SubTotalEnc + $SubTotal;
+                //total
+                $Total = $SubTotal + $TotalIva;
+                $TotalEnc = $TotalEnc + $Total;
+
+                $MovimientoDet->TotalIva = $TotalIva;
+                $MovimientoDet->SubTotal = $SubTotal;
+                $MovimientoDet->Total = $Total;
+
+                $MovimientoDet->save();
+            }
+            $arMovimiento->Total = $TotalEnc;
+            $arMovimiento->VrIva = $TotalIvaEnc;
+            $arMovimiento->SubTotal = $SubTotalEnc;
+            $arMovimiento->save();
+            DB::commit();
+            //Autorizamos el documento
+            /*$ValidaAut = \Funciones::AutorizarMovimiento($arMovimiento->IdMovimiento);
+            \Funciones::Consecutivo($arMovimiento->IdMovimiento);
+            
+
+            DB::commit();
+            //Enviamos el Email de alerta a el asesor
+            $DatosCliente = \Funciones::ObtenerTercero($arMovimiento->IdTercero);
+            $strMensaje = "El usuario  " . \Auth::user()->Nombres . " " . \Auth::user()->Apellidos . " de la institución " . $DatosCliente[0]->NombreCorto . " acaba de autorizar el pedido externo " . $arMovimiento->IdMovimiento;
+            \Funciones::EnviarEmail('Autorización Pedido Externo','auxsistemas@aba.com.co',$strMensaje);*/
+            return [
+                'movimiento'=>$arMovimiento->IdMovimiento,
+                'msg'=>"El ".$Doc->Nombre." ha sido actualizado con exito",
+                'status'=>201
+            ];
+        }
+        catch(Exception $e){
+            DB::rollBack();
+            return[
+                'msg'=>"Ha ocurrido un error",
+                'status'=>500,
+                'error'=>$e->getMessage()
+            ];
+        } 
+        
+    }
+
+
+    public function Autorizar(Request $request){
+        if(!$request->ajax()) return redirect("/");
+        try{
+            $MovAutorizado = \Funciones::AutorizarMovimiento($request->params['nIdMovimiento']);
+            $arMovimiento = Movimientos::find($request->params['nIdMovimiento']);
+            if($MovAutorizado == true){
+                \Funciones::Consecutivo($request->params['nIdMovimiento']);
+                //Enviamos el Email de alerta a el asesor
+                $DatosCliente = \Funciones::ObtenerTercero($arMovimiento->IdTercero);
+                $strMensaje = "El usuario  " . \Auth::user()->Nombres . " " . \Auth::user()->Apellidos . " de la institución " . $DatosCliente[0]->NombreCorto . " acaba de autorizar el pedido externo " . $arMovimiento->IdMovimiento;
+                \Funciones::EnviarEmail('Autorización Pedido Externo','auxsistemas@aba.com.co',$strMensaje);
+
+                return[
+                    'msg'=>"El movimiento ha sido autorizado con exito !!".$request->params['nIdMovimiento'],
+                    'status'=>201
+                ];
+            }
+            else{
+                return[
+                    'msg'=>$MovAutorizado,
+                    'status'=>501
+                ];
+            }
+        }
+        catch(Exception $e){
+            return[
+                'msg'=>$e,
+                'status'=>501
+            ];
+        }
+    }
+
+    public function NotificarMovimiento(Request $request){
+        if(!$request->ajax()) return redirect("/");
+        try{
+            $arMovimiento = Movimientos::find($request->params['nIdMovimiento']);
+            $DatosCliente = \Funciones::ObtenerTercero($arMovimiento->IdTercero);
+            $strMensaje = "El usuario  " . \Auth::user()->Nombres . " " . \Auth::user()->Apellidos . " de la institución " . $DatosCliente[0]->NombreCorto . " acaba de autorizar el pedido externo " . $arMovimiento->IdMovimiento;
+            \Funciones::EnviarEmail('Autorización Pedido Externo','auxsistemas@aba.com.co',$strMensaje);
+            return[
+                'msg'=>"Ups, el area de servicio al cliente fue notificada con exito ",
+                'status'=>201
+            ];
+        }
+        catch(Exception $e){
+            return[
+                'msg'=>$e,
+                'status'=>500
+            ];
+        }
+
     }
 }

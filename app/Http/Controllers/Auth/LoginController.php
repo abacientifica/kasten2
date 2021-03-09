@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\MessageBag;
 class LoginController extends Controller
 {
     /*
@@ -32,19 +32,18 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $this->validatelogin($request);
-
+        $errors = new MessageBag;
         $rpta = Auth::attempt(['Usuario'=>$request->cUsuario,'password'=>$request->cContrasena,'Inactivo'=>0]);
         if($rpta){
             return [
                 'authUser'=> \Auth::user(),
-                'code'=>200
+                'status'=>200
             ];
         }
         else{
             return [
-                'code'=>401,
-                 withErrors(['usuario'=>trans('auth.failed')])->withInput(['usuario'=>$request->cUsuario])
-                
+                'status'=>401,
+                'msg'=>"Las credenciales no funcionaron, intenta de nuevo"
             ];
         }   
 

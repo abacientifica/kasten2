@@ -27,7 +27,7 @@ function verificarAcceso(to, from, next) {
     let authUser = JSON.parse(sessionStorage.getItem('authUser'));
     if (authUser) {
         let listaPermisosByUser = JSON.parse(sessionStorage.getItem('listPermisosFilterByRolUser'));
-        if (listaPermisosByUser.includes(to.name) || listaPermisosByUser.includes('administrador.sistema')) {
+        if (listaPermisosByUser.includes(to.name) || listaPermisosByUser.includes('administrador.sistema') || to.name == 'home.index') {
             next();
         } else {
             let listRolPermisosByUsuarioFilter = [];
@@ -66,9 +66,9 @@ export default new Router({
             path: '/',
             component: Home,
             name: 'home.index',
-            /*beforeEnter: (to, from, next) => {
+            beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);
-            }*/
+            }
         },
 
         {

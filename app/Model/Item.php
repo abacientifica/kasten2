@@ -71,4 +71,8 @@ class Item extends Model
         'AplicaForecast',
         'ConsComodato',
     ];
+
+    public function listacostosdet(){
+        return $this->hasOne('App\Model\ListaCostosProvDet','IdListaCostosProvDet','IdListaCostosDetItem');
+    }
 }
