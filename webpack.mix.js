@@ -11,5 +11,15 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/app.js', 'public/js')
-    .sass('resources/sass/app.scss', 'public/css');
+mix.styles([
+        'resources/vendor/css/all.min.css',
+        'resources/vendor/css/adminlte.css',
+        'resources/vendor/css/transicion.css'
+    ], 'public/css/plantilla.css')
+    .js('resources/js/app.js', 'public/js') //Este es el que inclue laravel que viene con boostap,Jquery,Vue
+    .scripts([
+        'resources/vendor/js/adminlte.js',
+        'resources/vendor/js/demo.js',
+    ], 'public/js/plantilla.js')
+    .copy('resources/vendor/fontawesome/webfonts', 'public/webfonts')
+    .copy('resources/vendor/img', 'public/img');

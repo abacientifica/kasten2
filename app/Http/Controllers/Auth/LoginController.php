@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\MessageBag;
 class LoginController extends Controller
 {
     /*
@@ -18,15 +19,6 @@ class LoginController extends Controller
     |
     */
 
-    use AuthenticatesUsers;
-
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/home';
-
     /**
      * Create a new controller instance.
      *
@@ -35,5 +27,39 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+    }
+
+    public function login(Request $request)
+    {
+        $this->validatelogin($request);
+        $errors = new MessageBag;
+        $rpta = Auth::attempt(['Usuario'=>$request->cUsuario,'password'=>$request->cContrasena,'Inactivo'=>0]);
+        if($rpta){
+            return [
+                'authUser'=> \Auth::user(),
+                'status'=>200
+            ];
+        }
+        else{
+            return [
+                'status'=>401,
+                'msg'=>"Las credenciales no funcionaron, intenta de nuevo"
+            ];
+        }   
+
+        //return back()->withErrors(['usuario'=>trans('auth.failed')])->withInput(['usuario'=>$request->usuario]);
+    }
+
+    protected function validatelogin($request)
+    {
+        $this->validate($request,[
+            'cUsuario'=>'required|string',
+            'cContrasena'=>'required|string',
+        ]);
+    }
+
+    public function logout(Request $request){
+        \Auth::logout();
+        return ['code'=>204];
     }
 }
