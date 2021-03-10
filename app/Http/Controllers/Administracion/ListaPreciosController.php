@@ -18,12 +18,16 @@ class ListaPreciosController extends Controller
             $IdDir = $request->IdDireccion; 
             $Direccion = Direcciones::findOrFail($IdDir);
             $Sql = "select `lista_precios_det`.`Id_Item` as `Item`, `item`.`Descripcion` as `Descripcion`, `item`.`Disponible` as `Disponible`, `item`.`Inactivo` as `Inactivo`, lista_precios_det.Precio, `item`.`Por_Iva` as `Por_Iva`,'' as Venta,'0' as Cantidad,item.Por_Iva as Iva
+                    ,NmMarca
                     from  lista_precios_det
                     LEFT JOIN lista_precios on lista_precios.IdListaPrecios = lista_precios_det.IdListaPrecios
                     LEFT JOIN direcciones on direcciones.IdDireccion = ".$IdDir."
-                    LEFT JOIN item on item.Id_Item = lista_precios_det.Id_Item where 1";
+                    LEFT JOIN item on item.Id_Item = lista_precios_det.Id_Item
+                    LEFT JOIN lista_costos_prov_det as lista on lista.IdListaCostosProvDet = item.IdListaCostosDetItem
+                    LEFT JOIN marcas on marcas.IdMarca = lista.IdMarca
+                    where 1";
             if($filtro !=''){
-                $Sql.= " and (item.Descripcion like '%".$filtro."%' or item.Id_Item like '%".$filtro."%')";
+                $Sql.= " and (item.Descripcion like '%".$filtro."%' or item.Id_Item like '%".$filtro."%' or marcas.NmMarca like '%".$filtro."%')";
             }
             $Sql.= " and lista_precios.IdListaPrecios = ".$Direccion->IdListaPreciosDireccion." and item.Inactivo=0 and IdKit =0 order by Venta DESC limit 100";
             $Lista = DB::select($Sql);
