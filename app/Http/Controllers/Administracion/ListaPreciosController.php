@@ -16,6 +16,7 @@ class ListaPreciosController extends Controller
         $filtro = $request->filtro;
         if(isset($request->IdDireccion) && $request->IdDireccion >0){
             $IdDir = $request->IdDireccion; 
+            $limit = $request->limit;
             $Direccion = Direcciones::findOrFail($IdDir);
             $Sql = "select `lista_precios_det`.`Id_Item` as `Item`, `item`.`Descripcion` as `Descripcion`, `item`.`Disponible` as `Disponible`, `item`.`Inactivo` as `Inactivo`, lista_precios_det.Precio, `item`.`Por_Iva` as `Por_Iva`,'' as Venta,'0' as Cantidad,item.Por_Iva as Iva
                     ,NmMarca
@@ -27,9 +28,14 @@ class ListaPreciosController extends Controller
                     LEFT JOIN marcas on marcas.IdMarca = lista.IdMarca
                     where 1";
             if($filtro !=''){
-                $Sql.= " and (item.Descripcion like '%".$filtro."%' or item.Id_Item like '%".$filtro."%' or marcas.NmMarca like '%".$filtro."%')";
+                $Sql.= " and ( lista_precios_det.CodTercero like '%".$filtro."%' or item.Descripcion like '%".$filtro."%' or item.Id_Item like '%".$filtro."%' or marcas.NmMarca like '%".$filtro."%')";
             }
-            $Sql.= " and lista_precios.IdListaPrecios = ".$Direccion->IdListaPreciosDireccion." and item.Inactivo=0 and IdKit =0 order by Venta DESC limit 100";
+            if($limit != ''){
+                $Sql.= " and lista_precios.IdListaPrecios = ".$Direccion->IdListaPreciosDireccion." and item.Inactivo=0 and IdKit =0 order by Venta DESC limit 1";
+            }
+            else{
+                $Sql.= " and lista_precios.IdListaPrecios = ".$Direccion->IdListaPreciosDireccion." and item.Inactivo=0 and IdKit =0 order by Venta DESC limit 100";
+            }
             $Lista = DB::select($Sql);
         }
         return[

@@ -5,22 +5,22 @@
                 <div class="form-group">
                     <label>Artículo <span style="color:red" v-show="fillArticulosMov.nIdItem ==0">(Seleccione *)</span></label>
                     <div class="form-inline">
-                            <input type="text" class="form-control" v-model="fillProdNuevo.codigo" @keyup.enter="buscarArticulo(true)" placeholder="Ingrese artículo">
+                            <input type="text" class="form-control" v-model="fillProdNuevo.nIdItem" @keyup.enter="buscarArticuloIndividual()" placeholder="Ingrese artículo">
                             <button class="btn btn-primary" @click="AbrirModal()" value="">...</button>
-                            <input type="text" readonly="" class="form-control" v-model="articulo">
+                            <input type="text" readonly="" class="form-control" v-model="fillProdNuevo.cDescripcion">
                     </div>                                    
                 </div>
             </div>
             <div class="col-md-2">
                 <div class="form-group">
                     <label>Precio <span style="color:red" v-show="fillProdNuevo.precio ==0">(Ingrese *)</span></label>
-                    <input type="number" value="0" step="any" class="form-control" v-model="fillProdNuevo.precio" disabled>
+                    <input type="number" value="0" step="any" class="form-control" v-model="fillProdNuevo.nPrecio" v-text="FormatoMoneda(fillProdNuevo.nPrecio,2)" disabled>
                 </div>
             </div>
             <div class="col-md-2">
                 <div class="form-group">
                     <label>Cantidad <span style="color:red" v-show="fillProdNuevo.cantidad ==0">(Ingrese *)</span></label>
-                    <input type="number" value="0" class="form-control" v-model="fillProdNuevo.cantidad">
+                    <input type="number" value="0" class="form-control" v-model="fillProdNuevo.nCantidad">
                 </div>
             </div>
             <div class="col-md-2">
@@ -165,7 +165,6 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @click="AbrirModal()">Cerrar</button>
-                            <button type="button"  class="btn btn-primary" @click="registrarPersona()">Guardar</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -191,9 +190,11 @@ export default {
             },
             arraryDetallesMovimiento:[],
             fillProdNuevo:{
-                codigo:0,
-                precio:0,
-                cantidad:0
+                nIdItem:0,
+                cDescripcion:'',
+                nPrecio:0,
+                nIva:0,
+                nCantidad:0,
             },
             filtroProd:'',
             tituloModal:'',
@@ -221,7 +222,6 @@ export default {
 
     methods: {
         buscarArticulo(){
-            console.log(this.IdDireccion)
             let me = this;
             var url = '/listaprecios/lista';
             axios.get(url,{params:{
@@ -231,6 +231,31 @@ export default {
                 let respuesta = response.data;
                 me.arrayArticulos = respuesta.productos;
                 me.inicializarPagination();
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+        },
+
+        buscarArticuloIndividual(){
+            let me = this;
+            var url = '/listaprecios/lista';
+            axios.get(url,{params:{
+                'IdDireccion':this.IdDireccion,
+                'filtro':this.fillProdNuevo.nIdItem,
+                'limit':1
+            }}).then(function (response) {
+                let respuesta = response.data.productos[0];
+                if(respuesta != ''){
+                    me.fillProdNuevo.nIdItem = respuesta.Item;
+                    me.fillProdNuevo.cDescripcion = respuesta.Descripcion;
+                    me.fillProdNuevo.nPrecio = respuesta.Precio;
+                    me.fillProdNuevo.nIva = respuesta.Por_Iva;
+                    me.fillProdNuevo.nCantidad = 1;
+                }
+                else{
+                    alert("No se encontro ningun dato con "+me.fillProdNuevo.nIdItem)
+                }
             })
             .catch(function (error) {
                 console.log(error);
@@ -280,19 +305,21 @@ export default {
         },
 
         agregarDetalleModal(articulo){
-            this.arraryDetallesMovimiento.push({
-                Id_Item:articulo.Item,
-                Descripcion:articulo.Descripcion,
-                Cantidad:1,
-                Precio:articulo.Precio,
-                Iva:articulo.Iva
-            });
-            Swal.fire({
-                icon :'success',
-                type :'success',
-                title :'',
-                text:'El articulo '+articulo.Descripcion+' se agrego"'
-            })
+            if(!this.ValidarProductoExiste(articulo.Item)){
+                this.arraryDetallesMovimiento.push({
+                    Id_Item:articulo.Item,
+                    Descripcion:articulo.Descripcion,
+                    Cantidad:1,
+                    Precio:articulo.Precio,
+                    Iva:articulo.Iva
+                });
+                Swal.fire({
+                    icon :'success',
+                    type :'success',
+                    title :'',
+                    text:'El articulo '+articulo.Descripcion+' se agrego"'
+                })
+            }
         },
 
         eliminarDetalle(index){
@@ -346,6 +373,41 @@ export default {
                 amount_parts[0] = amount_parts[0].replace(regexp, '$1' + ',' + '$2');
 
             return  sign ? '-' + amount_parts.join('.') : amount_parts.join('.');
+        },
+
+        agregarDetalle(){
+            if(!this.ValidarProductoExiste(this.fillProdNuevo.nIdItem)){
+                this.arraryDetallesMovimiento.push({
+                    'Id_Item':this.fillProdNuevo.nIdItem,
+                    'Descripcion':this.fillProdNuevo.cDescripcion,
+                    'Precio':this.fillProdNuevo.nPrecio,
+                    'Iva':this.fillProdNuevo.nIva,
+                    'Cantidad':this.fillProdNuevo.nCantidad,
+                });
+            }
+        },
+
+        ValidarProductoExiste(Item){
+            var Existe = false;
+            var Producto = '';
+            this.arraryDetallesMovimiento.map(function(x,y){
+                if(x['Id_Item'] == Item){
+                    Existe = true;
+                    Producto = x['Descripcion'];
+                };
+            });
+            if(Existe){
+                Swal.fire({
+                    icon :'error',
+                    type :'danger',
+                    title :'',
+                    text:'El articulo '+Producto+' ya existe en el pedido"'
+                })
+                return true;
+            }
+            else{
+                return false;
+            }
         },
 
         EmitirEventoProductos(){

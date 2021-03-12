@@ -21,9 +21,13 @@
                 <div class="card-header bg-info">
                     <template v-if="listPermisosFilterByRolUser.includes('pedidos.crear')">
                         <div class="card-tools">
-                            <button class="btn btn-info btn-sm" @click.prevent="abrirModal(1)" data-toggle="modal">
-                            <i class="fas fa-plus-square"></i> Nuevo Pedido
-                            </button>
+                            <template v-if="listPermisosFilterByRolUser.includes('pedidos.crear') || listPermisosFilterByRolUser.includes('administrador.sistema')">
+                                <div class="card-tools">
+                                    <router-link class="btn btn-info btn-sm" :to="'/pedidos/crear/'+this.OpPedido">
+                                        <i class="fas fa-plus-square"></i> Nuevo Pedido
+                                    </router-link>
+                                </div>
+                            </template>
                         </div>
                     </template>
                     <div class="card-tools">
@@ -214,6 +218,7 @@ import Swal from 'sweetalert2'
 export default {
     data() {
         return {
+            OpPedido:2,
             accionMovimiento:0,
             listPermisosFilterByRolUser:[],
             fillMovimiento:{
@@ -477,6 +482,10 @@ export default {
     mounted() {
         this.ListarMovimiento(this.$attrs.id);
         this.listPermisosFilterByRolUser = sessionStorage.getItem('listPermisosFilterByRolUser');
+        this.usuario = JSON.parse(sessionStorage.getItem('authUser'));
+        if(this.usuario.Tipo == 2){
+            this.OpPedido = 61;
+        }
     },
 
 }
