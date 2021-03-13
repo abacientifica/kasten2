@@ -24,6 +24,10 @@
                             <button class="btn btn-info btn-sm" @click.prevent="abrirModal(1)" data-toggle="modal">
                             <i class="fas fa-plus-square"></i> Nuevo Usuario
                             </button>
+
+                            <button class="btn btn-success btn-sm" @click.prevent="actualizarContrasenas()" data-toggle="modal">
+                            <i class="fas fa-user-edit"></i> Actualizar Contraseñas
+                            </button>
                         </div>
                     </template>
                 </div>
@@ -436,6 +440,33 @@ export default {
                 this.ActualizarUsuario();
             }
         },
+
+        actualizarContrasenas(){
+            let url = "/usuarios/actualizarpass";
+            axios.put(url)
+            .then((response) => {
+                Swal.fire({
+                    icon :'success',
+                    type :'success',
+                    title :'',
+                    text: response.data.msg
+                })
+            }).catch(error =>{
+                Swal.fire({
+                    icon :'warning',
+                    type :'warning',
+                    title :'',
+                    text: response.data.msg
+                })
+                if(error.response.status ==401){
+                    this.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                    this.fullscreenLoading = false;
+                }
+            })
+        },
+
 
         /**
          * Valida los campos del formulario editar o registrar

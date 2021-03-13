@@ -71,7 +71,7 @@ import Swal from 'sweetalert2'
                 abrirModal:false,
                 error: 0,
                 mensajeError: [],
-                IdDocPed:8,
+                IdDocPed:this.$attrs.iddoc,
             }
         },
         computed: {

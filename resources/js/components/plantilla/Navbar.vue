@@ -188,7 +188,8 @@ export default {
             me.listPermisosFilterByRolUser=[];
             me.listaPermisosByUser.map(function(x,y){
                 //Aqui solamente incluimos los permisos que son de lista por ejemplo lista de pedidos, lista de usuarios.
-                if(x.slug.includes('index')){
+                
+                if(x.slug != null && x.slug.includes('index')){
                     me.listPermisosFilterByRolUser.push({
                         'value':x.nombre,
                         'link':x.slug

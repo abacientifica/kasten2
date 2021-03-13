@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Model\Conceptos;
-
+use App\Model\Direcciones;
 class ControladorGeneral extends Controller
 {
     
@@ -39,6 +39,7 @@ class ControladorGeneral extends Controller
 
     public function DashboardHome(Request $request)
     {
+        if(!$request->ajax())  return  redirect('/'); 
         $anio = date("Y");
         $IdTercero =  \Auth::user()->IdTercero;
         $Sql = "select MONTHNAME(movimientos.Fecha) as mes, YEAR(movimientos.Fecha) as anio, SUM(movimientos.Total) as total from `movimientos` 
@@ -57,5 +58,20 @@ class ControladorGeneral extends Controller
             'remisiones'=>$remisiones,
             "anio"=>$anio
         ];
+    }
+
+    public function ObtenerDireccion(Request $request){
+        if(!$request->ajax())  return  redirect('/'); 
+        $Datos = Direcciones::with('tipo')->where("IdDireccion",$request->IdDir)->get();
+        if(is_countable($Datos) && count($Datos)>0){
+            return[
+                'direccion'=>$Datos
+            ];
+        }
+        else{
+            return[
+                'direccion'=>[]
+            ];
+        }
     }
 }

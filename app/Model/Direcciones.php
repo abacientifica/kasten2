@@ -33,4 +33,8 @@ class Direcciones extends Model
         'CobraFlete',
         'HoraRecibo',
     ];
+
+    public function tipo(){
+        return $this->hasOne('App\Model\TipoDirecciones','IdTipoDireccion','Tipo');
+    }
 }
