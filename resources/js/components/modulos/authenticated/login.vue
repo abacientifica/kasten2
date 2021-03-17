@@ -76,6 +76,12 @@ export default {
                     sessionStorage.setItem('authUser',JSON.stringify(response.data.authUser));
                     //this.loginSucces();
                 }
+                if(response.data.status == 419){
+                    this.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                    this.fullscreenLoading = false;
+                }
             })
             this.fullscreenloading = false;
         },
