@@ -68,6 +68,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/formaspago/lista', 'ControladorGeneral@CargarFormasDePago')->name('formaspago.lista');
     Route::get('/documentos/ObtenerDocTp', 'Administracion\DocumentosController@ObtenerDocumentosTp')->name('documentos.obtenertp');
 
+    //Rutas log de acciones
+    Route::get('/log/lista', 'ControladorGeneral@LogMovimientos');
+
 
     //Listado de rutas terceros
     Route::get('/terceros/lista', 'Administracion\TercerosController@index')->name('terceros.lista');
