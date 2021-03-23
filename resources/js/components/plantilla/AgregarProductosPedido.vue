@@ -5,22 +5,22 @@
                 <div class="form-group">
                     <label>Artículo <span style="color:red" v-show="fillArticulosMov.nIdItem ==0">(Seleccione *)</span></label>
                     <div class="form-inline">
-                            <input type="text" class="form-control" v-model="fillProdNuevo.codigo" @keyup.enter="buscarArticulo(true)" placeholder="Ingrese artículo">
+                            <input type="text" class="form-control" v-model="fillProdNuevo.nIdItem" @keyup.enter="buscarArticuloIndividual()" placeholder="Ingrese artículo">
                             <button class="btn btn-primary" @click="AbrirModal()" value="">...</button>
-                            <input type="text" readonly="" class="form-control" v-model="articulo">
+                            <input type="text" readonly="" class="form-control" v-model="fillProdNuevo.cDescripcion">
                     </div>                                    
                 </div>
             </div>
             <div class="col-md-2">
                 <div class="form-group">
                     <label>Precio <span style="color:red" v-show="fillProdNuevo.precio ==0">(Ingrese *)</span></label>
-                    <input type="number" value="0" step="any" class="form-control" v-model="fillProdNuevo.precio" disabled>
+                    <input type="number" value="0" step="any" class="form-control" v-model="fillProdNuevo.nPrecio" v-text="FormatoMoneda(fillProdNuevo.nPrecio,2)" disabled>
                 </div>
             </div>
             <div class="col-md-2">
                 <div class="form-group">
                     <label>Cantidad <span style="color:red" v-show="fillProdNuevo.cantidad ==0">(Ingrese *)</span></label>
-                    <input type="number" value="0" class="form-control" v-model="fillProdNuevo.cantidad">
+                    <input type="number" value="0" class="form-control" v-model="fillProdNuevo.nCantidad">
                 </div>
             </div>
             <div class="col-md-2">
@@ -42,11 +42,16 @@
                     <thead>
                         <tr>
                             <th>Opciones</th>
-                            <th>Codigo</th>
+                            <th>Codigo Aba</th>
+                            <th>Codigo Cliente</th>
+                            <th>UMV Aba</th>
+                            <th>UMV Cli.</th>
                             <th>Artículo</th>
                             <th>Precio</th>
                             <th>Iva</th>
                             <th>Cantidad</th>
+                            <th>Cant. Min. Venta</th>
+                            <th>F.C</th>
                             <th>Subtotal</th>
                         </tr>
                     </thead>
@@ -58,31 +63,36 @@
                                 </button>
                             </td>
                             <td v-text="detalle.Id_Item"></td>
+                            <td v-text="detalle.CodTercero"></td>
+                            <td v-text="detalle.UMM"></td>
+                            <td v-text="detalle.UMV"></td>
                             <td v-text="detalle.Descripcion"></td>
                             <td v-text="FormatoMoneda(detalle.Precio,2)"></td>
                             <td v-text="FormatoMoneda(detalle.Iva,2)"></td>
                             <td>
-                                <input type="number" v-model="detalle.Cantidad" class="form-control">
+                                <input type="number" v-model="detalle.Cantidad" class="form-control" :style="detalle.Cantidad <= 0 || detalle.Cantidad < 1 ? 'border: 2px solid red;':''">
                             </td>
+                            <td v-text="detalle.FactorVenta"></td>
+                            <td v-text="detalle.CantMinimaVenta"></td>
                             <td v-text="FormatoMoneda((detalle.Precio * detalle.Cantidad),2)"> </td>
                         </tr>
                         
                         <tr style="background-color: #CEECF5;">
-                            <td colspan="6" align="right"><strong>Sub Total:</strong></td>
+                            <td colspan="11" align="right"><strong>Sub Total:</strong></td>
                             <td>$ {{FormatoMoneda(SubTotal,2)}}</td>
                         </tr>
                         <tr style="background-color: #CEECF5;">
-                            <td colspan="6" align="right"><strong>Total Iva:</strong></td>
+                            <td colspan="11" align="right"><strong>Total Iva:</strong></td>
                             <td>${{FormatoMoneda(TotalIva,2)}}</td>
                         </tr>
                         <tr style="background-color: #CEECF5;">
-                            <td colspan="6" align="right"><strong>Total Neto:</strong></td>
+                            <td colspan="11" align="right"><strong>Total Neto:</strong></td>
                             <td>${{FormatoMoneda(Total = calcularTotal,2)}} </td>
                         </tr>
                     </tbody>  
                     <tbody v-else>
                         <tr>
-                            <td colspan="6">No hay articulos</td>
+                            <td colspan="11">No hay articulos</td>
                         </tr>
                     </tbody>                                 
                 </table>
@@ -92,7 +102,7 @@
 
         <!--Inicio Modal-->
         <div class="modal fade" :class="{ show: modalShow }" :style=" modalShow ? mostrarModal : ocultarModal" role="dialog" aria-labelledby="myModalLabel"  aria-hidden="true">
-                <div class="modal-dialog modal-primary modal-lg" role="document">
+                <div class="modal-dialog modal-primary modal-xl" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h4 class="modal-title" v-text="tituloModal"></h4>
@@ -114,11 +124,14 @@
                                     <thead>
                                         <tr>
                                             <th>Opciones</th>
-                                            <th>Codigo</th>
+                                            <th>F.C</th>
+                                            <th>UMV</th>
+                                            <th>Codigo Aba</th>
+                                            <th>Codigo Cliente</th>
                                             <th>Nombre</th>
                                             <th>Marca</th>
                                             <th>Precio</th>
-                                            <th>Stock</th>
+                                            <th>Cant. Min. Venta</th>
                                             <th>Estado</th>
                                         </tr>
                                     </thead>
@@ -130,11 +143,14 @@
                                                 <i class="fas fa-check"></i>
                                                 </button>
                                             </td>
+                                            <td v-text="articulo.FactorVenta"></td>
+                                            <td v-text="articulo.UMM"></td>
                                             <td v-text="articulo.Item"></td>
+                                            <td v-text="articulo.CodTercero"></td>
                                             <td v-text="articulo.Descripcion"></td>
                                              <td v-text="articulo.NmMarca"></td>
                                             <td v-text="FormatoMoneda(articulo.Precio,2)"></td>
-                                            <td v-text="articulo.Disponible"></td>
+                                            <td v-text="articulo.CantMinimaVenta"></td>
                                             <td>
                                                 <div v-if="articulo.Inactivo == '0'">
                                                     <span class="badge badge-success" >Activo</span>
@@ -165,13 +181,29 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @click="AbrirModal()">Cerrar</button>
-                            <button type="button"  class="btn btn-primary" @click="registrarPersona()">Guardar</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
                 </div>
                 <!-- /.modal-dialog -->
+        </div>
+        <!--Modal Error-->
+        <div class="modal fade" :class="{ show: modalShowErr }" :style=" modalShowErr ? mostrarModalErr : ocultarModalErr">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Alerta !!!</h5>
+                        <button class="close" @click="abrirModalErr"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="callout callout-danger" style="padding: 5px" v-for="(item, index) in arrMensajeError" :key="index" v-text="item"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" @click="abrirModalErr">Cerrar</button>
+                    </div>
+                </div>
             </div>
+        </div>
     </div>
 </template>
 <script>
@@ -180,7 +212,9 @@ export default {
     props:['IdTercero','IdDireccion'],
     data() {
         return {
+            direccion:[],
             arrayArticulos:[],
+            arrMensajeError:[],
             articulo:'',
             fillArticulosMov:{
                 nIdItem:0,
@@ -191,18 +225,29 @@ export default {
             },
             arraryDetallesMovimiento:[],
             fillProdNuevo:{
-                codigo:0,
-                precio:0,
-                cantidad:0
+                nIdItem:0,
+                cDescripcion:'',
+                nPrecio:0,
+                nIva:0,
+                nCantidad:0,
             },
             filtroProd:'',
             tituloModal:'',
             modalShow: false,
+            modalShowErr:false,
             mostrarModal: {
                 display: 'block',
                 background: '#0000006b',
             },
             ocultarModal: {
+                display: 'none',
+            },
+
+            mostrarModalErr: {
+                display: 'block',
+                background: '#0000006b',
+            },
+            ocultarModalErr: {
                 display: 'none',
             },
             IdDir:0,
@@ -221,7 +266,6 @@ export default {
 
     methods: {
         buscarArticulo(){
-            console.log(this.IdDireccion)
             let me = this;
             var url = '/listaprecios/lista';
             axios.get(url,{params:{
@@ -231,6 +275,31 @@ export default {
                 let respuesta = response.data;
                 me.arrayArticulos = respuesta.productos;
                 me.inicializarPagination();
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+        },
+
+        buscarArticuloIndividual(){
+            let me = this;
+            var url = '/listaprecios/lista';
+            axios.get(url,{params:{
+                'IdDireccion':this.IdDireccion,
+                'filtro':this.fillProdNuevo.nIdItem,
+                'limit':1
+            }}).then(function (response) {
+                let respuesta = response.data.productos[0];
+                if(respuesta != ''){
+                    me.fillProdNuevo.nIdItem = respuesta.Item;
+                    me.fillProdNuevo.cDescripcion = respuesta.Descripcion;
+                    me.fillProdNuevo.nPrecio = respuesta.Precio;
+                    me.fillProdNuevo.nIva = respuesta.Por_Iva;
+                    me.fillProdNuevo.nCantidad = 1;
+                }
+                else{
+                    alert("No se encontro ningun dato con "+me.fillProdNuevo.nIdItem)
+                }
             })
             .catch(function (error) {
                 console.log(error);
@@ -279,20 +348,50 @@ export default {
             }
         },
 
+        abrirModalErr(){
+            this.modalShowErr = !this.modalShowErr;
+            if(this.modalShowErr){
+                //this.buscarArticulo();
+            }
+            else{
+                this.arrMensajeError=[];
+            }
+        },
+
         agregarDetalleModal(articulo){
-            this.arraryDetallesMovimiento.push({
-                Id_Item:articulo.Item,
-                Descripcion:articulo.Descripcion,
-                Cantidad:1,
-                Precio:articulo.Precio,
-                Iva:articulo.Iva
-            });
-            Swal.fire({
-                icon :'success',
-                type :'success',
-                title :'',
-                text:'El articulo '+articulo.Descripcion+' se agrego"'
-            })
+            if(!this.ValidarProductoExiste(articulo.Item)){
+                this.arraryDetallesMovimiento.push({
+                    Id_Item:articulo.Item,
+                    CodTercero:articulo.CodTercero,
+                    Descripcion:articulo.Descripcion,
+                    FactorVenta:articulo.FactorVenta,
+                    CantMinimaVenta:articulo.CantMinimaVenta,
+                    Cantidad:articulo.CantMinimaVenta,
+                    CantidadAba: 1 / articulo.FactorVenta,
+                    Precio:articulo.Precio,
+                    Iva:articulo.Iva,
+                    UMM:articulo.UMM,
+                    UMV:articulo.UMV
+                });
+                Swal.fire({
+                    icon :'success',
+                    type :'success',
+                    title :'',
+                    text:'El articulo '+articulo.Descripcion+' se agrego"'
+                })
+            }
+        },
+
+        ValidarDatos(articulo){
+            if(articulo.Cantidad <=0){
+                this.arrMensajeError.push("La cantidad del cod "+articulo.IId_Item+" debe ser mayor a 0");
+            }
+            if(articulo.CantMinimaVenta > articulo.Cantidad && this.direccion[0].tipo.NoValidaCantMinVenta  == 0){
+                this.arrMensajeError.push("La cantidad minima de venta del cod "+articulo.IId_Item+" es "+articulo.CantMinimaVenta);
+            }
+            if(this.Is_Float(articulo.Cantidad)){
+                this.arrMensajeError.push("La cantidad minima de venta es "+articulo.CantMinimaVenta+", debe ser igual o multiplos de esta");
+            }
         },
 
         eliminarDetalle(index){
@@ -348,9 +447,76 @@ export default {
             return  sign ? '-' + amount_parts.join('.') : amount_parts.join('.');
         },
 
+        agregarDetalle(){
+            if(!this.ValidarProductoExiste(this.fillProdNuevo.nIdItem)){
+                this.arraryDetallesMovimiento.push({
+                    'Id_Item':this.fillProdNuevo.nIdItem,
+                    'Descripcion':this.fillProdNuevo.cDescripcion,
+                    'Precio':this.fillProdNuevo.nPrecio,
+                    'Iva':this.fillProdNuevo.nIva,
+                    'Cantidad':this.fillProdNuevo.nCantidad,
+                });
+            }
+        },
+
+        ValidarProductoExiste(Item){
+            var Existe = false;
+            var Producto = '';
+            this.arraryDetallesMovimiento.map(function(x,y){
+                if(x['Id_Item'] == Item){
+                    Existe = true;
+                    Producto = x['Descripcion'];
+                };
+            });
+            if(Existe){
+                Swal.fire({
+                    icon :'error',
+                    type :'danger',
+                    title :'',
+                    text:'El articulo '+Producto+' ya existe en el pedido"'
+                })
+                return true;
+            }
+            else{
+                return false;
+            }
+        },
+
+        CargarDireccion(IdDireccion){
+            let me = this;
+            axios.get('/direcciones/obtenerDireccion',{params:{
+                'IdDir':IdDireccion
+            }}).then(function (response) {
+                var respuesta = response.data;
+                me.direccion = respuesta.direccion;
+            })
+            .catch(function (error) {
+                console.log(error);
+                if (error.response.status == 401) {
+                    me.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                    this.fullscreenLoading = false;
+                }
+            });
+        },
+
+        Is_Float(num){
+            return !isNaN(num) && Math.round(num) != num;
+        },
+
         EmitirEventoProductos(){
-            EventBus.$emit('arraryDetallesMovimiento',this.arraryDetallesMovimiento);
-            console.log("Se emitio el evento registrar detalles");
+            let i
+            for(i =0;i<this.arraryDetallesMovimiento.length;i++){
+                this.ValidarDatos(this.arraryDetallesMovimiento[i]);
+            }
+            if(this.arrMensajeError.length == 0){
+                EventBus.$emit('arraryDetallesMovimiento',this.arraryDetallesMovimiento);
+                console.log("Se emitio el evento registrar detalles");
+            }
+            else{
+                this.modalShowErr = true;
+            }
         }
 
     },
@@ -404,6 +570,8 @@ export default {
 
     mounted() {
         this.IdDir = this.IdDireccion;
+        this.CargarDireccion(this.IdDireccion);
+        
     },
 }
 </script>

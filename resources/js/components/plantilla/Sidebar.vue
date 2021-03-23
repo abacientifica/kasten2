@@ -92,6 +92,17 @@
                     </li>
                 </template>
             </template>
+            <template v-if="listPermisos.includes('reporte.ventas.index') || listPermisos.includes('administrador.sistema') ">
+            <li class="nav-header">REPORTES</li>
+            <li class="nav-item">
+                <template v-if="listPermisos.includes('reporte.ventas.index')">
+                    <router-link :to="'/reportes/ventas'" class="nav-link">
+                        <i class="nav-icon fas fa-chart-bar"></i>
+                        <p>Reporte Ventas</p>
+                    </router-link>
+                </template>
+            </li>
+            </template>
             </ul>
         </nav>
         <!-- /.sidebar-menu -->

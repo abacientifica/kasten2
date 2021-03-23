@@ -91,6 +91,27 @@ class UsuariosController extends Controller {
         }
     }
 
+    public function ActualizarContrasenas(Request $request){
+        if(!$request->ajax()) return redirect("/");
+        try{
+            $Usuarios = User::where('Inactivo',0)->get();
+            foreach($Usuarios as $user){
+                $user->password = Hash::make($user->Contrasena);
+                $user->save();
+            }
+            return[
+                'msg'=>"Las contraseñas fueron actualizadas",
+                'status'=>201
+            ];
+        }
+        catch(Exception $e){
+            return[
+                'msg'=>"Ocurrio un error al actualizar las contraseñas",
+                'status'=>500
+            ];
+        }
+    }
+
     public function ActivarUsuario(Request $request){
         if(!$request->ajax()) return redirect("/");
         try{

@@ -6,12 +6,12 @@ use App\Model\Movimientos;
 use App\Model\MovimientosDet;
 use App\Model\Documentos;
 use App\Model\Item;
+use App\Exception\Handler;
 
 class Funciones{
 
     public static function EnviarEmail($subject,$for,$mensaje){
         try{
-            
             Mail::send('mail.enviarcorreo',['mensaje'=>$mensaje], function($msj) use($subject,$for)
             { 
                 $msj->from("kasten@aba.com.co","Kasten V2"); 
@@ -19,8 +19,8 @@ class Funciones{
             });
             return true;
         }
-        catch(Exception $e){
-            return false;
+        catch(\Swift_TransportException $e){
+            return $e->getMessage();
         }
     }
 

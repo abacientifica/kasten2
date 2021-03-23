@@ -16,6 +16,7 @@ import PedidosDocumentos from './components/modulos/movimientos/pedidos/lista.vu
 import PedidosIndex from './components/modulos/movimientos/pedidos/index.vue';
 import PedidosVer from './components/modulos/movimientos/pedidos/ver.vue';
 import PedidosCrear from './components/modulos/movimientos/pedidos/create.vue';
+import RepVentas from './components/modulos/reportes/ventas.vue';
 
 
 //rutas configuracion documentos
@@ -212,10 +213,22 @@ export default new Router({
             }
         },
 
+        //REPORTES
+
         {
             path: '*',
             component: Pagina404,
             name: '404.index'
+        },
+
+        {
+            path: '/reportes/ventas',
+            component: RepVentas,
+            name: 'reporte.ventas.index',
+            props: true,
+            beforeEnter: (to, from, next) => {
+                verificarAcceso(to, from, next);
+            }
         },
 
     ],

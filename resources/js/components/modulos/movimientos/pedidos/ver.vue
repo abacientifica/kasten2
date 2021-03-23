@@ -21,9 +21,13 @@
                 <div class="card-header bg-info">
                     <template v-if="listPermisosFilterByRolUser.includes('pedidos.crear')">
                         <div class="card-tools">
-                            <button class="btn btn-info btn-sm" @click.prevent="abrirModal(1)" data-toggle="modal">
-                            <i class="fas fa-plus-square"></i> Nuevo Pedido
-                            </button>
+                            <template v-if="listPermisosFilterByRolUser.includes('pedidos.crear') || listPermisosFilterByRolUser.includes('administrador.sistema')">
+                                <div class="card-tools">
+                                    <router-link class="btn btn-info btn-sm" :to="'/pedidos/crear/'+this.OpPedido">
+                                        <i class="fas fa-plus-square"></i> Nuevo Pedido
+                                    </router-link>
+                                </div>
+                            </template>
                         </div>
                     </template>
                     <div class="card-tools">
@@ -127,12 +131,13 @@
                             </div>
                         </div>
                     </div>
-                    
+                    <AgregarProductosMovimiento v-if="fillMovimiento.cEstado == 'DIGITADA'" :IdTercero="fillMovimiento.nIdTercero" :IdDireccion="fillMovimiento.nIdDireccion" :IdMovimiento="fillMovimiento.nIdMovimiento" :arrayDetallesMovimientoAct="ListarMovimientosDetPaginate"></AgregarProductosMovimiento>
                     <div class="form-group row border">
                         <div class="table-responsive col-md-12">
                             <table class="table table-bordered table-striped table-sm" >
                                 <thead>
                                     <tr>
+                                        <th v-if="accionMovimiento==1">Opción</th>
                                         <th>Codigo</th>
                                         <th>Artículo</th>
                                         <th>Referencia</th>
@@ -146,6 +151,11 @@
                                 </thead>
                                 <tbody v-if="ListarMovimientosDetPaginate.length">
                                     <tr v-for="(detalle) in ListarMovimientosDetPaginate" :key="detalle.id">
+                                        <td v-if="accionMovimiento==1">
+                                            <button type="button" @click="eliminarDetalle(detalle)" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-times-circle"></i>
+                                            </button>
+                                        </td>
                                         <td v-text="detalle.Id_Item"></td>
                                         <td v-text="detalle.item.Descripcion"></td>
                                         <td v-text="detalle.item.listacostosdet.RefFabricante"></td>
@@ -153,9 +163,9 @@
                                         <td v-text="detalle.item.listacostosdet.RegInvima"></td>
                                         <td v-text="FormatoMoneda(detalle.Precio,2)"></td>
                                         <td v-text="detalle.Cantidad" v-if="accionMovimiento==0"></td>
-                                        <td v-else><input type="number" v-model="detalle.Cantidad" class="form-control"></td>
+                                        <td v-else><input type="number" v-model="detalle.Cantidad" class="form-control" :style="detalle.Cantidad <= 0 || detalle.Cantidad < 1 ? 'border: 2px solid red;':''"></td>
                                         <td v-text="detalle.PorIva"></td>
-                                        <td v-text="FormatoMoneda(detalle.Precio * detalle.Cantidad)"> </td>
+                                        <td v-text="FormatoMoneda((detalle.Precio * detalle.Cantidad),2)"> </td>
                                     </tr>
                                     
                                     
@@ -207,6 +217,24 @@
                 </div>
             </div>
         </div>
+
+        <!--Modal Error-->
+        <div class="modal fade" :class="{ show: modalShow }" :style=" modalShow ? mostrarModal : ocultarModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Alerta !!!</h5>
+                        <button class="close" @click="AbrirModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="callout callout-danger" style="padding: 5px" v-for="(item, index) in arrMensajeError" :key="index" v-text="item"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" @click="AbrirModal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 <script>
@@ -214,10 +242,15 @@ import Swal from 'sweetalert2'
 export default {
     data() {
         return {
+            direccion:[],
+            arrMensajeError:[],
+            OpPedido:2,
             accionMovimiento:0,
             listPermisosFilterByRolUser:[],
             fillMovimiento:{
                 nIdMovimiento: 0,
+                nIdDireccion: 0,
+                nIdTercero: 0,
                 nNroDocumento:0,
                 nIdDocumento:61,
                 dFecha : '',
@@ -234,6 +267,15 @@ export default {
                 nVrIva:0,
                 nSubTotal:0,
                 nTotal:0,
+            },
+
+            modalShow: false,
+            mostrarModal: {
+                display: 'block',
+                background: '#0000006b',
+            },
+            ocultarModal: {
+                display: 'none',
             },
 
             fillDetallesMov:[],
@@ -290,6 +332,8 @@ export default {
                     let Datos = response.data.movimiento[0];
                     this.fillMovimiento.nIdMovimiento = Datos.IdMovimiento;
                     this.fillMovimiento.nNroDocumento = Datos.NroDocumento;
+                    this.fillMovimiento.nIdDireccion = Datos.IdDireccion;
+                    this.fillMovimiento.nIdTercero = Datos.IdTercero;
                     this.fillMovimiento.dFecha = Datos.Fecha;
                     this.fillMovimiento.dFecha1 = Datos.Fecha1;
                     this.fillMovimiento.dFecha2 = Datos.Fecha2;
@@ -305,6 +349,7 @@ export default {
                     this.fillMovimiento.nTotal = Datos.Total;
                     this.fillMovimiento.cNmCliente = Datos.tercero.NombreCorto;
                     this.fillDetallesMov = response.data.movimientos_det;
+                    this.CargarDireccion(Datos.IdDireccion);
                 }
                 else{
                     this.listMovimientos = [];
@@ -373,40 +418,123 @@ export default {
 
         ActualizarDatos(){
             let me = this;
-            axios.put('/movimiento/editar',{
-                params:{
-                    'nIdMovimiento':this.fillMovimiento.nIdMovimiento,
-                    'arraryDetallesMovimiento':this.fillDetallesMov
-                }
-            }).then(function (response) {
-                var respuesta = response.data;
-                Swal.fire({
-                    position: 'top-center',
-                    icon: 'success',
-                    title: respuesta.msg,
-                    showConfirmButton: false,
-                    timer: 1300
-                });
-                me.ListarMovimiento(me.fillMovimiento.nIdMovimiento);
-                me.Editar();
-            })
-            .catch(function (error) {
-                console.log(error);
-                if (error.response.data.status == 401) {
-                    this.$router.push({name: 'login'})
-                    location.reload();
-                    sessionStorage.clear();
-                    this.fullscreenLoading = false;
-                }
-                if(error.response.data.status == 500){
+            this.ValidarDatos();
+            if(this.arrMensajeError.length <=0){
+                axios.put('/movimiento/editar',{
+                    params:{
+                        'nIdMovimiento':this.fillMovimiento.nIdMovimiento,
+                        'arraryDetallesMovimiento':this.fillDetallesMov
+                    }
+                }).then(function (response) {
+                    var respuesta = response.data;
                     Swal.fire({
-                        icon :'danger',
-                        type :'danger',
-                        title :'',
-                        text:response.data.error
+                        position: 'top-center',
+                        icon: 'success',
+                        title: respuesta.msg,
+                        showConfirmButton: false,
+                        timer: 1300
+                    });
+                    me.ListarMovimiento(me.fillMovimiento.nIdMovimiento);
+                    me.Editar();
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    if (error.response.data.status == 401) {
+                        this.$router.push({name: 'login'})
+                        location.reload();
+                        sessionStorage.clear();
+                        this.fullscreenLoading = false;
+                    }
+                    if(error.response.data.status == 500){
+                        Swal.fire({
+                            icon :'danger',
+                            type :'danger',
+                            title :'',
+                            text:response.data.error
+                        })
+                    }
+                });
+            }
+            else{
+                this.modalShow = true;
+            }
+        },
+
+        ValidarDatos(){
+            let i;
+            for(i=0;i<this.fillDetallesMov.length;i++){
+                let articulo = this.fillDetallesMov[i];
+                if(articulo.Cantidad <=0){
+                    this.arrMensajeError.push("La cantidad del cod "+articulo.Id_Item+" debe ser mayor a 0");
+                }
+                if(articulo.CantMinimaVenta > articulo.Cantidad && this.direccion[0].tipo.NoValidaCantMinVenta  == 0){
+                    this.arrMensajeError.push("La cantidad minima de venta del cod "+articulo.Id_Item+" es "+articulo.CantMinimaVenta);
+                }
+                if(this.Is_Float(articulo.Cantidad)){
+                    this.arrMensajeError.push("La cantidad minima de venta del cod "+articulo.Id_Item+" es "+articulo.item.listacostosdet.CantMinimaVenta+", debe ser igual o multiplos de esta");
+                }
+            }
+            if(this.arrMensajeError.length==0){
+                return true;
+            }
+            else{
+                return false;
+            }
+        },
+
+        Is_Float(num){
+            return !isNaN(num) && Math.round(num) != num;
+        },
+
+
+        AbrirModal(){
+            this.modalShow = !this.modalShow;
+            if(this.modalShow){
+            }
+            else{
+                this.arrMensajeError=[];
+            }
+        },
+
+        eliminarDetalle(detalle){
+           
+            let me = this;
+            let url ="/movimiento/EliminarDet";
+            Swal.fire({
+                title: 'Estas seguro(a) de eliminar '+detalle.item.Descripcion+'?',
+                showDenyButton: false,
+                showCancelButton: true,
+                confirmButtonText: `Eliminar`,
+                denyButtonText: `No Eliminar`,
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.put(url,{
+                        params:{
+                            'nIdMovimientoDet':detalle.IdMovimientoDet
+                        }
+                    }).then(response=>{    
+                        let respuesta = response.data;
+                        Swal.fire({
+                            position: 'top-center',
+                            icon: 'success',
+                            title: respuesta.msg,
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                        me.ListarMovimiento(detalle.IdMovimiento);
+
+                    }).catch(error =>{
+                        console.log(error)
+                        if(error.response.status ==401){
+                            me.$router.push({name: 'login'})
+                            location.reload();
+                            sessionStorage.clear();
+                            this.fullscreenLoading = false;
+                        }
                     })
                 }
-            });
+            })
         },
 
         NotificarPedido(){
@@ -448,8 +576,6 @@ export default {
         },    
         /*Fin Metodos Paginacion*/
         
-        
-
         FormatoMoneda(amount=0, decimals) {
             var sign = (amount.toString().substring(0, 1) == "-");
 
@@ -473,10 +599,46 @@ export default {
 
             return  sign ? '-' + amount_parts.join('.') : amount_parts.join('.');
         },
+
+        CargarDireccion(IdDireccion){
+            let me = this;
+            axios.get('/direcciones/obtenerDireccion',{params:{
+                'IdDir':IdDireccion
+            }}).then(function (response) {
+                var respuesta = response.data;
+                me.direccion = respuesta.direccion;
+            })
+            .catch(function (error) {
+                console.log(error);
+                if (error.response.status == 401) {
+                    me.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                    this.fullscreenLoading = false;
+                }
+            });
+        },
     },
     mounted() {
         this.ListarMovimiento(this.$attrs.id);
         this.listPermisosFilterByRolUser = sessionStorage.getItem('listPermisosFilterByRolUser');
+        this.usuario = JSON.parse(sessionStorage.getItem('authUser'));
+        if(this.usuario.Tipo == 2){
+            this.OpPedido = 61;
+        }
+        EventBus.$on('agregarDetalleMovimiento',data =>{
+            console.log("Se recibio el evento detalle nuevo");
+            let Descripcion = data[0].Descripcion;
+            console.log(Descripcion)
+            Swal.fire({
+                position: 'top-center',
+                icon: 'success',
+                title: "Se agrego con Exito "+Descripcion,
+                showConfirmButton: false,
+                timer: 1500
+            });
+            this.ListarMovimiento(this.$attrs.id);
+        });
     },
 
 }

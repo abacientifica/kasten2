@@ -26,6 +26,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/usuarios/registrarImagenPerfil','FilesController@GuardarImagenPerfil');
     Route::put('/usuarios/inactivar/{id?}','Administracion\UsuariosController@InaActivarUsuario');
     Route::put('/usuarios/activar/{id?}','Administracion\UsuariosController@ActivarUsuario');
+    Route::put('/usuarios/actualizarpass','Administracion\UsuariosController@ActualizarContrasenas');
 
     //Lista rutas roles
     Route::get('/roles/lista','Administracion\RolesController@index');
@@ -53,6 +54,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::put('/movimiento/autorizar','Movimientos\MovimientosController@Autorizar');
     Route::put('/movimiento/editar','Movimientos\MovimientosController@ActualizarMovimiento');
     Route::put('/movimiento/notificar','Movimientos\MovimientosController@NotificarMovimiento');
+    Route::put('/movimiento/EliminarDet','Movimientos\MovimientosController@EliminarMovimientoDet');
+    Route::put('/movimiento/agregarProducto','Movimientos\MovimientosController@AgregarProducto');
 
     //Lista rutas documentos
     Route::get('/documentos/lista','Administracion\DocumentosController@index');
@@ -77,6 +80,12 @@ Route::group(['middleware' => ['auth']], function () {
 
     //Rutas dashboard
     Route::get('/dashboard', 'ControladorGeneral@DashboardHome')->name('dashboard');
+
+    //Rutas Reportes
+    Route::get('/reporte/ventas', 'Administracion\ReportesController@ReporteVentas');
+
+    //Ruta Direcciones
+    Route::get('/direcciones/obtenerDireccion', 'ControladorGeneral@ObtenerDireccion');
 
 });
 Route::get('/{optional?}', function () {

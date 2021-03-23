@@ -54,10 +54,6 @@ class MovimientosController extends Controller
 
     public function RegistrarMovimiento(Request $request){
         if(!$request->ajax()) return redirect("/");
-        /*return[
-            'movimiento'=>$request->params['fillNuevoMovimiento'],
-            'movimientos_det'=>$request->params['arraryDetallesMovimiento']
-        ];*/
         try{
             DB::beginTransaction();
             $DatosMovimiento = $request->params['fillNuevoMovimiento'];
@@ -225,7 +221,6 @@ class MovimientosController extends Controller
         
     }
 
-
     public function Autorizar(Request $request){
         if(!$request->ajax()) return redirect("/");
         try{
@@ -236,12 +231,13 @@ class MovimientosController extends Controller
                 //Enviamos el Email de alerta a el asesor
                 $DatosCliente = \Funciones::ObtenerTercero($arMovimiento->IdTercero);
                 $strMensaje = "El usuario  " . \Auth::user()->Nombres . " " . \Auth::user()->Apellidos . " de la institución " . $DatosCliente[0]->NombreCorto . " acaba de autorizar el pedido externo " . $arMovimiento->IdMovimiento;
-                \Funciones::EnviarEmail('Autorización Pedido Externo','auxsistemas@aba.com.co',$strMensaje);
-
+                //Se comenta el envio de email
                 return[
                     'msg'=>"El movimiento ha sido autorizado con exito !!".$request->params['nIdMovimiento'],
-                    'status'=>201
+                    'status'=>201,
+                    'Email'=>\Funciones::EnviarEmail('Autorización Pedido Externo','auxsistemas@aba.com.co',$strMensaje)
                 ];
+                
             }
             else{
                 return[
@@ -264,18 +260,136 @@ class MovimientosController extends Controller
             $arMovimiento = Movimientos::find($request->params['nIdMovimiento']);
             $DatosCliente = \Funciones::ObtenerTercero($arMovimiento->IdTercero);
             $strMensaje = "El usuario  " . \Auth::user()->Nombres . " " . \Auth::user()->Apellidos . " de la institución " . $DatosCliente[0]->NombreCorto . " acaba de autorizar el pedido externo " . $arMovimiento->IdMovimiento;
-            \Funciones::EnviarEmail('Autorización Pedido Externo','auxsistemas@aba.com.co',$strMensaje);
+            $Mensaje = \Funciones::EnviarEmail('Autorización Pedido Externo','auxsistemas@aba.com.co',$strMensaje);
             return[
                 'msg'=>"Ups, el area de servicio al cliente fue notificada con exito ",
-                'status'=>201
+                'status'=>201,
+                'mensaje'=>$Mensaje
             ];
         }
         catch(Exception $e){
             return[
                 'msg'=>$e,
-                'status'=>500
+                'status'=>200
             ];
         }
 
+    }
+
+    public function EliminarMovimientoDet(Request $request){
+        if(!$request->ajax()) return redirect("/");
+        try{
+            DB::beginTransaction();
+            $IdMovDet = $request->params['nIdMovimientoDet'];
+            $MovimientoDet = MovimientosDet::with('item')->find($IdMovDet);
+            $DetElim = $MovimientoDet->item->Descripcion. " COD ".$MovimientoDet->Id_Item;
+            $Movimiento =  Movimientos::find($MovimientoDet->IdMovimiento);
+            $MovimientoDet->delete();
+            $MovDets = MovimientosDet::where('IdMovimiento',$Movimiento->IdMovimiento)->get();
+            if(is_countable($MovDets) && count($MovDets)>0){
+                $TotalIvaEnc =0;
+                $SubTotalEnc =0;
+                $TotalEnc = 0; 
+                foreach($MovDets as $det){
+                    //iva
+                    $TotalIva = ((($det->Precio - $det->TotalDescuento) * $det->PorIva) / 100) * $det->Cantidad;
+                    $TotalIvaEnc = $TotalIvaEnc + $TotalIva;
+                    //subtotal.
+                    $SubTotal = ($det->Precio * $det->Cantidad) - $det->TotalDescuento;
+                    $SubTotalEnc = $SubTotalEnc + $SubTotal;
+                    //total
+                    $Total = $SubTotal + $TotalIva;
+                    $TotalEnc = $TotalEnc + $Total;
+                }
+                $Movimiento->Total = $TotalEnc;
+                $Movimiento->VrIva = $TotalIvaEnc;
+                $Movimiento->SubTotal = $SubTotalEnc;
+                $Movimiento->save();
+                
+            }
+            DB::commit();
+            return[
+                'msg'=>"Se ha eliminado el ".$DetElim,
+                'status'=>201
+            ];
+        }
+        catch(Exception $e){
+            DB::rollBack();
+            return[
+                'msg'=>$e,
+                'status'=>500
+            ];
+        }
+    }
+
+    public function AgregarProducto(Request $request){
+        if(!$request->ajax()) return redirect("/");
+        try{
+            DB::beginTransaction();
+            $nIdMovimiento = $request->params['nIdMovimiento'];
+            $DatosMovimientoDetalle = $request->params['arraryDetalleMovimiento'];
+
+            $arMovimiento = Movimientos::FindOrFail($nIdMovimiento);
+            $Doc =  Documentos::find($arMovimiento->IdDocumento);
+            $TotalIvaEnc =0;
+            $SubTotalEnc =0;
+            $TotalEnc = 0; 
+            foreach ( $DatosMovimientoDetalle as  $ep => $det ) {
+                $MovimientoDet = new MovimientosDet();
+                $MovimientoDet->IdMovimiento = $arMovimiento->IdMovimiento;
+                $MovimientoDet->TpDocumento = $arMovimiento->TpDocumento;
+                $MovimientoDet->IdDocumento = $arMovimiento->IdDocumento;
+                $MovimientoDet->IdTercero = $arMovimiento->IdTercero;
+                $MovimientoDet->Id_Item = $det['Id_Item'];
+                $MovimientoDet->Cantidad = $det['Cantidad'];
+                $MovimientoDet->CantFactor = $MovimientoDet->Cantidad;
+                $MovimientoDet->Operacion = $Doc->Operacion;
+                $MovimientoDet->Factor = 1;
+                $MovimientoDet->PorIva = $det['Iva'];
+                $MovimientoDet->Precio = $det['Precio'];
+                $MovimientoDet->Estado ='DIGITADO';
+                $MovimientoDet->save();
+            }
+            $MovDets = MovimientosDet::where('IdMovimiento',$arMovimiento->IdMovimiento)->get();
+            foreach ($MovDets as $det ) {
+                $MovimientoDet = MovimientosDet::find($det['IdMovimientoDet']);
+                $MovimientoDet->Cantidad = $det['Cantidad'];
+                $MovimientoDet->CantFactor = $MovimientoDet->Cantidad;
+                $MovimientoDet->Estado ='DIGITADO';
+
+                //iva
+                $TotalIva = ((($MovimientoDet->Precio - $MovimientoDet->TotalDescuento) * $MovimientoDet->PorIva) / 100) * $MovimientoDet->Cantidad;
+                $TotalIvaEnc = $TotalIvaEnc + $TotalIva;
+                //subtotal.
+                $SubTotal = ($MovimientoDet->Precio * $MovimientoDet->Cantidad) - $MovimientoDet->TotalDescuento;
+                $SubTotalEnc = $SubTotalEnc + $SubTotal;
+                //total
+                $Total = $SubTotal + $TotalIva;
+                $TotalEnc = $TotalEnc + $Total;
+
+                $MovimientoDet->TotalIva = $TotalIva;
+                $MovimientoDet->SubTotal = $SubTotal;
+                $MovimientoDet->Total = $Total;
+
+                $MovimientoDet->save();
+            }
+            $arMovimiento->Total = $TotalEnc;
+            $arMovimiento->VrIva = $TotalIvaEnc;
+            $arMovimiento->SubTotal = $SubTotalEnc;
+            $arMovimiento->save();
+            DB::commit();
+            return[
+                'msg'=>"El producto fue agregado correctamente",
+                'status'=>200
+            ];
+
+        }
+        catch(Exception $e){
+            DB::rollBack();
+            return[
+                'msg'=>$e,
+                'status'=>500
+            ];
+        }
     }
 }

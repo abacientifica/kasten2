@@ -23,7 +23,7 @@
                     <div class="form-group">
                         <label >{{ValidarCampoVisible('IdDireccion')}}</label>
                         <span style="color:red" v-show="fillNuevoMovimiento.nIdDireccion ==0">(Seleccione *)</span>
-                        <select class="form-control" v-model="fillNuevoMovimiento.nIdDireccion">
+                        <select class="form-control" v-model="fillNuevoMovimiento.nIdDireccion" :disabled="usuario.IdDireccion >0 ? true:false">
                             <option value="0" selected>( Seleccione )</option>
                             <option v-for="dir in arrayDirecciones" :key="dir.IdDireccion" :value="dir.IdDireccion" v-text="dir.NmDireccion"></option>
                         </select>                                   
@@ -507,7 +507,6 @@ export default {
         },
 
         CargarDirecciones(IdTercero){
-            console.log("Entro a direcciones"+IdTercero)
             let me = this;
             axios.get('/terceros/lista',{params:{
                 'filtro':IdTercero
