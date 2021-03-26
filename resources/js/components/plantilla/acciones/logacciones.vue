@@ -19,6 +19,7 @@
                                             <th>Accion</th>
                                             <th>Fecha</th>
                                             <th>Usuario</th>
+                                            <th>Cod Aba</th>
                                             <th>Comentarios</th>
                                         </tr>
                                     </thead>
@@ -29,6 +30,7 @@
                                             <td v-text="log.NmAccion"></td>
                                             <td v-text="log.Fecha"></td>
                                             <td v-text="log.Usuario"></td>
+                                            <td v-text="log.Id_Item"></td>
                                             <td v-text="log.Comentarios"></td>
                                         </tr>
                                     </tbody>

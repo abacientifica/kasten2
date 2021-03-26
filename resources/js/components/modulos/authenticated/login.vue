@@ -77,7 +77,7 @@ export default {
                     //this.loginSucces();
                 }
                 if(response.data.status == 419){
-                    this.$router.push({name: 'login'})
+                    //this.$router.push({name: 'login'})
                     location.reload();
                     sessionStorage.clear();
                     this.fullscreenLoading = false;
