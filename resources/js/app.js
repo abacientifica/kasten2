@@ -17,6 +17,7 @@ Vue.component('Auth', require('./components/Auth.vue').default);
 Vue.component('NuevoMovimiento', require('./components/plantilla/NuevoMovimiento.vue').default);
 Vue.component('AgregarProductosPedido', require('./components/plantilla/AgregarProductosPedido.vue').default);
 Vue.component('AgregarProductosMovimiento', require('./components/plantilla/AgregarProductosMovimiento.vue').default);
+Vue.component('logacciones', require('./components/plantilla/acciones/logacciones.vue').default);
 import router from './routes';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';

@@ -6,6 +6,7 @@ use App\Model\Movimientos;
 use App\Model\MovimientosDet;
 use App\Model\Documentos;
 use App\Model\Item;
+use App\Model\Log;
 use App\Exception\Handler;
 
 class Funciones{
@@ -279,6 +280,15 @@ class Funciones{
         $Documentos->Consecutivo = $Documentos->Consecutivo + 1;
         $Documentos->save();
         return $Consecutivo;
+    }
+
+    public static function CrearLog($IdAccion, $IdMovimiento, $strUsuario) {
+        $LogNew = new Log;
+        $LogNew->IdAccion = $IdAccion;
+        $LogNew->IdMovimiento = $IdMovimiento;
+        $LogNew->Usuario = $strUsuario;
+        $LogNew->Fecha = date('y-m-d H:i:s');
+        $LogNew->save();
     }
 
     function   mime_content_type($filename) {

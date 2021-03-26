@@ -330,7 +330,7 @@ export default {
             }*/
             var graficsVentas = document.getElementById('ventas2').getContext('2d');
             me.myChart = new Chart(graficsVentas, {
-                type: 'pie',
+                type: 'doughnut',
                 data: {
                     labels: me.VarMeses,
                     datasets: [{
@@ -382,21 +382,7 @@ export default {
                             }
                         }]
                     },
-                    tooltips: {
-                        callbacks: {
-                            label: function(tooltipItem, data) {
-                                var valor = tooltipItem.yLabel
-                                valor = new Intl.NumberFormat('es-CO', {
-                                    style: 'currency',
-                                    currency: 'COP',
-                                }).format(valor)
-
-                                return data.datasets[tooltipItem.datasetIndex].label+": "+ valor;
-                            }
-                        }
-                    }
                 }
-                
             });
         },
 

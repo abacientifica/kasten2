@@ -39,12 +39,13 @@
                     
                 </div>
                 <div class="card-body">
-                    <div class="col-md-12 btn-group-justified" v-if="fillMovimiento.cEstado == 'DIGITADA' || fillMovimiento.cEstado == 'AUTORIZADA'">
+                    <div class="col-md-12 btn-group-justified"  style="display:flex" v-if="fillMovimiento.cEstado == 'DIGITADA' || fillMovimiento.cEstado == 'AUTORIZADA' || fillMovimiento.cEstado == 'CERRADA'">
                         <button class="btn btn-success " v-if="fillMovimiento.cEstado =='AUTORIZADA'" @click.prevent="NotificarPedido()"><i class="fas fa-bell"></i> Enviar Alerta Servicio Cliente</button>
                         <button class="btn btn-success " v-if="fillMovimiento.cEstado == 'DIGITADA' && accionMovimiento==0" @click.prevent="Autorizar()"><i class="fas fa-check"></i> Autorizar</button>
                         <button class="btn btn-primary " v-if="fillMovimiento.cEstado == 'DIGITADA' && accionMovimiento==0" @click.prevent="Editar()"><i class="fas fa-edit"></i> Editar</button>
                         <button class="btn btn-success " v-if="fillMovimiento.cEstado == 'DIGITADA' && accionMovimiento==1" @click.prevent="ActualizarDatos()"><i class="fas fa-check"></i> Guardar Cambios</button>
                         <button class="btn btn-warning " v-if="fillMovimiento.cEstado == 'DIGITADA' && accionMovimiento==1" @click.prevent="Editar()"><i class="fas fa-times-circle"></i> Cancelar Edición</button>
+                        <logacciones :IdMovimiento ="this.fillMovimiento.nIdMovimiento"></logacciones>
                     </div><hr>
                     <div class="form-group row border">
                         <div class="col-md-3">
@@ -239,7 +240,9 @@
 </template>
 <script>
 import Swal from 'sweetalert2'
+import Input from '../../../../../../../project-pruebajet/vendor/laravel/jetstream/stubs/inertia/resources/js/Jetstream/Input.vue';
 export default {
+  components: { Input },
     data() {
         return {
             direccion:[],

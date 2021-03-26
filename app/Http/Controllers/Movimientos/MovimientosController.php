@@ -138,6 +138,7 @@ class MovimientosController extends Controller
             $DatosCliente = \Funciones::ObtenerTercero($arMovimiento->IdTercero);
             $strMensaje = "El usuario  " . \Auth::user()->Nombres . " " . \Auth::user()->Apellidos . " de la institución " . $DatosCliente[0]->NombreCorto . " acaba de autorizar el pedido externo " . $arMovimiento->IdMovimiento;
             \Funciones::EnviarEmail('Autorización Pedido Externo','auxsistemas@aba.com.co',$strMensaje);*/
+            \Funciones::CrearLog(8, $arMovimiento->IdMovimiento, \Auth::user()->Usuario);
             return [
                 'movimiento'=>$arMovimiento->IdMovimiento,
                 'msg'=>"El ".$Doc->Nombre." ha sido creado con exito",
