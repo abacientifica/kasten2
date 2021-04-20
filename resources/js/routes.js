@@ -17,6 +17,7 @@ import PedidosIndex from './components/modulos/movimientos/pedidos/index.vue';
 import PedidosVer from './components/modulos/movimientos/pedidos/ver.vue';
 import PedidosCrear from './components/modulos/movimientos/pedidos/create.vue';
 import RepVentas from './components/modulos/reportes/ventas.vue';
+import RepVentasGrilla from './components/modulos/reportes/ventasgeneral.vue';
 
 
 //rutas configuracion documentos
@@ -81,6 +82,7 @@ export default new Router({
                 verificarAcceso(to, from, next);
             }
         },
+
         {
             path: '/usuario/permisos',
             component: UsuarioPermiso,
@@ -229,6 +231,15 @@ export default new Router({
             beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);
             }
+        },
+        {
+            path: '/reportes/ventas/grilla',
+            component: RepVentasGrilla,
+            name: 'reporte.ventas.grilla.index',
+            props: true,
+            /*beforeEnter: (to, from, next) => {
+                verificarAcceso(to, from, next);
+            }*/
         },
 
     ],

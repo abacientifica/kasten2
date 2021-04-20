@@ -20,16 +20,18 @@ Vue.component('AgregarProductosMovimiento', require('./components/plantilla/Agre
 Vue.component('logacciones', require('./components/plantilla/acciones/logacciones.vue').default);
 import router from './routes';
 import ElementUI from 'element-ui';
+window.Vue.use(ElementUI); //Con esta declaracion lo utilizamos en todo el sitio
 import 'element-ui/lib/theme-chalk/index.css';
 import vSelect from "vue-select";
-
-window.Vue.use(ElementUI); //Con esta declaracion lo utilizamos en todo el sitio
 
 /**
  * SweetAlert2 - biblioteca para ventanas emergentes
  */
 import Swal from 'sweetalert2'
 window.Swal = Swal;
+
+import VGrid from "@revolist/vue-datagrid";
+window.VGrid = VGrid;
 
 const app = new Vue({
     el: '#app',

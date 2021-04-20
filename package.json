@@ -25,9 +25,14 @@
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^5.15.2",
+        "@revolist/vue-datagrid": "^3.0.8",
+        "ag-grid-community": "^25.1.0",
+        "ag-grid-enterprise": "^25.1.0",
+        "ag-grid-vue": "^25.1.0",
         "chart.js": "^2.9.4",
         "element-ui": "^2.15.0",
         "sweetalert2": "^10.13.0",
+        "vue-property-decorator": "^8.5.1",
         "vue-router": "^3.4.9",
         "vue-select": "^3.11.2"
     }

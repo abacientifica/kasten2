@@ -93,15 +93,19 @@
                 </template>
             </template>
             <template v-if="listPermisos.includes('reporte.ventas.index') || listPermisos.includes('administrador.sistema') ">
-            <li class="nav-header">REPORTES</li>
-            <li class="nav-item">
-                <template v-if="listPermisos.includes('reporte.ventas.index') || listPermisos.includes('administrador.sistema')">
-                    <router-link :to="'/reportes/ventas'" class="nav-link">
-                        <i class="nav-icon fas fa-chart-bar"></i>
-                        <p>Reporte Ventas</p>
-                    </router-link>
-                </template>
-            </li>
+                <li class="nav-header">REPORTES</li>
+                <li class="nav-item">
+                    <template v-if="listPermisos.includes('reporte.ventas.index') || listPermisos.includes('administrador.sistema')">
+                        <router-link :to="'/reportes/ventas'" class="nav-link">
+                            <i class="nav-icon fas fa-chart-bar"></i>
+                            <p>Reporte Ventas Grafico</p>
+                        </router-link>
+                        <router-link :to="'/reportes/ventas/grilla'" class="nav-link">
+                            <i class="nav-icon fas fa-table"></i>
+                            <p>Reporte Ventas Tabla</p>
+                        </router-link>
+                    </template>
+                </li>
             </template>
             </ul>
         </nav>

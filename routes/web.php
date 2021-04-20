@@ -87,6 +87,9 @@ Route::group(['middleware' => ['auth']], function () {
     //Rutas Reportes
     Route::get('/reporte/ventas', 'Administracion\ReportesController@ReporteVentas');
 
+    //Reporte de ventas grilla
+    Route::get('/ventasGrilla', 'AdministracionReportesController@index');
+
     //Ruta Direcciones
     Route::get('/direcciones/obtenerDireccion', 'ControladorGeneral@ObtenerDireccion');
 

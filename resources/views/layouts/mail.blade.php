@@ -6,7 +6,9 @@
 </head>
 <body>
     <!-- Email Body -->
+    
     @yield('contenido')
     <!-- Fin Email Body -->
+    
 </body>
 </html>
