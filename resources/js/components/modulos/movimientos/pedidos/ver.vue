@@ -162,11 +162,11 @@
                                         <td v-text="detalle.item.listacostosdet.RefFabricante"></td>
                                         <td v-text="detalle.item.listacostosdet.marca.NmMarca"></td>
                                         <td v-text="detalle.item.listacostosdet.RegInvima"></td>
-                                        <td v-text="FormatoMoneda(detalle.Precio,2)"></td>
-                                        <td v-text="detalle.Cantidad" v-if="accionMovimiento==0"></td>
+                                        <td style="text-align:right;" v-text="FormatoMoneda(detalle.Precio,2)"></td>
+                                        <td style="text-align:right;" v-text="detalle.Cantidad" v-if="accionMovimiento==0"></td>
                                         <td v-else><input type="number" v-model="detalle.Cantidad" class="form-control" :style="detalle.Cantidad <= 0 || detalle.Cantidad < 1 ? 'border: 2px solid red;':''"></td>
-                                        <td v-text="detalle.PorIva"></td>
-                                        <td v-text="FormatoMoneda((detalle.Precio * detalle.Cantidad),2)"> </td>
+                                        <td style="text-align:right;" v-text="detalle.PorIva"></td>
+                                        <td style="text-align:right;" v-text="FormatoMoneda((detalle.Precio * detalle.Cantidad),2)"> </td>
                                     </tr>
                                     
                                     

@@ -30,9 +30,6 @@ import vSelect from "vue-select";
 import Swal from 'sweetalert2'
 window.Swal = Swal;
 
-import VGrid from "@revolist/vue-datagrid";
-window.VGrid = VGrid;
-
 const app = new Vue({
     el: '#app',
     router,
