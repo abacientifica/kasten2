@@ -25,7 +25,6 @@
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^5.15.2",
-        "@revolist/vue-datagrid": "^3.0.8",
         "ag-grid-community": "^25.1.0",
         "ag-grid-enterprise": "^25.1.0",
         "ag-grid-vue": "^25.1.0",
