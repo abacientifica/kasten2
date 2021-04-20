@@ -10,11 +10,10 @@ const mix = require('laravel-mix');
  | file for the application as well as bundling up all the JS files.
  |
  */
-
 mix.styles([
         'resources/vendor/css/all.min.css',
         'resources/vendor/css/adminlte.css',
-        'resources/vendor/css/transicion.css'
+        'resources/vendor/css/transicion.css',
     ], 'public/css/plantilla.css')
     .js('resources/js/app.js', 'public/js') //Este es el que inclue laravel que viene con boostap,Jquery,Vue
     .scripts([

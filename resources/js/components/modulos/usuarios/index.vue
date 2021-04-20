@@ -97,17 +97,16 @@
                     <div class="card-body">
                         <div class="card-header">
                         <h3 class="card-title">Bandeja Resultados</h3>
-                        <div class="card-body table-responsive">
+                        <div class="card-body table-responsive" style="height: 700px;">
                             <template v-if="listarUserPaginate.length <= 0">
                             <div class="callout callout-info">
                                 <h5>Sin Resultados</h5>
                             </div>
                             </template>
-                            <table
-                            class="table table-hover table-head-fixed text-nowrap projects"
+                            <table class="table table-hover table-head-fixed text-nowrap projects"
                             v-else
                             >
-                            <thead>
+                            <thead class="sticky-header">
                                 <tr>
                                 <th>Foto</th>
                                 <th>Nombres</th>
@@ -172,22 +171,23 @@
                                 </tr>
                             </tbody>
                             </table>
-                            <div class="card-footer clearfix">
-                            <ul class="pagination pagination-sm m-0 float-rigth">
-                                <li class="page-item" v-if="this.pageNumber > 0">
-                                <a href="#" class="page-link" @click.prevent="pagePrev()" >Ant</a>
-                                </li>
-
-                                <li class="page-item" v-for="(page, index) in pagesList" :key="index" :class="page == pageNumber ? 'active' : ''">
-                                <a href="#" class="page-link" @click.prevent="selectPage(page)">{{ page + 1 }}</a>
-                                </li>
-
-                                <li class="page-item" v-if="pageNumber < pageCount - 1">
-                                <a href="#" class="page-link" @click.prevent="nextPage()">Sig</a>
-                                </li>
-                            </ul>
-                            </div>
+                            
                         </div>
+                            <div class="card-footer clearfix">
+                                <ul class="pagination pagination-sm m-0 float-rigth">
+                                    <li class="page-item" v-if="this.pageNumber > 0">
+                                    <a href="#" class="page-link" @click.prevent="pagePrev()" >Ant</a>
+                                    </li>
+
+                                    <li class="page-item" v-for="(page, index) in pagesList" :key="index" :class="page == pageNumber ? 'active' : ''">
+                                    <a href="#" class="page-link" @click.prevent="selectPage(page)">{{ page + 1 }}</a>
+                                    </li>
+
+                                    <li class="page-item" v-if="pageNumber < pageCount - 1">
+                                    <a href="#" class="page-link" @click.prevent="nextPage()">Sig</a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                     </div>

@@ -177,7 +177,7 @@ export default {
                 cEstado:'',
                 nIdDireccion:'',
             },
-            OpPedido:2,
+            OpPedido:8,
             ImagenPerfil:'',
             //Con este objeto enviados los datos del usuarios nuevo o el que vamos a actualizar
             fillCrearUsuario:{
@@ -501,7 +501,7 @@ export default {
             }
         }
         else{
-            this.OpPedido = 2;
+            this.OpPedido = 8;
         }
         this.ListarMovimientos(this.fillMovimiento.nIdtercero);
     },

@@ -240,14 +240,12 @@
 </template>
 <script>
 import Swal from 'sweetalert2'
-import Input from '../../../../../../../project-pruebajet/vendor/laravel/jetstream/stubs/inertia/resources/js/Jetstream/Input.vue';
 export default {
-  components: { Input },
     data() {
         return {
             direccion:[],
             arrMensajeError:[],
-            OpPedido:2,
+            OpPedido:8,
             accionMovimiento:0,
             listPermisosFilterByRolUser:[],
             fillMovimiento:{
@@ -628,6 +626,9 @@ export default {
         this.usuario = JSON.parse(sessionStorage.getItem('authUser'));
         if(this.usuario.Tipo == 2){
             this.OpPedido = 61;
+        }
+        else{
+            this.OpPedido = 8;
         }
         EventBus.$on('agregarDetalleMovimiento',data =>{
             console.log("Se recibio el evento detalle nuevo");
