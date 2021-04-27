@@ -176,11 +176,11 @@
                                     </tr>
                                     <tr style="background-color: #CEECF5;">
                                         <td colspan="8" align="right"><strong>Sub Total:</strong></td>
-                                        <td>$ {{FormatoMoneda((this.fillMovimiento.nSubTotal),2)}}</td>
+                                        <td>$ {{FormatoMoneda((fillMovimiento.nTotal = calcularTotal),2)}}</td>
                                     </tr>
                                     <tr style="background-color: #CEECF5;">
                                         <td colspan="8" align="right"><strong>Total:</strong></td>
-                                        <td>$ {{FormatoMoneda((fillMovimiento.nTotal),2)}}</td>
+                                        <td>$ {{FormatoMoneda((fillMovimiento.nTotal + this.fillMovimiento.nVrIva),2)}}</td>
                                     </tr>
                                 </tbody>  
                                 <tbody v-else>
@@ -287,6 +287,24 @@ export default {
         }
     },
     computed: {
+        calcularTotal: function(){
+            var resultado =0;
+            var porIva = 0;
+            if(this.accionMovimiento!=0){
+                for(var i=0;i< this.ListarMovimientosDetPaginate.length;i++){
+                    var objeto = this.ListarMovimientosDetPaginate[i];
+                    porIva = porIva + (((objeto['Cantidad'] * objeto['Precio']) * objeto['PorIva'])/100);
+                    resultado = resultado + (objeto['Cantidad'] * objeto['Precio']);
+                }
+            }
+            else{
+                var objeto = this.fillMovimiento;
+                porIva = objeto['nVrIva'] ;
+                resultado = objeto['nSubTotal'];
+            }
+            this.fillMovimiento.nVrIva = porIva;
+            return resultado;
+        },
         //Obtener el numero de las paginas
         pageCount() {
             let a = this.fillDetallesMov.length;

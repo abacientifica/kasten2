@@ -18,7 +18,7 @@ import PedidosVer from './components/modulos/movimientos/pedidos/ver.vue';
 import PedidosCrear from './components/modulos/movimientos/pedidos/create.vue';
 import RepVentas from './components/modulos/reportes/ventas.vue';
 import RepVentasGrilla from './components/modulos/reportes/ventasgeneral.vue';
-
+import Chat from './components/modulos/chat/chat.vue';
 
 //rutas configuracion documentos
 import ConfigurarDocumentos from './components/modulos/configuraciones/configdocumentos.vue';
@@ -242,6 +242,16 @@ export default new Router({
             }*/
         },
 
+        /**Ruta del chat */
+        {
+            path: '/chat',
+            component: Chat,
+            name: 'chat.index',
+            props: true,
+            /*beforeEnter: (to, from, next) => {
+                verificarAcceso(to, from, next);
+            }*/
+        },
     ],
     mode: 'history',
     linkActiveClass: 'active'

@@ -74,6 +74,7 @@
                         </router-link>
                     </li>
                 </template>
+                
                 <template v-if="listPermisos.includes('permisos.index')">
                     <li class="nav-item">
                         <router-link :to="'/permisos'" class="nav-link">
@@ -106,6 +107,13 @@
                         </router-link>
                     </template>
                 </li>
+            </template>
+            <template v-if="listPermisos.includes('chat.index') || listPermisos.includes('administrador.sistema') ">
+                <li class="nav-header">CHAT INTERNO</li>
+                <router-link :to="'/chat'" class="nav-link">
+                    <i class="nav-icon fas fa-comments"></i>
+                    <p>Chat</p>
+                </router-link>
             </template>
             </ul>
         </nav>
