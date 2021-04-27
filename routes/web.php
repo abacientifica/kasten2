@@ -93,6 +93,11 @@ Route::group(['middleware' => ['auth']], function () {
     //Ruta Direcciones
     Route::get('/direcciones/obtenerDireccion', 'ControladorGeneral@ObtenerDireccion');
 
+    //Rutas del chat
+    
+    Route::get('/chat/getListarContactos', 'Administracion\ChatController@ListaContactos');
+    Route::get('/chat/getListarConversaciones', 'Administracion\ChatController@ListaConversaciones');
+    Route::post('/chat/setRegistrarMensaje', 'Administracion\ChatController@setRegistrarMensaje');
 });
 Route::get('/{optional?}', function () {
 return view('app');

@@ -30,9 +30,12 @@
         "ag-grid-vue": "^25.1.0",
         "chart.js": "^2.9.4",
         "element-ui": "^2.15.0",
+        "laravel-echo": "^1.10.0",
+        "pusher-js": "^7.0.3",
         "sweetalert2": "^10.13.0",
         "vue-property-decorator": "^8.5.1",
         "vue-router": "^3.4.9",
-        "vue-select": "^3.11.2"
+        "vue-select": "^3.11.2",
+        "vuesax": "^4.0.1-alpha.25"
     }
 }
