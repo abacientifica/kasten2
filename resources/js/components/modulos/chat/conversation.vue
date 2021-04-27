@@ -9,8 +9,8 @@
                             <span class="direct-chat-timestamp " :class="(item.to != contacto.Usuario) ? 'float-left' : 'float-right'" v-text=" ' '+item.created_at"></span>
                             </div>
                             <!-- /.direct-chat-infos -->
-                            <img  v-if="item.from != contacto.Usuario" :src="item.remitente.imagen"  class="direct-chat-img"  alt="message user image">
-                            <img  v-else :src="contacto.imagen"  class="direct-chat-img"  alt="message user image">
+                            <img  v-if="item.from != contacto.Usuario" :src="item.remitente.imagen !='/img/avatar.png' ? item.remitente.imagen : ''"  class="direct-chat-img"  alt="message user image">
+                            <img  v-else :src="contacto.imagen !='' ? contacto.imagen : '/img/avatar.png'"  class="direct-chat-img"  alt="message user image">
                             <!-- /.direct-chat-img -->
                             <div class="direct-chat-text" v-text="item.text">
                             </div>
