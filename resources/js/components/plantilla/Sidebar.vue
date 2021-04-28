@@ -1,6 +1,6 @@
 <template>
     <div>
-        <aside class="main-sidebar sidebar-collapse sidebar-dark-primary elevation-4">
+        <aside class="main-sidebar sidebar-collapse sidebar-dark-blue elevation-4">
         <!-- Brand Logo -->
         <router-link to="/" class="brand-link">
             <img src="/img/logos/icono_aba.jpg" alt="Logo Aba" class="brand-image img-circle elevation-3" style="opacity: .8">

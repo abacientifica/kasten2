@@ -10,7 +10,7 @@
             </div>
             <div class="car-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-6" v-if="usuario.Tipo != 2">
                         <div class="card card-chart">
                             <div class="card-header">
                                 <h4>Pedidos </h4>
@@ -29,7 +29,7 @@
                     <div class="col-md-6">
                         <div class="card card-chart">
                             <div class="card-header">
-                                <h4>Ventas</h4>
+                                <h4>{{TituloGrafica}}</h4>
                             </div>
                             <div class="card-content">
                                 <div class="ct-chart">
@@ -38,12 +38,12 @@
                                 </div>
                             </div>
                             <div class="card-footer">
-                                <p>Ventas de los últimos meses.</p>
+                                <p>{{TituloGrafica}} de los últimos meses.</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="alert alert-primary" style="text-align: center;" v-loading.fullscreen.lock="fullscreenLoading">Bienvenido {{usuario.Nombres}}</div>
+                <div class="alert bgt-tema" style="text-align: center;" v-loading.fullscreen.lock="fullscreenLoading">Bienvenido {{usuario.Nombres}}</div>
             </div>
         </div>
     </div>
@@ -55,6 +55,7 @@ export default {
     
     data() {
         return {
+            TituloGrafica : "Ventas",
             varIngreso:null,
             charIngreso:null,
             ingresos:[],
@@ -68,7 +69,8 @@ export default {
             varTotalVenta:[],
             varMesVenta:[],
             fullscreenLoading:false,
-            usuario:[]
+            usuario:[],
+            moment:moment
         }
     },
     methods: {
@@ -104,7 +106,7 @@ export default {
         loadVentas(){
             let me=this;
             me.ventas.map(function(x){
-                me.varMesVenta.push(x.mes);
+                me.varMesVenta.push(moment(x.mes).format('MMMM'));
                 me.varTotalVenta.push(x.total);
             });
             me.varVenta=document.getElementById('ventas').getContext('2d');
@@ -157,7 +159,7 @@ export default {
             let me=this;
             this.isLoading = true;
             me.ingresos.map(function(x){
-                me.varMesIngreso.push(x.mes);
+                me.varMesIngreso.push(moment(x.mes).format('MMMM'));
                 me.varTotalIngreso.push(x.total);
             });
             me.varIngreso=document.getElementById('ingresos').getContext('2d');
@@ -234,6 +236,9 @@ export default {
 
     mounted() {
         this.usuario = JSON.parse(sessionStorage.getItem('authUser'));
+        if(this.usuario.Tipo == 2){
+            this.TituloGrafica = 'Compras';
+        }
         this.isLoading = true;
         this.getPedidos();
         this.getVentas();
