@@ -71,3 +71,31 @@
     width: 100% !important;
     position: absolute !important;
 }
+
+.texto-centrado {
+    text-align: center;
+}
+
+.texto-derecha {
+    text-align: right;
+}
+
+.texto-isquierda {
+    text-align: left;
+}
+
+.oculto {
+    display: none;
+}
+
+.margen-ruta {
+    padding: 0px 0.5rem;
+}
+
+.margen-label-encabezado {
+    margin-bottom: 0rem;
+}
+
+.margen-form-item {
+    margin-bottom: 0rem;
+}

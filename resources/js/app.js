@@ -18,8 +18,11 @@ Vue.component('NuevoMovimiento', require('./components/plantilla/NuevoMovimiento
 Vue.component('AgregarProductosPedido', require('./components/plantilla/AgregarProductosPedido.vue').default);
 Vue.component('AgregarProductosMovimiento', require('./components/plantilla/AgregarProductosMovimiento.vue').default);
 Vue.component('logacciones', require('./components/plantilla/acciones/logacciones.vue').default);
+
 import router from './routes';
+
 import ElementUI from 'element-ui';
+
 window.Vue.use(ElementUI); //Con esta declaracion lo utilizamos en todo el sitio
 import 'element-ui/lib/theme-chalk/index.css';
 import vSelect from "vue-select";
@@ -35,6 +38,10 @@ Vue.use(Vuesax, {
  */
 import Swal from 'sweetalert2'
 window.Swal = Swal;
+
+import moment from 'moment';
+moment.locale('es');
+window.moment = moment;
 
 const app = new Vue({
     el: '#app',

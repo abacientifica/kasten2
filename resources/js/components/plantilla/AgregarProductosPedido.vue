@@ -39,20 +39,20 @@
         <div class="form-group row border">
             <div class="table-responsive col-md-12">
                 <table class="table table-bordered table-striped table-sm">
-                    <thead>
+                    <thead class="bg-info">
                         <tr>
-                            <th>Opciones</th>
-                            <th>Codigo Aba</th>
-                            <th>Codigo Cliente</th>
-                            <th>UMV Aba</th>
-                            <th>UMV Cli.</th>
-                            <th>Artículo</th>
-                            <th>Precio</th>
-                            <th>Iva</th>
-                            <th>Cantidad</th>
-                            <th>Cant. Min. Venta</th>
-                            <th>F.C</th>
-                            <th>Subtotal</th>
+                            <th class="texto-centrado">Opciones</th>
+                            <th class="texto-centrado">Codigo Aba</th>
+                            <th class="texto-centrado">Codigo Cliente</th>
+                            <th class="texto-centrado">Artículo</th>
+                            <th class="texto-centrado">UMV Aba</th>
+                            <th class="texto-centrado">UMV Cli.</th>
+                            <th class="texto-centrado">Cant. Min. Venta</th>
+                            <th class="texto-centrado">F.C</th>
+                            <th class="texto-centrado">Cantidad</th>
+                            <th class="texto-centrado">Precio</th>
+                            <th class="texto-centrado">Iva</th>
+                            <th class="texto-centrado">Subtotal</th>
                         </tr>
                     </thead>
                     <tbody v-if="arraryDetallesMovimiento.length">
@@ -62,24 +62,25 @@
                                     <i class="fas fa-times-circle"></i>
                                 </button>
                             </td>
-                            <td v-text="detalle.Id_Item"></td>
+                            <td class="texto-derecha" v-text="detalle.Id_Item"></td>
                             <td v-text="detalle.CodTercero"></td>
+                            <td v-text="detalle.Descripcion"></td>
                             <td v-text="detalle.UMM"></td>
                             <td v-text="detalle.UMV"></td>
-                            <td v-text="detalle.Descripcion"></td>
-                            <td v-text="FormatoMoneda(detalle.Precio,2)"></td>
-                            <td v-text="FormatoMoneda(detalle.Iva,2)"></td>
+                            <td class="texto-derecha" v-text="detalle.CantMinimaVenta"></td>
+                            <td class="texto-derecha" v-text="detalle.FactorVenta"></td>
                             <td>
                                 <input type="number" v-model="detalle.Cantidad" class="form-control" :style="detalle.Cantidad <= 0 || detalle.Cantidad < 1 ? 'border: 2px solid red;':''">
                             </td>
-                            <td v-text="detalle.FactorVenta"></td>
-                            <td v-text="detalle.CantMinimaVenta"></td>
-                            <td v-text="FormatoMoneda((detalle.Precio * detalle.Cantidad),2)"> </td>
+                            <td class="texto-derecha" v-text="FormatoMoneda(detalle.Precio,2)"></td>
+                            <td class="texto-derecha" v-text="FormatoMoneda(detalle.Iva,2)"></td>
+                            
+                            <td class="texto-derecha" v-text="FormatoMoneda((detalle.Precio * detalle.Cantidad),2)"> </td>
                         </tr>
                         
                         <tr style="background-color: #CEECF5;">
                             <td colspan="11" align="right"><strong>Sub Total:</strong></td>
-                            <td>$ {{FormatoMoneda(SubTotal,2)}}</td>
+                            <td>${{FormatoMoneda(SubTotal,2)}}</td>
                         </tr>
                         <tr style="background-color: #CEECF5;">
                             <td colspan="11" align="right"><strong>Total Iva:</strong></td>
@@ -121,18 +122,18 @@
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped table-sm">
-                                    <thead>
+                                    <thead class="bg-info">
                                         <tr>
-                                            <th>Opciones</th>
-                                            <th>F.C</th>
-                                            <th>UMV</th>
-                                            <th>Codigo Aba</th>
-                                            <th>Codigo Cliente</th>
-                                            <th>Nombre</th>
-                                            <th>Marca</th>
-                                            <th>Precio</th>
-                                            <th>Cant. Min. Venta</th>
-                                            <th>Estado</th>
+                                            <th class="texto-centrado">Opciones</th>
+                                            <th class="texto-centrado">F.C</th>
+                                            <th class="texto-centrado">Codigo Cliente</th>
+                                            <th class="texto-centrado">Nombre</th>
+                                            <th class="texto-centrado">Codigo Aba</th>
+                                            <th class="texto-centrado">Referencia</th>
+                                            <th class="texto-centrado">Marca</th>
+                                            <th class="texto-centrado">UMV</th>
+                                            <th class="texto-centrado">Precio</th>
+                                            <th class="texto-centrado">Cant. Min. Venta</th>
                                         </tr>
                                     </thead>
 
@@ -143,22 +144,15 @@
                                                 <i class="fas fa-check"></i>
                                                 </button>
                                             </td>
-                                            <td v-text="articulo.FactorVenta"></td>
-                                            <td v-text="articulo.UMM"></td>
-                                            <td v-text="articulo.Item"></td>
+                                            <td class="texto-derecha" v-text="articulo.FactorVenta"></td>
                                             <td v-text="articulo.CodTercero"></td>
                                             <td v-text="articulo.Descripcion"></td>
-                                             <td v-text="articulo.NmMarca"></td>
-                                            <td v-text="FormatoMoneda(articulo.Precio,2)"></td>
-                                            <td v-text="articulo.CantMinimaVenta"></td>
-                                            <td>
-                                                <div v-if="articulo.Inactivo == '0'">
-                                                    <span class="badge badge-success" >Activo</span>
-                                                </div>
-                                                <div v-else>
-                                                    <span class="badge badge-danger" >Inactivo</span>
-                                                </div>
-                                            </td>
+                                            <td class="texto-derecha" v-text="articulo.Item"></td>
+                                            <td v-text="articulo.RefFabricante"></td>
+                                            <td v-text="articulo.NmMarca"></td>
+                                            <td v-text="articulo.UMM"></td>
+                                            <td class="texto-derecha" v-text="FormatoMoneda(articulo.Precio,2)"></td>
+                                            <td class="texto-derecha" v-text="articulo.CantMinimaVenta"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -395,7 +389,7 @@ export default {
         },
 
         eliminarDetalle(index){
-            let producto = this.arraryDetallesMovimiento[index]['articulo'];
+            let producto = this.arraryDetallesMovimiento[index]['Descripcion'];
             Swal.fire({
                 title: '',
                 text: "Estas seguro de eliminar "+producto+" de la lista ?",
@@ -448,7 +442,7 @@ export default {
         },
 
         agregarDetalle(){
-            if(!this.ValidarProductoExiste(this.fillProdNuevo.nIdItem)){
+            if(this.fillProdNuevo.nIdItem != 0  && !this.ValidarProductoExiste(this.fillProdNuevo.nIdItem)){
                 this.arraryDetallesMovimiento.push({
                     'Id_Item':this.fillProdNuevo.nIdItem,
                     'Descripcion':this.fillProdNuevo.cDescripcion,

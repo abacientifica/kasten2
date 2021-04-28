@@ -25,7 +25,7 @@
                         <span style="color:red" v-show="fillNuevoMovimiento.nIdDireccion ==0">(Seleccione *)</span>
                         <select class="form-control" v-model="fillNuevoMovimiento.nIdDireccion" :disabled="usuario.IdDireccion >0 ? true:false">
                             <option value="0" selected>( Seleccione )</option>
-                            <option v-for="dir in arrayDirecciones" :key="dir.IdDireccion" :value="dir.IdDireccion" v-text="dir.NmDireccion"></option>
+                            <option v-for="dir in arrayDirecciones" :key="dir.IdDireccion" :value="dir.IdDireccion" v-text="dir.NmDireccion+' ('+dir.Direccion+')'"></option>
                         </select>                                   
                     </div>
                 </div>
