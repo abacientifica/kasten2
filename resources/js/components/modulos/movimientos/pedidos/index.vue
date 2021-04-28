@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="content-header">
+        <div class="content-header margen-ruta">
             <div class="container-fluid">
                 <div class="row mb-2">
                 <div class="col-sm-6">
@@ -8,7 +8,7 @@
                 </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item"><router-link to="/">Home</router-link></li>
                         <li class="breadcrumb-item active">Pedidos</li>
                         </ol>
                     </div>
@@ -100,38 +100,34 @@
                             </div>
                             </template>
                             <table class="table table-hover table-bordered table-striped table-sm" v-else>
-                            <thead>
+                            <thead class="bg-info">
                                 <tr>
-                                <th>Opcion</th>
-                                <th>ID</th>
-                                <th>Nro</th>
-                                <th>Soporte</th>
-                                <th>Direccion</th>
-                                <th>Fecha</th>
-                                <th>Fecha Min. Entrega</th>
-                                <th>Fecha Max. Entrega</th>
-                                <th>Total</th>
-                                <th>Estado</th>
-                                <th>Comentarios</th>
+                                <th class="texto-centrado">Nro</th>
+                                <th class="texto-centrado">Soporte</th>
+                                <th class="texto-centrado">Direccion</th>
+                                <th class="texto-centrado">Fecha</th>
+                                <th class="texto-centrado">Fecha Entrega</th>
+                                <th class="texto-centrado">Total</th>
+                                <th class="texto-centrado">Estado</th>
+                                <th class="texto-centrado">Comentarios</th>
+                                <th class="texto-centrado">Opcion</th>
                                 </tr>
                             </thead>
                             <tbody v-if="ListarMovimientosPaginate.length >0">
                                 <tr v-for="(mov) in ListarMovimientosPaginate" :key="mov.IdMovimiento">
+                                    <td class="texto-derecha" v-text="mov.NroDocumento"></td>
+                                    <td v-text="mov.Soporte"></td>
+                                    <td v-text="mov.direccion.NmDireccion"></td>
+                                    <td>{{moment(mov.FhAutoriza).format('MMMM DD YYYY, h:mm:ss a')}}</td>
+                                    <td>{{moment(mov.Fecha2).format('MMMM DD YYYY')}}</td>
+                                    <td class="texto-derecha" v-text="FormatoMoneda(mov.Total >0 ? mov.Total:0,2)"></td>
+                                    <td v-text="mov.Estado"></td>
+                                    <td v-text="mov.Comentarios"></td>
                                     <td>
                                         <router-link  :to="'/pedidos/ver/'+mov.IdMovimiento" class="btn btn-info btn-sm" v-if="listPermisosFilterByRolUser.includes('pedidos.ver') || listPermisosFilterByRolUser.includes('administrador.sistema')">
                                             <i class="fas fa-eye"></i>
                                         </router-link>
                                     </td>
-                                    <td v-text="mov.IdMovimiento"></td>
-                                    <td v-text="mov.NroDocumento"></td>
-                                    <td v-text="mov.Soporte"></td>
-                                    <td v-text="mov.direccion.NmDireccion"></td>
-                                    <td v-text="mov.Fecha"></td>
-                                    <td v-text="mov.Fecha1"></td>
-                                    <td v-text="mov.Fecha2"></td>
-                                    <td v-text="FormatoMoneda(mov.Total >0 ? mov.Total:0,2)"></td>
-                                    <td v-text="mov.Estado"></td>
-                                    <td v-text="mov.Comentarios"></td>
                                 </tr>
                             </tbody>
                             </table>
@@ -174,7 +170,7 @@ export default {
                 nNroDocumento:'',
                 nIdMovimiento:'',
                 nIdTercero:'',
-                cEstado:'',
+                cEstado:'AUTORIZADA',
                 nIdDireccion:'',
             },
             OpPedido:8,
@@ -218,6 +214,7 @@ export default {
                 display: "none",
             },
             usuario:[],
+            moment:moment,
         }
     },
     computed: {

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="content-header">
+        <div class="content-header margen-ruta">
             <div class="container-fluid">
                 <div class="row mb-2">
                 <div class="col-sm-6">
@@ -8,7 +8,7 @@
                 </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item"><router-link to="/">Home</router-link></li>
                         <li class="breadcrumb-item active">Pedidos</li>
                         </ol>
                     </div>
@@ -49,85 +49,94 @@
                     </div><hr>
                     <div class="form-group row border">
                         <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="" class='label-strong'>IdMovimiento</label>
+                            <div class="form-group margen-form-item">
+                                <label for="" class='label-strong margen-label-encabezado'>IdMovimiento</label>
                                 <!--label muestra el objeto o la columna en el select-->
                                 <p v-text="fillMovimiento.nIdMovimiento"></p>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <label for="" class='label-strong'>Nro Documento</label>
+                            <div class="form-group margen-form-item">
+                                <label for="" class='label-strong margen-label-encabezado'>Nro Documento</label>
                                 <p v-text="fillMovimiento.nNroDocumento"></p>
+                            </div>
                         </div>
 
                         <div class="col-md-3">
-                            <div class="form-group">
-                                <label class='label-strong'>Fecha Creación</label>
+                            <div class="form-group margen-form-item">
+                                <label class='label-strong margen-label-encabezado'>Fecha Creación</label>
                                 <p v-text="fillMovimiento.dFecha"></p>
                             </div>
                         </div>
 
                         <div class="col-md-3">
-                            <div class="form-group">
-                                <label class='label-strong'>Condición Entrega</label>
+                            <div class="form-group margen-form-item">
+                                <label class='label-strong margen-label-encabezado'>Condición Entrega</label>
                                 <p v-text="fillMovimiento.cNmCondEntrega"></p>
                             </div>
                         </div>
 
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label class='label-strong'>Fecha Minima Entrega </label>
-                                <p v-text="fillMovimiento.dFecha1"></p>
+                        <div class="col-md-3 oculto">
+                            <div class="form-group margen-form-item">
+                                <label class='label-strong margen-label-encabezado'>Fecha Minima Entrega </label>
+                                <p>{{moment(fillMovimiento.dFecha1).format('MMMM DD YYYY')}}</p>
                             </div>
                         </div>
 
                         <div class="col-md-3">
-                            <div class="form-group">
-                                <label class='label-strong'>Fecha Maxima Entrega </label>
-                                <p v-text="fillMovimiento.dFecha2"></p>
+                            <div class="form-group margen-form-item">
+                                <label class='label-strong margen-label-encabezado'>Fecha  Entrega </label>
+                                <p>{{moment(fillMovimiento.dFecha2).format('MMMM DD YYYY')}}</p>
                             </div>
                         </div>
 
                         
 
                         <div class="col-md-3">
-                            <div class="form-group">
-                                <label class='label-strong'>Estado</label>
+                            <div class="form-group margen-form-item">
+                                <label class='label-strong margen-label-encabezado'>Estado</label>
                                 <p v-text="fillMovimiento.cEstado"></p>
                             </div>
                         </div>
 
                         <div class="col-md-3">
-                            <div class="form-group">
-                                <label class='label-strong'>Soporte</label>
+                            <div class="form-group margen-form-item">
+                                <label class='label-strong margen-label-encabezado'>Soporte</label>
                                 <p v-text="fillMovimiento.cSoporte"></p>
                             </div>
                         </div>
 
                         <div class="col-md-3">
-                            <div class="form-group">
+                            <div class="form-group margen-form-item">
                                 <label class='label-strong'>Centro Costos / Dirección</label>
                                 <p v-text="fillMovimiento.cNmDireccion"></p>
                             </div>
                         </div>
 
                         <div class="col-md-3">
-                            <div class="form-group">
-                                <label class='label-strong'>Asesor</label>
+                            <div class="form-group margen-form-item">
+                                <label class='label-strong margen-label-encabezado'>Asesor</label>
                                 <p v-text="fillMovimiento.cNmAsesor"></p>
                             </div>
                         </div>
 
                         <div class="col-md-3">
-                            <div class="form-group">
-                                <label class='label-strong'>Forma Pago</label>
+                            <div class="form-group margen-form-item">
+                                <label class='label-strong margen-label-encabezado'>Asesor Serv. Cliente</label>
+                                <p v-text="fillMovimiento.cNmAsesorServC"></p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group margen-form-item">
+                                <label class='label-strong margen-label-encabezado'>Forma Pago</label>
                                 <p v-text="fillMovimiento.cNmFormaPago"></p>
                             </div>
                         </div>
 
                         <div class="col-md-3">
-                            <div class="form-group">
-                                <label class='label-strong'>Comentarios</label>
+                            <div class="form-group margen-form-item">
+                                <label class='label-strong margen-label-encabezado'>Comentarios</label>
                                 <p v-text="fillMovimiento.cComentarios"></p>
                             </div>
                         </div>
@@ -136,37 +145,37 @@
                     <div class="form-group row border">
                         <div class="table-responsive col-md-12">
                             <table class="table table-bordered table-striped table-sm" >
-                                <thead>
+                                <thead class="bg-info">
                                     <tr>
+                                        <th class="texto-centrado">Codigo</th>
+                                        <th class="texto-centrado">Artículo</th>
+                                        <th class="texto-centrado">Referencia</th>
+                                        <th class="texto-centrado">Marca</th>
+                                        <th class="texto-centrado">Invima</th>
+                                        <th class="texto-centrado">Precio</th>
+                                        <th class="texto-centrado">Cantidad</th>
+                                        <th class="texto-centrado">Iva</th>
+                                        <th class="texto-centrado">Subtotal</th>
                                         <th v-if="accionMovimiento==1">Opción</th>
-                                        <th>Codigo</th>
-                                        <th>Artículo</th>
-                                        <th>Referencia</th>
-                                        <th>Marca</th>
-                                        <th>Invima</th>
-                                        <th>Precio</th>
-                                        <th>Cantidad</th>
-                                        <th>Iva</th>
-                                        <th>Subtotal</th>
                                     </tr>
                                 </thead>
                                 <tbody v-if="ListarMovimientosDetPaginate.length">
                                     <tr v-for="(detalle) in ListarMovimientosDetPaginate" :key="detalle.id">
+                                        <td class="texto-derecha" v-text="detalle.Id_Item"></td>
+                                        <td v-text="detalle.item.Descripcion"></td>
+                                        <td v-text="detalle.item.listacostosdet.RefFabricante"></td>
+                                        <td v-text="detalle.item.listacostosdet.marca.NmMarca"></td>
+                                        <td v-text="detalle.item.listacostosdet.RegInvima"></td>
+                                        <td class="texto-derecha" v-text="FormatoMoneda(detalle.Precio,2)"></td>
+                                        <td class="texto-derecha" v-text="detalle.Cantidad" v-if="accionMovimiento==0"></td>
+                                        <td v-else><input type="number" v-model="detalle.Cantidad" class="form-control" :style="detalle.Cantidad <= 0 || detalle.Cantidad < 1 ? 'border: 2px solid red;':''"></td>
+                                        <td class="texto-derecha" v-text="detalle.PorIva"></td>
+                                        <td class="texto-derecha" v-text="FormatoMoneda((detalle.Precio * detalle.Cantidad),2)"> </td>
                                         <td v-if="accionMovimiento==1">
                                             <button type="button" @click="eliminarDetalle(detalle)" class="btn btn-danger btn-sm">
                                                 <i class="fas fa-times-circle"></i>
                                             </button>
                                         </td>
-                                        <td v-text="detalle.Id_Item"></td>
-                                        <td v-text="detalle.item.Descripcion"></td>
-                                        <td v-text="detalle.item.listacostosdet.RefFabricante"></td>
-                                        <td v-text="detalle.item.listacostosdet.marca.NmMarca"></td>
-                                        <td v-text="detalle.item.listacostosdet.RegInvima"></td>
-                                        <td style="text-align:right;" v-text="FormatoMoneda(detalle.Precio,2)"></td>
-                                        <td style="text-align:right;" v-text="detalle.Cantidad" v-if="accionMovimiento==0"></td>
-                                        <td v-else><input type="number" v-model="detalle.Cantidad" class="form-control" :style="detalle.Cantidad <= 0 || detalle.Cantidad < 1 ? 'border: 2px solid red;':''"></td>
-                                        <td style="text-align:right;" v-text="detalle.PorIva"></td>
-                                        <td style="text-align:right;" v-text="FormatoMoneda((detalle.Precio * detalle.Cantidad),2)"> </td>
                                     </tr>
                                     
                                     
@@ -264,6 +273,7 @@ export default {
                 cNmCondEntrega:'',
                 cNmFormaPago:'',
                 cNmAsesor:'',
+                cNmAsesorServC:'',
                 cComentarios:'',
                 nVrIva:0,
                 nSubTotal:0,
@@ -284,6 +294,7 @@ export default {
             pageNumber: 0,
             perPage: 15,
             //Fin variables paginacion
+            moment:moment
         }
     },
     computed: {
@@ -362,6 +373,7 @@ export default {
                     this.fillMovimiento.cNmCondEntrega = Datos.Fecha;
                     this.fillMovimiento.cNmFormaPago = Datos.fpago.FormaPago;
                     this.fillMovimiento.cNmAsesor = Datos.asesor.Nombre;
+                    this.fillMovimiento.cNmAsesorServC = Datos.tercero.asesorservcliente.Nombre+" "+Datos.tercero.asesorservcliente.Email;
                     this.fillMovimiento.cComentarios = Datos.Comentarios == '' ? 'SIN COMENTARIOS' : Datos.Comentarios;
                     this.fillMovimiento.nVrIva = Datos.VrIva;
                     this.fillMovimiento.nSubTotal = Datos.SubTotal;

@@ -114,4 +114,8 @@ class Terceros extends Model
     public function direcciones(){
         return $this->hasMany('App\Model\Direcciones','IdTercero','IdTercero');
     }
+
+    public function asesorservcliente(){
+        return $this->hasOne('App\Model\Asesores','IdAsesor','IdAsesorServicliente');
+    }
 }
