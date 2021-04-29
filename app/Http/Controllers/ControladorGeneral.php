@@ -42,13 +42,15 @@ class ControladorGeneral extends Controller
         if(!$request->ajax())  return  redirect('/'); 
         $anio = date("Y");
         $IdTercero =  \Auth::user()->IdTercero;
-        $Sql = "select MONTH(movimientos.Fecha) as mes, YEAR(movimientos.Fecha) as anio, SUM(movimientos.Total) as total from `movimientos` 
-        where Fecha >= date_sub(CURDATE(), interval 6 MONTH) and `IdTercero` = ".$IdTercero." and (IdDocumento = 61 or `IdDocumento` = 8)
+        $Sql = "select MONTH(movimientos.Fecha) as mes, YEAR(movimientos.Fecha) as anio, SUM(movimientos.SubTotal * if(OpValor =0,1,OpValor)) as total   from `movimientos` 
+        LEFT JOIN documentos on documentos.IdDocumento = movimientos.IdDocumento
+        where Fecha >= date_sub(CURDATE(), interval 6 MONTH) and `IdTercero` = ".$IdTercero." and (movimientos.IdDocumento = 61 or movimientos.`IdDocumento` = 8) and (movimientos.Estado='AUTORIZADA' OR movimientos.Estado='CERRADA' )
          group by MONTH(movimientos.Fecha), YEAR(movimientos.Fecha) ORDER BY YEAR(movimientos.Fecha) ,MONTH(movimientos.Fecha)";
         $pedidos = DB::select($Sql);
 
-        $Sql = "select MONTH(movimientos.Fecha) as mes, YEAR(movimientos.Fecha) as anio, SUM(movimientos.Total) as total from `movimientos` 
-            where Fecha >= date_sub(CURDATE(), interval 6 MONTH) and `IdTercero` = ".$IdTercero." and (IdDocumento = 3 or `IdDocumento` = 11)
+        $Sql = "select MONTH(movimientos.Fecha) as mes, YEAR(movimientos.Fecha) as anio, SUM(movimientos.SubTotal * if(OpValor =0,1,OpValor)) as total  from `movimientos` 
+            LEFT JOIN documentos on documentos.IdDocumento = movimientos.IdDocumento
+            where Fecha >= date_sub(CURDATE(), interval 6 MONTH) and `IdTercero` = ".$IdTercero." and (movimientos.TpDocumento = 5) and (movimientos.Estado='AUTORIZADA' OR movimientos.Estado='CERRADA' )
             group by MONTH(movimientos.Fecha), YEAR(movimientos.Fecha) ORDER BY YEAR(movimientos.Fecha) ,MONTH(movimientos.Fecha)";
         $ventas=DB::select($Sql); 
 
