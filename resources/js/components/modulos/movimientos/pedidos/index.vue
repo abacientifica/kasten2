@@ -103,9 +103,9 @@
                             <thead class="bg-info">
                                 <tr>
                                 <th class="texto-centrado">Nro</th>
-                                <th class="texto-centrado">Soporte</th>
+                                <th class="texto-centrado">Orden Compra</th>
                                 <th class="texto-centrado">Direccion</th>
-                                <th class="texto-centrado">Fecha</th>
+                                <th class="texto-centrado">Fecha Pedido</th>
                                 <th class="texto-centrado">Fecha Entrega</th>
                                 <th class="texto-centrado">Total</th>
                                 <th class="texto-centrado">Estado</th>

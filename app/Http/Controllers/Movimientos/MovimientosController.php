@@ -44,7 +44,7 @@ class MovimientosController extends Controller
 
     public function ObtenerMovimiento(Request $request){
         if(!$request->ajax()) return redirect("/");
-        $Movimiento = Movimientos::with('documento','asesor','tercero','tercero.asesorservcliente','direccion','fpago')->where('IdMovimiento',$request->IdMov)->get();
+        $Movimiento = Movimientos::with('documento','asesor','tercero','tercero.asesorservcliente','direccion','fpago','condentrega')->where('IdMovimiento',$request->IdMov)->get();
         $MovimientosDet = MovimientosDet::with('item','item.listacostosdet','item.listacostosdet.marca')->where('IdMovimiento',$request->IdMov)->get();
         return[
             'movimiento'=>$Movimiento,

@@ -65,7 +65,7 @@
                         <div class="col-md-3">
                             <div class="form-group margen-form-item">
                                 <label class='label-strong margen-label-encabezado'>Fecha Creación</label>
-                                <p class="p-encabezado" v-text="fillMovimiento.dFecha"></p>
+                                <p class="p-encabezado">{{moment(fillMovimiento.dFecha).format('MMMM DD YYYY, h:mm:ss a')}}</p>
                             </div>
                         </div>
 
@@ -152,7 +152,7 @@
                                         <th class="texto-centrado">Descripción</th>
                                         <th class="texto-centrado">Referencia</th>
                                         <th class="texto-centrado">Marca</th>
-                                        <th class="texto-centrado">UMM</th>
+                                        <th class="texto-centrado">UMV</th>
                                         <th class="texto-centrado">Invima</th>
                                         <th class="texto-centrado">Precio</th>
                                         <th class="texto-centrado">Cantidad</th>
@@ -371,8 +371,8 @@ export default {
                     this.fillMovimiento.dFecha2 = Datos.Fecha2;
                     this.fillMovimiento.cEstado = Datos.Estado;
                     this.fillMovimiento.cSoporte = Datos.Soporte;
-                    this.fillMovimiento.cNmDireccion = Datos.direccion.NmDireccion;
-                    this.fillMovimiento.cNmCondEntrega = Datos.Fecha;
+                    this.fillMovimiento.cNmDireccion = Datos.direccion.NmDireccion+' ('+Datos.direccion.Direccion+' )';
+                    this.fillMovimiento.cNmCondEntrega = Datos.condentrega.NmCondicionEntrega;
                     this.fillMovimiento.cNmFormaPago = Datos.fpago.FormaPago;
                     this.fillMovimiento.cNmAsesor = Datos.asesor.Nombre;
                     this.fillMovimiento.cNmAsesorServC = Datos.tercero.asesorservcliente.Nombre+" "+Datos.tercero.asesorservcliente.Email;

@@ -4,7 +4,7 @@
             <div class="col-md-6">
                 <div class="col-md-6">
                     <div class="form-group btnagregar">
-                        <button @click="AbrirModal()" class="btn btn-success form-control">Agregar Productos <i class="fas fa-plus-square"></i></button>
+                        <button @click="AbrirModal()" class="btn btn-success form-control col-md-6"><i class="fas fa-plus-square"></i> Agregar Productos</button>
                     </div>
                 </div>
             </div>
@@ -34,7 +34,7 @@
                                         <tr>
                                             <th class="texto-centrado">Codigo Cliente</th>
                                             <th class="texto-centrado">Codigo Aba</th>
-                                            <th class="texto-centrado">Descripcion</th>
+                                            <th class="texto-centrado">Descripción</th>
                                             <th class="texto-centrado">Referencia</th>
                                             <th class="texto-centrado">Marca</th>
                                             <th class="texto-centrado">UMV</th>
