@@ -1,58 +1,62 @@
 <template>
     <div class="container-fluid">
         <div class="form-group row border">
-            <div class="col-md-6">
+            <div class="col-md-9">
                 <div class="form-group">
                     <label>Artículo <span style="color:red" v-show="fillArticulosMov.nIdItem ==0">(Seleccione *)</span></label>
                     <div class="form-inline">
-                            <input type="text" class="form-control" v-model="fillProdNuevo.nIdItem" @keyup.enter="buscarArticuloIndividual()" placeholder="Ingrese artículo">
+                            <input type="text" class="form-control" v-model="fillProdNuevo.nIdItem" @keyup.enter="buscarArticuloIndividual()" placeholder="Ingrese Des,Cod,Ref...">
                             <button class="btn btn-primary" @click="AbrirModal()" value="">...</button>
-                            <input type="text" readonly="" class="form-control" v-model="fillProdNuevo.cDescripcion">
+                            <input type="text" readonly="" class="form-control col-md-8" v-model="fillProdNuevo.cDescripcion">
                     </div>                                    
                 </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-1">
                 <div class="form-group">
                     <label>Precio <span style="color:red" v-show="fillProdNuevo.precio ==0">(Ingrese *)</span></label>
-                    <input type="number" value="0" step="any" class="form-control" v-model="fillProdNuevo.nPrecio" v-text="FormatoMoneda(fillProdNuevo.nPrecio,2)" disabled>
+                    <input type="number" value="0" step="any" class="form-control" v-model="fillProdNuevo.nPrecio" v-text="FormatoMoneda(fillProdNuevo.nPrecio,1)" disabled>
                 </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-1">
                 <div class="form-group">
                     <label>Cantidad <span style="color:red" v-show="fillProdNuevo.cantidad ==0">(Ingrese *)</span></label>
                     <input type="number" value="0" class="form-control" v-model="fillProdNuevo.nCantidad">
                 </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-1">
                 <div class="form-group">
-                    <button @click="agregarDetalle()" class="btn btn-success form-control btnagregar"><i class="fas fa-plus-square"></i></button>
+                    <label>Agregar</label>
+                    <button @click="agregarDetalle()" class="btn btn-success form-control"><i class="fas fa-plus-square"></i></button>
                 </div>
             </div>
-            <div class="col-md-2">
-                <div class="form-group">
-                    <button class="btn btn-success form-control btnagregar" v-if="arraryDetallesMovimiento.length >0" @click="EmitirEventoProductos">Registrar Pedido<i class="fas fa-plus-square"></i></button>
+            
+        </div>
+        <div class="form-group row border">
+            <div class="col-md-12">
+                <div class="form-group btnagregar ">
+                    <button class="btn btn-success form-control col-md-5" v-if="arraryDetallesMovimiento.length >0" @click="EmitirEventoProductos">Registrar Pedido <i class="fas fa-plus-square"></i></button>
                 </div>
             </div>
         </div>
-
         <!--Listado de Productos-->
         <div class="form-group row border">
             <div class="table-responsive col-md-12">
                 <table class="table table-bordered table-striped table-sm">
                     <thead class="bg-info">
                         <tr>
-                            <th class="texto-centrado">Opciones</th>
+                            <th class="texto-centrado">Opción</th>
                             <th class="texto-centrado">Codigo Aba</th>
                             <th class="texto-centrado">Codigo Cliente</th>
                             <th class="texto-centrado">Artículo</th>
-                            <th class="texto-centrado">UMV Aba</th>
-                            <th class="texto-centrado">UMV Cli.</th>
+                            <th class="texto-centrado">Marca</th>
+                            <th class="texto-centrado">Referencia</th>
+                            <th class="texto-centrado">UMV</th>
                             <th class="texto-centrado">Cant. Min. Venta</th>
-                            <th class="texto-centrado">F.C</th>
                             <th class="texto-centrado">Cantidad</th>
                             <th class="texto-centrado">Precio</th>
                             <th class="texto-centrado">Iva</th>
                             <th class="texto-centrado">Subtotal</th>
+                            
                         </tr>
                     </thead>
                     <tbody v-if="arraryDetallesMovimiento.length">
@@ -65,10 +69,10 @@
                             <td class="texto-derecha" v-text="detalle.Id_Item"></td>
                             <td v-text="detalle.CodTercero"></td>
                             <td v-text="detalle.Descripcion"></td>
-                            <td v-text="detalle.UMM"></td>
+                            <td v-text="detalle.NmMarca"></td>
+                            <td v-text="detalle.Referencia"></td>
                             <td v-text="detalle.UMV"></td>
                             <td class="texto-derecha" v-text="detalle.CantMinimaVenta"></td>
-                            <td class="texto-derecha" v-text="detalle.FactorVenta"></td>
                             <td>
                                 <input type="number" v-model="detalle.Cantidad" class="form-control" :style="detalle.Cantidad <= 0 || detalle.Cantidad < 1 ? 'border: 2px solid red;':''">
                             </td>
@@ -76,19 +80,20 @@
                             <td class="texto-derecha" v-text="FormatoMoneda(detalle.Iva,2)"></td>
                             
                             <td class="texto-derecha" v-text="FormatoMoneda((detalle.Precio * detalle.Cantidad),2)"> </td>
+                            
                         </tr>
                         
                         <tr style="background-color: #CEECF5;">
                             <td colspan="11" align="right"><strong>Sub Total:</strong></td>
-                            <td>${{FormatoMoneda(SubTotal,2)}}</td>
+                            <td class="texto-derecha">${{FormatoMoneda(SubTotal,2)}}</td>
                         </tr>
                         <tr style="background-color: #CEECF5;">
                             <td colspan="11" align="right"><strong>Total Iva:</strong></td>
-                            <td>${{FormatoMoneda(TotalIva,2)}}</td>
+                            <td class="texto-derecha">${{FormatoMoneda(TotalIva,2)}}</td>
                         </tr>
                         <tr style="background-color: #CEECF5;">
                             <td colspan="11" align="right"><strong>Total Neto:</strong></td>
-                            <td>${{FormatoMoneda(Total = calcularTotal,2)}} </td>
+                            <td class="texto-derecha">${{FormatoMoneda(Total = calcularTotal,2)}} </td>
                         </tr>
                     </tbody>  
                     <tbody v-else>
@@ -124,35 +129,33 @@
                                 <table class="table table-bordered table-striped table-sm">
                                     <thead class="bg-info">
                                         <tr>
-                                            <th class="texto-centrado">Opciones</th>
-                                            <th class="texto-centrado">F.C</th>
                                             <th class="texto-centrado">Codigo Cliente</th>
-                                            <th class="texto-centrado">Nombre</th>
                                             <th class="texto-centrado">Codigo Aba</th>
+                                            <th class="texto-centrado">Descripcion</th>
                                             <th class="texto-centrado">Referencia</th>
                                             <th class="texto-centrado">Marca</th>
                                             <th class="texto-centrado">UMV</th>
                                             <th class="texto-centrado">Precio</th>
                                             <th class="texto-centrado">Cant. Min. Venta</th>
+                                            <th class="texto-centrado">Opción</th>
                                         </tr>
                                     </thead>
 
                                     <tbody>
                                         <tr v-for="articulo in listarArticulosPaginate" :key="articulo.id" :class="{'vendidos' : articulo.Venta >0}">
-                                            <td>
-                                                <button type="button"  @click="agregarDetalleModal(articulo)" class="btn btn-success btn-sm" >
-                                                <i class="fas fa-check"></i>
-                                                </button>
-                                            </td>
-                                            <td class="texto-derecha" v-text="articulo.FactorVenta"></td>
                                             <td v-text="articulo.CodTercero"></td>
-                                            <td v-text="articulo.Descripcion"></td>
                                             <td class="texto-derecha" v-text="articulo.Item"></td>
+                                            <td v-text="articulo.Descripcion"></td>
                                             <td v-text="articulo.RefFabricante"></td>
                                             <td v-text="articulo.NmMarca"></td>
                                             <td v-text="articulo.UMM"></td>
                                             <td class="texto-derecha" v-text="FormatoMoneda(articulo.Precio,2)"></td>
                                             <td class="texto-derecha" v-text="articulo.CantMinimaVenta"></td>
+                                            <td>
+                                                <button type="button"  @click="agregarDetalleModal(articulo)" class="btn btn-success btn-sm" >
+                                                <i class="fas fa-check"></i>
+                                                </button>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -219,11 +222,17 @@ export default {
             },
             arraryDetallesMovimiento:[],
             fillProdNuevo:{
-                nIdItem:0,
+                nIdItem:null,
                 cDescripcion:'',
+                cCodTercero:'',
+                cNmMarca:'',
                 nPrecio:0,
                 nIva:0,
+                cUMV:'',
+                cUMM:'',
+                cReferencia:'',
                 nCantidad:0,
+                nCantMinimaVenta:0
             },
             filtroProd:'',
             tituloModal:'',
@@ -253,7 +262,8 @@ export default {
             //Variables Totales
             SubTotal:0,
             TotalIva:0,
-            Total:0
+            Total:0,
+            active:false,
 
         }
     },
@@ -284,15 +294,27 @@ export default {
                 'limit':1
             }}).then(function (response) {
                 let respuesta = response.data.productos[0];
-                if(respuesta != ''){
+                if(response.data.productos.length >0){
                     me.fillProdNuevo.nIdItem = respuesta.Item;
                     me.fillProdNuevo.cDescripcion = respuesta.Descripcion;
+                    me.fillProdNuevo.cCodTercero = respuesta.CodTercero;
                     me.fillProdNuevo.nPrecio = respuesta.Precio;
                     me.fillProdNuevo.nIva = respuesta.Por_Iva;
+                    me.fillProdNuevo.cUMV = respuesta.UMM;
+                    me.fillProdNuevo.cUMM = respuesta.UMM;
+                    me.fillProdNuevo.cReferencia = respuesta.RefFabricante;
+                    me.fillProdNuevo.cNmMarca = respuesta.NmMarca;
+                    me.fillProdNuevo.nCantMinimaVenta = respuesta.CantMinimaVenta;
                     me.fillProdNuevo.nCantidad = 1;
                 }
                 else{
-                    alert("No se encontro ningun dato con "+me.fillProdNuevo.nIdItem)
+                    me.$vs.notification({
+                        position : 'top-center',
+                        color: 'warning',
+                        title: 'Producto no encontrado',
+                        text: 'No se encontro ningun producto relacionado con : <strong>'+me.fillProdNuevo.nIdItem+"</strong>, intenta ingresar una descripción diferente."
+                    });
+                    //alert("No se encontro ningun dato con "+me.fillProdNuevo.nIdItem)
                 }
             })
             .catch(function (error) {
@@ -361,6 +383,8 @@ export default {
                     FactorVenta:articulo.FactorVenta,
                     CantMinimaVenta:articulo.CantMinimaVenta,
                     Cantidad:articulo.CantMinimaVenta,
+                    Referencia:articulo.RefFabricante,
+                    NmMarca : articulo.NmMarca,
                     CantidadAba: 1 / articulo.FactorVenta,
                     Precio:articulo.Precio,
                     Iva:articulo.Iva,
@@ -446,10 +470,29 @@ export default {
                 this.arraryDetallesMovimiento.push({
                     'Id_Item':this.fillProdNuevo.nIdItem,
                     'Descripcion':this.fillProdNuevo.cDescripcion,
+                    'CodTercero':this.fillProdNuevo.cCodTercero,
+                    'NmMarca':this.fillProdNuevo.cNmMarca,
+                    'Referencia':this.fillProdNuevo.cReferencia,
+                    'UMV':this.fillProdNuevo.cUMV,
+                    'UMM':this.fillProdNuevo.cUMM,
                     'Precio':this.fillProdNuevo.nPrecio,
                     'Iva':this.fillProdNuevo.nIva,
                     'Cantidad':this.fillProdNuevo.nCantidad,
+                    'CantMinimaVenta':this.fillProdNuevo.nCantMinimaVenta,
                 });
+
+                let prodNuevo = this.fillProdNuevo;
+                prodNuevo.nIdItem=null;
+                prodNuevo.cDescripcion='';
+                prodNuevo.cCodTercero='';
+                prodNuevo.cNmMarca='';
+                prodNuevo.nPrecio=0;
+                prodNuevo.nIva=0;
+                prodNuevo.cUMV='';
+                prodNuevo.cUMM='';
+                prodNuevo.cReferencia='';
+                prodNuevo.nCantidad=0;
+                prodNuevo.nCantMinimaVenta=0
             }
         },
 

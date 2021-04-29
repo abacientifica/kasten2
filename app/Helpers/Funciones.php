@@ -211,6 +211,7 @@ class Funciones{
             }
 
             DB::update("UPDATE movimientos_det SET FechaDet='" . $FechaDocEtrada . "' WHERE IdMovimiento=" . $IdMovimiento);
+            \Funciones::CrearLog(2, $Movimientos->IdMovimiento, \Auth::user()->Usuario);
             return true;
         }
         catch(Exception $e){

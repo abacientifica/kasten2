@@ -3,7 +3,7 @@
         <div class="form-group row border">
             <div class="col-md-6">
                 <div class="col-md-6">
-                    <div class="form-group">
+                    <div class="form-group btnagregar">
                         <button @click="AbrirModal()" class="btn btn-success form-control">Agregar Productos <i class="fas fa-plus-square"></i></button>
                     </div>
                 </div>
@@ -30,43 +30,34 @@
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped table-sm">
-                                    <thead>
+                                    <thead class="bg-info">
                                         <tr>
-                                            <th>Opciones</th>
-                                            <th>F.C</th>
-                                            <th>UMV</th>
-                                            <th>Codigo Aba</th>
-                                            <th>Codigo Cliente</th>
-                                            <th>Nombre</th>
-                                            <th>Marca</th>
-                                            <th>Precio</th>
-                                            <th>Cant. Min. Venta</th>
-                                            <th>Estado</th>
+                                            <th class="texto-centrado">Codigo Cliente</th>
+                                            <th class="texto-centrado">Codigo Aba</th>
+                                            <th class="texto-centrado">Descripcion</th>
+                                            <th class="texto-centrado">Referencia</th>
+                                            <th class="texto-centrado">Marca</th>
+                                            <th class="texto-centrado">UMV</th>
+                                            <th class="texto-centrado">Precio</th>
+                                            <th class="texto-centrado">Cant. Min. Venta</th>
+                                            <th class="texto-centrado">Opción</th>
                                         </tr>
                                     </thead>
 
                                     <tbody>
                                         <tr v-for="articulo in listarArticulosPaginate" :key="articulo.id" :class="{'vendidos' : articulo.Venta >0}">
+                                            <td v-text="articulo.CodTercero"></td>
+                                            <td class="texto-derecha" v-text="articulo.Item"></td>
+                                            <td v-text="articulo.Descripcion"></td>
+                                            <td v-text="articulo.RefFabricante"></td>
+                                            <td v-text="articulo.NmMarca"></td>
+                                            <td v-text="articulo.UMM"></td>
+                                            <td class="texto-derecha" v-text="FormatoMoneda(articulo.Precio,2)"></td>
+                                            <td class="texto-derecha" v-text="articulo.CantMinimaVenta"></td>
                                             <td>
                                                 <button type="button"  @click="agregarDetalleModal(articulo)" class="btn btn-success btn-sm" >
                                                 <i class="fas fa-check"></i>
                                                 </button>
-                                            </td>
-                                            <td v-text="articulo.FactorVenta"></td>
-                                            <td v-text="articulo.UMM"></td>
-                                            <td v-text="articulo.Item"></td>
-                                            <td v-text="articulo.CodTercero"></td>
-                                            <td v-text="articulo.Descripcion"></td>
-                                             <td v-text="articulo.NmMarca"></td>
-                                            <td v-text="FormatoMoneda(articulo.Precio,2)"></td>
-                                            <td v-text="articulo.CantMinimaVenta"></td>
-                                            <td>
-                                                <div v-if="articulo.Inactivo == '0'">
-                                                    <span class="badge badge-success" >Activo</span>
-                                                </div>
-                                                <div v-else>
-                                                    <span class="badge badge-danger" >Inactivo</span>
-                                                </div>
                                             </td>
                                         </tr>
                                     </tbody>
