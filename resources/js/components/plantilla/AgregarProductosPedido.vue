@@ -34,7 +34,7 @@
         <div class="form-group row border">
             <div class="col-md-12">
                 <div class="form-group btnagregar ">
-                    <button class="btn btn-success form-control col-md-5" v-if="arraryDetallesMovimiento.length >0" @click="EmitirEventoProductos">Registrar Pedido <i class="fas fa-plus-square"></i></button>
+                    <button class="btn btn-success form-control col-md-2" v-if="arraryDetallesMovimiento.length >0" @click="EmitirEventoProductos"><i class="fas fa-plus-square"></i> Crear Pedido</button>
                 </div>
             </div>
         </div>
@@ -129,9 +129,9 @@
                                 <table class="table table-bordered table-striped table-sm">
                                     <thead class="bg-info">
                                         <tr>
-                                            <th class="texto-centrado">Codigo Cliente</th>
-                                            <th class="texto-centrado">Codigo Aba</th>
-                                            <th class="texto-centrado">Descripcion</th>
+                                            <th class="texto-centrado">Código Cliente</th>
+                                            <th class="texto-centrado">Código Aba</th>
+                                            <th class="texto-centrado">Descripción</th>
                                             <th class="texto-centrado">Referencia</th>
                                             <th class="texto-centrado">Marca</th>
                                             <th class="texto-centrado">UMV</th>

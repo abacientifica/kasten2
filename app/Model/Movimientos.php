@@ -103,4 +103,8 @@ class Movimientos extends Model
     public function fpago(){
         return $this->hasOne('App\Model\FormasPago','IdFormaPago','IdFormaPago');
     }
+
+    public function condentrega(){
+        return $this->hasOne('App\Model\CondicionesEntrega','IdCondicionEstrega','IdCondEntrega');
+    }
 }
