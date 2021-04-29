@@ -7,8 +7,9 @@
                     <form class="form-horizontal was-validated" method="post">
                         <input type="hidden" name="_token" :value="csrf">
                         <div class="card-body">
-                        <h1>Acceder</h1>
-                        <p class="text-muted">Control de acceso al sistema</p>
+                            <center>
+                                 <img src="/img/kasten/LogoKastenPositivo.png" height="100px" alt="Logo aba" align="middle">
+                            </center>
                         <div class="form-group mb-3">
                             <span class="input-group-addon"><i class="fas fa-user-tie"></i></span>
                             <input type="text"  name="usuario"  class="form-control" @keyup.enter="login" v-model="fillLogin.cUsuario" placeholder="Usuario">
@@ -31,8 +32,7 @@
                     <div class="card text-white bg-info py-5 d-none d-md-block" style="width:44%">
                         <div class="card-body text-center">
                             <div>
-                                <h2>Sistema de Ventas KastenV2</h2>
-                                <p>Sistema de inventario</p>
+                                <img src="/img/kasten/02_LogoKastenAlterno.png" style="height: 200px">
                                 <p>Desarrollado por  ABA Cientifica S.A.S todos los derechos reservados</p>
                             </div>
                         </div>

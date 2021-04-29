@@ -2,10 +2,14 @@
     <div>
         <aside class="main-sidebar sidebar-collapse sidebar-dark-primary elevation-4">
         <!-- Brand Logo -->
-        <router-link to="/" class="brand-link">
-            <img src="/img/logos/icono_aba.jpg" alt="Logo Aba" class="brand-image img-circle elevation-3" style="opacity: .8">
-            <span class="brand-text font-weight-light">Kasten</span>
-        </router-link>
+        <!--<router-link to="/" class="brand-link">
+            <img src="/img/kasten/LogoIcono.png" alt="Logo Aba" class="brand-image img-circle elevation-3" style="opacity: .8">
+            <img src="/img/kasten/LogoKastenPositivo.png" alt="AdminLTE Docs Logo Large" class="brand-image-xs logo-xl" style="left: 12px">
+        </router-link>-->
+        <a href="/docs/3.0/index.html" class="brand-link logo-switch">
+            <img src="/img/kasten/LogoIcono.png" alt="AdminLTE Docs Logo Small" class="brand-image-xl logo-xs">
+            <img src="/img/kasten/LogoKastenLarge.png" alt="AdminLTE Docs Logo Large" class="brand-image-xs logo-xl" style="left: 12px">
+        </a>
 
         <!-- Sidebar -->
         <div class="sidebar">
