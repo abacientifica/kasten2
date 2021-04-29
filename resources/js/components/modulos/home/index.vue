@@ -43,7 +43,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="alert bgt-tema" style="text-align: center;" v-loading.fullscreen.lock="fullscreenLoading">Bienvenido {{usuario.Nombres}}</div>
+                <vs-alert progress="70">
+                    <template #title class="aling-center">
+                    Hola {{usuario.Nombres}} !!!
+                    </template>
+                    Kasten es un software ERP de entorno web desarrollado para el manejo Aba  científica, cualquier uso no autorizado de este programa será sancionado como la ley lo estipula para los derechos de autor, para mayor información comuníquese al (4) 444 6303 Ext 220 o al email sistemas@aba.com.co
+                    <br>Bienvenido y esperamos que sea de la mayor utilidad.
+                </vs-alert>
             </div>
         </div>
     </div>
@@ -106,7 +112,10 @@ export default {
         loadVentas(){
             let me=this;
             me.ventas.map(function(x){
-                me.varMesVenta.push(moment(x.mes).format('MMMM'));
+                var fecha = new Date();
+                var ano = fecha. getFullYear();
+                let mes = moment(ano+'-'+x.mes+'-01').format('MMMM');
+                me.varMesVenta.push(mes+'('+x.anio+')');
                 me.varTotalVenta.push(x.total);
             });
             me.varVenta=document.getElementById('ventas').getContext('2d');
@@ -159,7 +168,10 @@ export default {
             let me=this;
             this.isLoading = true;
             me.ingresos.map(function(x){
-                me.varMesIngreso.push(moment(x.mes).format('MMMM'));
+                var fecha = new Date();
+                var ano = fecha. getFullYear();
+                let mes = moment(ano+'-'+x.mes+'-01').format('MMMM');
+                me.varMesIngreso.push(mes);
                 me.varTotalIngreso.push(x.total);
             });
             me.varIngreso=document.getElementById('ingresos').getContext('2d');

@@ -127,6 +127,15 @@
                 </div>
             </template>
 
+            <template v-if="ValidarCampoVisible('IdAsesorServCliente') !=''">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label v-text="ValidarCampoVisible('IdAsesorServCliente')"></label><span style="color:red" v-show="fillNuevoMovimiento.nIdAsesorServCliente==''">(Seleccione *)</span>
+                        <input type="text" class="form-control" v-model="fillNuevoMovimiento.nIdAsesorServCliente" disabled="true">       
+                    </div>
+                </div>
+            </template>
+
             <template  v-if="ValidarCampoVisible('IdConcepto') !=''">
                 <div class="col-md-3">
                     <div class="form-group">
@@ -222,6 +231,7 @@ export default {
                 nIdCondicionEntrega:0,
                 nIdPrioridad:0,
                 nIdAsesor:0,
+                nIdAsesorServCliente:'',
                 nIdConcepto:0,
                 nFlete:0,
                 cComentarios:'',
@@ -303,6 +313,7 @@ export default {
             let me = this;
             try{
                 me.fillNuevoMovimiento.nIdTercero = val1.IdTercero;
+                me.fillNuevoMovimiento.nIdAsesorServCliente = val1.asesorservcliente.Nombre;
                 me.arrayDirecciones = val1.direcciones;
                 me.fillNuevoMovimiento.nIdAsesor = val1.IdAsesor;
                 me.CargarAsesores();
@@ -516,6 +527,7 @@ export default {
                 me.fillNuevoMovimiento.nIdAsesor = respuesta.IdAsesor;
                 me.fillNuevoMovimiento.nIdFormaPago = respuesta.IdFormaPago;
                 me.fillNuevoMovimiento.nIdCondicionEntrega = 2;
+                me.fillNuevoMovimiento.nIdAsesorServCliente = me.tercero.asesorservcliente.Nombre;
                 me.arrayDirecciones = respuesta.direcciones;
             })
             .catch(function (error) {

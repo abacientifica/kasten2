@@ -15,7 +15,7 @@ class TercerosController extends Controller
             return  redirect('/');
         } 
         $filtro = $request->filtro;
-        $terceros = Terceros::with('direcciones')->select('IdTercero','NombreCorto','IdTercero','IdAsesor','IdFormaPago')
+        $terceros = Terceros::with('direcciones','asesorservcliente')->select('IdTercero','NombreCorto','IdTercero','IdAsesor','IdFormaPago','IdAsesorServicliente')
                                 ->where('NombreCorto','like',"%".$filtro."%")
                                 ->where('Inactivo',0)
                                 ->where('Cliente',1)

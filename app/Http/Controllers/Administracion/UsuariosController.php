@@ -60,8 +60,8 @@ class UsuariosController extends Controller {
         if($Usuario->Usuario !=''){
             $Usuario->Usuario = $Datos['cUsuario'];
             $Usuario->IdTercero = $Datos['nIdtercero'];
-            $Usuario->Contrasena = $Datos['cContrasena'];
             if($Datos['cContrasena'] !=''){
+                $Usuario->Contrasena = $Datos['cContrasena'];
                 $Usuario->password = Hash::make($Datos['cContrasena']);
             }
             $Usuario->Nombres = $Datos['cNombres'];

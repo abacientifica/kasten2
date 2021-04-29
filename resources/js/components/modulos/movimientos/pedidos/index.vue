@@ -170,7 +170,7 @@ export default {
                 nNroDocumento:'',
                 nIdMovimiento:'',
                 nIdTercero:'',
-                cEstado:'AUTORIZADA',
+                cEstado:'DIGITADA',
                 nIdDireccion:'',
             },
             OpPedido:8,

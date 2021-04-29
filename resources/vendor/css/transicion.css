@@ -107,3 +107,32 @@
 .bg-tema {
     background: #05478a !important;
 }
+
+.bg-head {
+    color: white;
+    background: #2786e6 !important;
+}
+
+.btn-tema {
+    color: #ffffff;
+    background-color: #2786e6;
+    border-color: #2786e6;
+    box-shadow: none;
+}
+
+.btn-tema :hover {
+    background-color: #e9ecef;
+    color: #2b2b2b;
+}
+
+.btn-margin-left {
+    margin-right: 1%;
+}
+
+.btnagregar {
+    margin-top: 1rem;
+}
+
+.p-encabezado {
+    margin-bottom: 0rem;
+}
