@@ -2847,15 +2847,15 @@ fieldset:disabled a.btn {
 
 .btn-info {
     color: #ffffff;
-    background-color: #17a2b8;
-    border-color: #17a2b8;
+    background-color: #333366;
+    border-color: #57578a;
     box-shadow: none;
 }
 
 .btn-info:hover {
     color: #ffffff;
-    background-color: #138496;
-    border-color: #117a8b;
+    background-color: #8345ca;
+    border-color: #621d9b;
 }
 
 .btn-info:focus,
@@ -7127,7 +7127,7 @@ button.bg-success:focus {
 }
 
 .bg-info {
-    background-color: #17a2b8 !important;
+    background-color: #333366 !important;
 }
 
 a.bg-info:hover,
