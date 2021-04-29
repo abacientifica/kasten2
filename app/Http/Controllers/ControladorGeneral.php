@@ -50,7 +50,8 @@ class ControladorGeneral extends Controller
 
         $Sql = "select MONTH(movimientos.Fecha) as mes, YEAR(movimientos.Fecha) as anio, SUM(movimientos.SubTotal * if(OpValor =0,1,OpValor)) as total  from `movimientos` 
             LEFT JOIN documentos on documentos.IdDocumento = movimientos.IdDocumento
-            where Fecha >= date_sub(CURDATE(), interval 6 MONTH) and `IdTercero` = ".$IdTercero." and (movimientos.TpDocumento = 5) and (movimientos.Estado='AUTORIZADA' OR movimientos.Estado='CERRADA' )
+            LEFT JOIN conceptos on conceptos.IdConcepto = movimientos.IdConcepto
+            where Fecha >= date_sub(CURDATE(), interval 6 MONTH) and conceptos.Opcion = 0 and `IdTercero` = ".$IdTercero." and (movimientos.TpDocumento = 5) and (movimientos.Estado='AUTORIZADA' OR movimientos.Estado='CERRADA' )
             group by MONTH(movimientos.Fecha), YEAR(movimientos.Fecha) ORDER BY YEAR(movimientos.Fecha) ,MONTH(movimientos.Fecha)";
         $ventas=DB::select($Sql); 
 
