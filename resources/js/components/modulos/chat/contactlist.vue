@@ -78,7 +78,7 @@ export default {
 </script>
 <style>
 .selected{
-    background: #007bff;
+    background: #88ccbd;
 }
 .contact-notification{
     display: inline-block;
@@ -90,7 +90,7 @@ export default {
     white-space: nowrap;
     vertical-align: baseline;
     border-radius: 0.25rem;
-    background: chartreuse;
+    background: rgb(179, 218, 140);
 }
 .img-tamano{
     height: 40px;
