@@ -104,7 +104,7 @@
                                 <tr>
                                 <th class="texto-centrado">Nro</th>
                                 <th class="texto-centrado">Orden Compra</th>
-                                <th class="texto-centrado">Direccion</th>
+                                <th class="texto-centrado">Dirección</th>
                                 <th class="texto-centrado">Fecha Pedido</th>
                                 <th class="texto-centrado">Fecha Entrega</th>
                                 <th class="texto-centrado">Total</th>
