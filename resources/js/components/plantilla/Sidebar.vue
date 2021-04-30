@@ -6,10 +6,10 @@
             <img src="/img/kasten/LogoIcono.png" alt="Logo Aba" class="brand-image img-circle elevation-3" style="opacity: .8">
             <img src="/img/kasten/LogoKastenPositivo.png" alt="AdminLTE Docs Logo Large" class="brand-image-xs logo-xl" style="left: 12px">
         </router-link>-->
-        <a href="/docs/3.0/index.html" class="brand-link logo-switch">
+        <router-link to="/" class="brand-link logo-switch">
             <img src="/img/kasten/LogoIcono.png" alt="AdminLTE Docs Logo Small" class="brand-image-xl logo-xs">
             <img src="/img/kasten/LogoKastenLarge.png" alt="AdminLTE Docs Logo Large" class="brand-image-xs logo-xl" style="left: 12px">
-        </a>
+        </router-link>
 
         <!-- Sidebar -->
         <div class="sidebar">
