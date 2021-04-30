@@ -127,8 +127,8 @@ export default {
                     datasets: [{
                         label: 'Facturación',
                         data: me.varTotalVenta,
-                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                        borderColor: 'rgba(51, 51, 102, 2.4)',
+                        backgroundColor: '#EBE4DB',
+                        borderColor: '#D9CBBA',
                         borderWidth: 1
                     }]
                 },
@@ -183,8 +183,8 @@ export default {
                     datasets: [{
                         label: 'Pedidos',
                         data: me.varTotalIngreso,
-                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                        borderColor: 'rgba(51, 51, 102, 2.4)',
+                        backgroundColor: '#EBE4DB',
+                        borderColor: '#D9CBBA',
                         borderWidth: 1
                     }]
                 },
