@@ -17,10 +17,10 @@
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
                 <template v-if="usuario.imagen ==null">
-                    <img src="/img/avatar.png" class="img-circle elevation-2" alt="User Image"> 
+                    <img src="/img/avatar.png" class="img-circle elevation-2" style="height: 2.1rem" alt="User Image"> 
                 </template>
                 <template v-else>
-                    <img :src="usuario.imagen" class="img-circle elevation-2" alt="User Image"> 
+                    <img :src="usuario.imagen" class="img-circle elevation-2" style="height: 2.1rem" alt="User Image"> 
                 </template>
             </div>
             <div class="info">

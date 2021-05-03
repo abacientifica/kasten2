@@ -140,3 +140,117 @@
 .bg-info {
     background-color: #333366 !important;
 }
+
+
+/*Estilos aavatar*/
+
+.img-avatar {
+    border-radius: 50em;
+}
+
+.avatar {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+}
+
+.avatar .img-avatar {
+    width: 36px;
+    height: 36px;
+}
+
+.avatar .avatar-status {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    display: block;
+    width: 10px;
+    height: 10px;
+    border: 1px solid #fff;
+    border-radius: 50em;
+}
+
+.avatar.avatar-xs {
+    position: relative;
+    display: inline-block;
+    width: 20px;
+}
+
+.avatar.avatar-xs .img-avatar {
+    width: 20px;
+    height: 20px;
+}
+
+.avatar.avatar-xs .avatar-status {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    display: block;
+    width: 8px;
+    height: 8px;
+    border: 1px solid #fff;
+    border-radius: 50em;
+}
+
+.avatar.avatar-sm {
+    position: relative;
+    display: inline-block;
+    width: 24px;
+}
+
+.avatar.avatar-sm .img-avatar {
+    width: 24px;
+    height: 24px;
+}
+
+.avatar.avatar-sm .avatar-status {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    display: block;
+    width: 8px;
+    height: 8px;
+    border: 1px solid #fff;
+    border-radius: 50em;
+}
+
+.avatar.avatar-lg {
+    position: relative;
+    display: inline-block;
+    width: 72px;
+}
+
+.avatar.avatar-lg .img-avatar {
+    width: 72px;
+    height: 72px;
+}
+
+.avatar.avatar-lg .avatar-status {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    display: block;
+    width: 12px;
+    height: 12px;
+    border: 1px solid #fff;
+    border-radius: 50em;
+}
+
+.avatars-stack .avatar.avatar-xs {
+    margin-right: -10px;
+}
+
+.avatars-stack .avatar {
+    margin-right: -15px;
+    transition: margin-left 0.25s, margin-right 0.25s;
+}
+
+.avatars-stack .avatar:hover {
+    margin-right: 0 !important;
+}
+
+.dropdown-toggle>.img-avatar {
+    height: 40px;
+    width: 40px;
+    margin: -5px 10px;
+}

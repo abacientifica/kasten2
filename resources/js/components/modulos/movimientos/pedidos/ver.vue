@@ -180,15 +180,18 @@
                                         <td class="texto-derecha" v-text="FormatoMoneda((detalle.Precio * detalle.Cantidad),2)"> </td>
                                     </tr>
                                     
-                                    <tr style="background-color: #CEECF5;">
-                                        <td :colspan="accionMovimiento == 1?'10':'9'" align="right"><strong>Total Iva:</strong></td>
-                                        <td class="texto-derecha">${{FormatoMoneda(this.fillMovimiento.nVrIva ,2)}}</td>
-                                    </tr>
-                                    <tr style="background-color: #CEECF5;">
+                                    
+                                    <tr style="background-color: rgb(196 196 245);">
                                         <td :colspan="accionMovimiento == 1?'10':'9'" align="right"><strong>Sub Total:</strong></td>
                                         <td class="texto-derecha">${{FormatoMoneda((fillMovimiento.nTotal = calcularTotal),2)}}</td>
                                     </tr>
-                                    <tr style="background-color: #CEECF5;">
+
+                                    <tr style="background-color: rgb(196 196 245);">
+                                        <td :colspan="accionMovimiento == 1?'10':'9'" align="right"><strong>Total Iva:</strong></td>
+                                        <td class="texto-derecha">${{FormatoMoneda(this.fillMovimiento.nVrIva ,2)}}</td>
+                                    </tr>
+
+                                    <tr style="background-color: rgb(196 196 245);">
                                         <td :colspan="accionMovimiento == 1?'10':'9'" align="right"><strong>Total:</strong></td>
                                         <td class="texto-derecha">${{FormatoMoneda((fillMovimiento.nTotal + this.fillMovimiento.nVrIva),2)}}</td>
                                     </tr>

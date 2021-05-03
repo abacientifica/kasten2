@@ -28,7 +28,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="table-responsive">
+                            <div class="table-responsive" style="height:500px">
                                 <table class="table table-bordered table-striped table-sm">
                                     <thead class="bg-info">
                                         <tr>
@@ -39,7 +39,7 @@
                                             <th class="texto-centrado">Marca</th>
                                             <th class="texto-centrado">UMV</th>
                                             <th class="texto-centrado">Precio</th>
-                                            <th class="texto-centrado">Cant. Min. Venta</th>
+                                            <th class="texto-centrado">Cant. Min.</th>
                                             <th class="texto-centrado">Opción</th>
                                         </tr>
                                     </thead>
@@ -62,21 +62,22 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                                <div class="card-footer clearfix">
-                                    <ul class="pagination pagination-sm m-0 float-rigth">
-                                        <li class="page-item" v-if="this.pageNumber > 0">
-                                        <a href="#" class="page-link" @click.prevent="pagePrev()" >Ant</a>
-                                        </li>
+                                
+                            </div>
+                            <div class="card-footer clearfix">
+                                <ul class="pagination pagination-sm m-0 float-rigth">
+                                    <li class="page-item" v-if="this.pageNumber > 0">
+                                    <a href="#" class="page-link" @click.prevent="pagePrev()" >Ant</a>
+                                    </li>
 
-                                        <li class="page-item" v-for="(page, index) in pagesList" :key="index" :class="page == pageNumber ? 'active' : ''">
-                                        <a href="#" class="page-link" @click.prevent="selectPage(page)">{{ page + 1 }}</a>
-                                        </li>
+                                    <li class="page-item" v-for="(page, index) in pagesList" :key="index" :class="page == pageNumber ? 'active' : ''">
+                                    <a href="#" class="page-link" @click.prevent="selectPage(page)">{{ page + 1 }}</a>
+                                    </li>
 
-                                        <li class="page-item" v-if="pageNumber < pageCount - 1">
-                                        <a href="#" class="page-link" @click.prevent="nextPage()">Sig</a>
-                                        </li>
-                                    </ul>
-                                </div>
+                                    <li class="page-item" v-if="pageNumber < pageCount - 1">
+                                    <a href="#" class="page-link" @click.prevent="nextPage()">Sig</a>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                         <div class="modal-footer">
