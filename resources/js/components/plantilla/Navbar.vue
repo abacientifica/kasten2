@@ -38,7 +38,7 @@
                 <div class="menu-rigth" >
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                            
+                            <img src="/img/kasten/icono_blanco.png" class="img-avatar" >
                             <span class="d-md-down-none" >{{usuario.Nombres}}</span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">

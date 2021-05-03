@@ -36,10 +36,10 @@ class ListaPreciosController extends Controller
                 $Sql.= " and  marcas.IdMarca in (select marcas_terceros.IdMarca from marcas_terceros where IdTercero = '".$Direccion->IdTercero."')";
             }
             if($limit != ''){
-                $Sql.= " and lista_precios.IdListaPrecios = ".$Direccion->IdListaPreciosDireccion." and item.Inactivo=0 and IdKit =0 order by Venta DESC limit 1";
+                $Sql.= " and lista_precios.IdListaPrecios = ".$Direccion->IdListaPreciosDireccion." and  lista_precios_det.FhHasta >= DATE_SUB(CURDATE(),INTERVAL 12 MONTH) and item.Inactivo=0 and IdKit =0 order by Venta DESC limit 1";
             }
             else{
-                $Sql.= " and lista_precios.IdListaPrecios = ".$Direccion->IdListaPreciosDireccion." and item.Inactivo=0 and IdKit =0 order by Venta DESC limit 100";
+                $Sql.= " and lista_precios.IdListaPrecios = ".$Direccion->IdListaPreciosDireccion." and  lista_precios_det.FhHasta >= DATE_SUB(CURDATE(),INTERVAL 12 MONTH) and item.Inactivo=0 and IdKit =0 order by Venta DESC limit 100";
             }
             $Lista = DB::select($Sql);
         }
