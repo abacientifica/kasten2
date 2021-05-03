@@ -119,10 +119,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label v-text="ValidarCampoVisible('IdAsesor')"></label><span style="color:red" v-show="fillNuevoMovimiento.nIdAsesor ==''">(Seleccione *)</span>
-                        <select class="form-control" v-model="fillNuevoMovimiento.nIdAsesor" :disabled="usuario.Tipo != 2 ? false:true">
-                            <option value="0">Seleccione</option>
-                            <option v-for="asesoraba in arrayAsesores" :key="asesoraba.IdAsesor" :value="asesoraba.IdAsesor" v-text="asesoraba.Nombre" ></option>
-                        </select>              
+                        <input type="text" class="form-control" v-model="fillNuevoMovimiento.cNmAsesor" disabled="true">           
                     </div>
                 </div>
             </template>
@@ -235,7 +232,8 @@ export default {
                 nIdConcepto:0,
                 nFlete:0,
                 cComentarios:'',
-                cComentariosInt:''
+                cComentariosInt:'',
+                cNmAsesor :'',
             },
             EncabezadoVisible:true,
             arrayTerceros:[],
@@ -256,7 +254,8 @@ export default {
                 display: 'none',
             },
             usuario:[],
-            tercero:[]
+            tercero:[],
+            moment :moment,
         }
     },
 
@@ -316,7 +315,7 @@ export default {
                 me.fillNuevoMovimiento.nIdAsesorServCliente = val1.asesorservcliente.Nombre;
                 me.arrayDirecciones = val1.direcciones;
                 me.fillNuevoMovimiento.nIdAsesor = val1.IdAsesor;
-                me.CargarAsesores();
+                me.fillNuevoMovimiento.cNmAsesor = val1.asesor.Nombre;
             }
             catch(error){
                 this.fillNuevoMovimiento.nIdTercero = 0;
@@ -333,24 +332,6 @@ export default {
             catch(error){
                 me.fillNuevoMovimiento.nIdTercero2 = 0;
             }
-        },
-
-        CargarAsesores(){
-            let me = this;
-            axios.get('/asesores/lista').then(function (response) {
-                //Asi le asignamos al array categoria los datos de la respuesta
-                var respuesta = response.data;
-                me.arrayAsesores = respuesta.asesores;
-            })
-            .catch(function (error) {
-                // handle error
-                if (error.response.status == 401) {
-                    this.$router.push({name: 'login'})
-                    location.reload();
-                    sessionStorage.clear();
-                    this.fullscreenLoading = false;
-                }
-            });
         },
 
         CargarConceptosDoc(){
@@ -424,24 +405,6 @@ export default {
 
         },
 
-        CargarAsesores(){
-            let me = this;
-            axios.get('/asesores/lista').then(function (response) {
-                var respuesta = response.data;
-                me.arrayAsesores = respuesta.asesores;
-            })
-            .catch(function (error) {
-                console.log(error);
-                if (error.response.status == 401) {
-                    me.$router.push({name: 'login'})
-                    location.reload();
-                    sessionStorage.clear();
-                    this.fullscreenLoading = false;
-                }
-            });
-
-        },
-
         ValidarDatos(){
             var datos = this.fillNuevoMovimiento;
             let NmAliasCampo ='';
@@ -466,6 +429,13 @@ export default {
                 this.arrayMensajeError.push("El campo "+NmAliasCampo+" es Obligatorio")
             }
 
+            let Fecha = new Date();
+            Fecha = (moment(Fecha).format('YYYY-MM-DD'))
+            NmAliasCampo  = this.ValidarCampoVisible('Fecha2');
+            if(NmAliasCampo !='' && datos.dFecha2 < Fecha){
+                this.arrayMensajeError.push("El campo "+NmAliasCampo+" no puede tener una fecha inferior a la  actual.")
+            }
+            
             NmAliasCampo  = this.ValidarCampoVisible('IdFormaPago');
             if(NmAliasCampo !='' && datos.nIdFormaPago <=0){
                 this.arrayMensajeError.push("El campo "+NmAliasCampo+" es obligatorio")
@@ -528,6 +498,12 @@ export default {
                 me.fillNuevoMovimiento.nIdFormaPago = respuesta.IdFormaPago;
                 me.fillNuevoMovimiento.nIdCondicionEntrega = 2;
                 me.fillNuevoMovimiento.nIdAsesorServCliente = me.tercero.asesorservcliente.Nombre;
+                if(me.tercero.asesor){
+                    me.fillNuevoMovimiento.cNmAsesor = me.tercero.asesor.Nombre;
+                }
+                else{
+                    me.fillNuevoMovimiento.cNmAsesor = 'SIN ASESOR';
+                }
                 me.arrayDirecciones = respuesta.direcciones;
             })
             .catch(function (error) {
@@ -557,7 +533,6 @@ export default {
         this.CargarCamposDocumento(this.fillNuevoMovimiento.nIdDocumento);
         this.CargarConceptosDoc(this.IdDoc);
         this.CargarFormasPago();
-        this.CargarAsesores();
         
     },
 }
