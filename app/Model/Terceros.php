@@ -118,4 +118,8 @@ class Terceros extends Model
     public function asesorservcliente(){
         return $this->hasOne('App\Model\Asesores','IdAsesor','IdAsesorServicliente');
     }
+
+    public function asesor(){
+        return $this->hasOne('App\Model\Asesores','IdAsesor','IdAsesor');
+    }
 }
