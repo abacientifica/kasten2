@@ -33,7 +33,8 @@
                         <div class="card-body text-center">
                             <div>
                                 <img src="/img/kasten/02_LogoKastenAlterno.png" style="height: 200px">
-                                <p>Desarrollado por  ABA Cientifica S.A.S todos los derechos reservados</p>
+                                    <p>Desarrollado por  ABA Cientifica S.A.S todos los derechos reservados</p>
+                                <img src="/img/kasten/icono_trasparente.png" style="height: 43px">
                             </div>
                         </div>
                     </div>
