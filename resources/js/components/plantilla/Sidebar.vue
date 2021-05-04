@@ -16,16 +16,17 @@
         <!-- Sidebar user (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
-                <template v-if="usuario.imagen ==null">
+                <img src="/img/kasten/logo_aba_vertical.png" class="img-circle elevation-2 img-navbar-aba" style="height: 2.1rem" alt="User Image"> 
+                <!--<template v-if="usuario.imagen ==null">
                     <img src="/img/avatar.png" class="img-circle elevation-2" style="height: 2.1rem" alt="User Image"> 
                 </template>
-                <template v-else>
+                <template v-else>src="/img/kasten/logo_aba_vertical.png"
                     <img :src="usuario.imagen" class="img-circle elevation-2" style="height: 2.1rem" alt="User Image"> 
-                </template>
+                </template>-->
             </div>
             <div class="info">
-                <router-link :to="{name:'usuario.perfil',params:{id:usuario.Usuario}}" :usuario="usuario" class="d-block">
-                    {{usuario.Nombres}}
+                <router-link :to="'/'" :usuario="usuario" class="d-block" >
+                    Aba científica
                 </router-link>
             </div>
 

@@ -38,7 +38,7 @@
                 <div class="menu-rigth" >
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                            <img src="/img/kasten/logo_aba_vertical.png" class="img-avatar img-navbar-aba" >
+                            <img :src="usuario.imagen" class="img-avatar img-navbar-aba" >
                             <span class="d-md-down-none" >{{usuario.Nombres}}</span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
