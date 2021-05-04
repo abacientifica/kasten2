@@ -141,7 +141,7 @@
                             </div>
                         </div>
                     </div>
-                    <AgregarProductosMovimiento v-if="fillMovimiento.cEstado == 'DIGITADA'" :IdTercero="fillMovimiento.nIdTercero" :IdDireccion="fillMovimiento.nIdDireccion" :IdMovimiento="fillMovimiento.nIdMovimiento" :arrayDetallesMovimientoAct="ListarMovimientosDetPaginate"></AgregarProductosMovimiento>
+                    <AgregarProductosMovimiento v-if="fillMovimiento.cEstado == 'DIGITADA' && accionMovimiento ==1" :IdTercero="fillMovimiento.nIdTercero" :IdDireccion="fillMovimiento.nIdDireccion" :IdMovimiento="fillMovimiento.nIdMovimiento" :arrayDetallesMovimientoAct="ListarMovimientosDetPaginate"></AgregarProductosMovimiento>
                     <div class="form-group row border">
                         <div class="table-responsive col-md-12">
                             <table class="table table-bordered table-striped table-sm" >

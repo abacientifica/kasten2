@@ -47,7 +47,7 @@
                             <th class="texto-centrado">Opción</th>
                             <th class="texto-centrado">Codigo Aba</th>
                             <th class="texto-centrado">Codigo Cliente</th>
-                            <th class="texto-centrado">Artículo</th>
+                            <th class="texto-centrado">Descripción</th>
                             <th class="texto-centrado">Marca</th>
                             <th class="texto-centrado">Referencia</th>
                             <th class="texto-centrado">UMV</th>
