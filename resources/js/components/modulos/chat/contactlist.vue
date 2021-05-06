@@ -14,7 +14,7 @@
                         </span>
                         <small class="direct-chat-timestamp float-right contact-notification">{{contacto.ExtensionTel}}</small>
                         <span v-if="typing.state==true && typing.usuario == contacto.Usuario" class="contacts-list-msg">Está escribiendo ...</span>
-                        <span  v-else class="contacts-list-msg" v-text="contacto.UltMensaje"></span>
+                        <span  v-else class="contacts-list-msg">{{!contacto.UltMensaje ? '' : contacto.UltMensaje.slice(0,40)+' ...'}}</span>
                         </div>
                         <!-- /.contacts-list-info -->
                     </a>
@@ -78,7 +78,7 @@ export default {
 </script>
 <style>
 .selected{
-    background: #88ccbd;
+    background: #28564c;
 }
 .contact-notification{
     display: inline-block;

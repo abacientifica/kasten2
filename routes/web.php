@@ -49,7 +49,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     //Lista rutas movimientos
     Route::get('/movimientos/lista','Movimientos\MovimientosController@index');
-    Route::get('/movimiento/{IdMov}','Movimientos\MovimientosController@ObtenerMovimiento');
+    Route::get('/movimiento/{IdDoc}/{IdMov}','Movimientos\MovimientosController@ObtenerMovimiento');
     Route::post('/movimiento/nuevo','Movimientos\MovimientosController@RegistrarMovimiento');
     Route::put('/movimiento/autorizar','Movimientos\MovimientosController@Autorizar');
     Route::put('/movimiento/editar','Movimientos\MovimientosController@ActualizarMovimiento');

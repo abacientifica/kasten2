@@ -12,6 +12,9 @@
                             <p>
                                 No pudimos encontrar la pagina que estabas buscando, mientras tanto puede navegar en las paginas que tiene disponible.
                             </p>
+                            <router-link :to="'/'" class="btn btn-primary">
+                                Ir a inicio
+                            </router-link>
                         </div>
                         <!-- /.error-content -->
                     </div>
@@ -26,6 +29,9 @@ export default {
         return {
             
         }
+    },
+    mounted() {
+        //setTimeout(this.$router.push('/'),19000);
     },
 }
 </script>

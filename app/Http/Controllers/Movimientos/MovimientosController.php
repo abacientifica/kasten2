@@ -33,6 +33,9 @@ class MovimientosController extends Controller
             if($Filtros->nIdDireccion){
                 $Movimientos = $Movimientos->where('IdDireccion',$Filtros->nIdDireccion );
             }
+            if($Filtros->cFechaDesde !='' && $Filtros->cFechaHasta !=''){
+                $Movimientos = $Movimientos->where('FhAutoriza','>=',$Filtros->cFechaDesde)->where('FhAutoriza','<=',$Filtros->cFechaHasta);
+            }
             $Movimientos = $Movimientos->where('IdDireccion','<>','');
             
             $Movimientos = $Movimientos->limit(100)->orderBy('FhAutoriza','DESC')->get();
@@ -44,12 +47,22 @@ class MovimientosController extends Controller
 
     public function ObtenerMovimiento(Request $request){
         if(!$request->ajax()) return redirect("/");
-        $Movimiento = Movimientos::with('documento','asesor','tercero','tercero.asesorservcliente','direccion','fpago','condentrega')->where('IdMovimiento',$request->IdMov)->get();
-        $MovimientosDet = MovimientosDet::with('item','item.listacostosdet','item.listacostosdet.marca')->where('IdMovimiento',$request->IdMov)->get();
-        return[
-            'movimiento'=>$Movimiento,
-            'movimientos_det'=>$MovimientosDet
-        ];
+        $Movimiento = Movimientos::with('documento','asesor','tercero','tercero.asesorservcliente','direccion','fpago','condentrega')->where('IdMovimiento',$request->IdMov)->where('IdDocumento',$request->IdDoc)->get();
+        $MovimientosDet = MovimientosDet::with('item','item.listacostosdet','item.listacostosdet.marca')->where('IdMovimiento',$request->IdMov)->where('IdDocumento',$request->IdDoc)->get();
+        if(is_countable($Movimiento) && count($Movimiento)>0){
+            return[
+                'movimiento'=>$Movimiento,
+                'movimientos_det'=>$MovimientosDet,
+                'msg'=>"encontrado"
+            ];
+        }
+        else{
+            return[
+                'movimiento'=>$Movimiento,
+                'movimientos_det'=>$MovimientosDet,
+                'msg'=>"no_encontrado"
+            ];
+        }
     }
 
     public function RegistrarMovimiento(Request $request){

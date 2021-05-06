@@ -41,6 +41,7 @@
                 <div class="card-body">
                     <div class="col-md-12 btn-group-justified"  style="display:flex" v-if="fillMovimiento.cEstado == 'DIGITADA' || fillMovimiento.cEstado == 'AUTORIZADA' || fillMovimiento.cEstado == 'CERRADA'">
                         <button class="btn btn-success btn-margin-left" v-if="fillMovimiento.cEstado =='AUTORIZADA'" @click.prevent="NotificarPedido()"><i class="fas fa-bell"></i> Enviar Alerta Servicio Cliente</button>
+                        <button class="btn btn-primary btn-margin-left" v-if="fillMovimiento.cEstado =='AUTORIZADA'" @click.prevent="NotificarPedido()"><i class="fas fa-print"></i> Imprimir</button>
                         <button class="btn btn-success btn-margin-left" v-if="fillMovimiento.cEstado == 'DIGITADA' && accionMovimiento==0" @click.prevent="Autorizar()"><i class="fas fa-check"></i> Autorizar</button>
                         <button class="btn btn-primary btn-margin-left" v-if="fillMovimiento.cEstado == 'DIGITADA' && accionMovimiento==0" @click.prevent="Editar()"><i class="fas fa-edit"></i> Editar</button>
                         <button class="btn btn-success btn-margin-left" v-if="fillMovimiento.cEstado == 'DIGITADA' && accionMovimiento==1" @click.prevent="ActualizarDatos()"><i class="fas fa-check"></i> Guardar Cambios</button>
@@ -359,10 +360,15 @@ export default {
         /**
          * Obtenemos el listado de detalles
          */
-        ListarMovimiento(IdMov){
-            let url ="/movimiento/"+IdMov;
+        ListarMovimiento(IdMov,IdDoc){
+            let url ="/movimiento/"+IdDoc+'/'+IdMov;
+            let me = this;
             axios.get(url).then(response=>{    
                 this.inicializarPagination();
+                if(response.data.msg == "no_encontrado"){
+                    me.$router.push('/*');
+                    return;
+                }
                 if(response.data.movimiento.length){
                     let Datos = response.data.movimiento[0];
                     this.fillMovimiento.nIdMovimiento = Datos.IdMovimiento;
@@ -663,7 +669,7 @@ export default {
         },
     },
     mounted() {
-        this.ListarMovimiento(this.$attrs.id);
+        this.ListarMovimiento(this.$attrs.id,this.$attrs.iddoc);
         this.listPermisosFilterByRolUser = sessionStorage.getItem('listPermisosFilterByRolUser');
         this.usuario = JSON.parse(sessionStorage.getItem('authUser'));
         if(this.usuario.Tipo == 2){
@@ -683,7 +689,7 @@ export default {
                 showConfirmButton: false,
                 timer: 1500
             });
-            this.ListarMovimiento(this.$attrs.id);
+            this.ListarMovimiento(this.$attrs.id,this.$attrs.iddoc);
         });
     },
 

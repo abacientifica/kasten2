@@ -47,22 +47,6 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group row">
-                                <label class="col-md-3 col-form-label">Id. Movimiento</label>
-                                <div class="col-md-9">
-                                    <input type="text" class="form-control" v-model="fillMovimiento.nIdMovimiento" @keyup.enter="ListarMovimientos()"/>
-                                </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group row">
-                                <label class="col-md-3 col-form-label">Cliente</label>
-                                <div class="col-md-9">
-                                    <input type="email" class="form-control" v-model="fillMovimiento.nIdTercero" @keyup.enter="ListarMovimientos()"/>
-                                </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group row">
                                 <label class="col-md-3 col-form-label">Estado</label>
                                 <div class="col-md-9">
                                     <el-select v-model="fillMovimiento.cEstado" placeholder="Seleccione un estado" clearable @keyup.enter="ListarMovimientos()">
@@ -72,6 +56,23 @@
                                 </div>
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                <label class="col-md-3 col-form-label">Fecha Desde</label>
+                                <div class="col-md-9">
+                                    <input type="date" class="form-control" v-model="fillMovimiento.cFechaDesde"  @keyup.enter="ListarMovimientos()"/>
+                                </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                <label class="col-md-3 col-form-label">Fecha Hasta</label>
+                                <div class="col-md-9">
+                                    <input type="date" class="form-control" v-model="fillMovimiento.cFechaHasta"  @keyup.enter="ListarMovimientos()"/>
+                                </div>
+                                </div>
+                            </div>
+                            
                             </div>
                         </form>
                         </div>
@@ -124,7 +125,7 @@
                                     <td v-text="mov.Estado"></td>
                                     <td v-text="mov.Comentarios"></td>
                                     <td>
-                                        <router-link  :to="'/pedidos/ver/'+mov.IdMovimiento" class="btn btn-info btn-sm" v-if="listPermisosFilterByRolUser.includes('pedidos.ver') || listPermisosFilterByRolUser.includes('administrador.sistema')">
+                                        <router-link  :to="'/pedidos/ver/'+mov.IdDocumento+'/'+mov.IdMovimiento" class="btn btn-info btn-sm" v-if="listPermisosFilterByRolUser.includes('pedidos.ver') || listPermisosFilterByRolUser.includes('administrador.sistema')">
                                             <i class="fas fa-eye"></i>
                                         </router-link>
                                     </td>
@@ -165,6 +166,7 @@ export default {
             //Al cambiar a true muestra el loading
             fullscreenLoading:false,
             listPermisosFilterByRolUser:[],
+            moment:moment,
             //Objeto usuario para realizar consultas de usuarios.
             fillMovimiento:{
                 nNroDocumento:'',
@@ -172,6 +174,8 @@ export default {
                 nIdTercero:'',
                 cEstado:'DIGITADA',
                 nIdDireccion:'',
+                cFechaDesde:'',
+                cFechaHasta:'',
             },
             OpPedido:8,
             ImagenPerfil:'',
@@ -264,7 +268,9 @@ export default {
                 'nIdTercero' : IdTercero,
                 'cEstado' : this.fillMovimiento.cEstado,
                 'nIdDocumento' : 61,
-                'nIdDireccion': this.fillMovimiento.nIdDireccion
+                'nIdDireccion': this.fillMovimiento.nIdDireccion,
+                'cFechaDesde' : this.fillMovimiento.cFechaDesde,
+                'cFechaHasta' : this.fillMovimiento.cFechaHasta
             }}).then(response=>{    
                 this.inicializarPagination();
                 if(response.data.movimientos.length){
