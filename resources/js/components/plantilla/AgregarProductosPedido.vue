@@ -60,7 +60,7 @@
                         </tr>
                     </thead>
                     <tbody v-if="arraryDetallesMovimiento.length">
-                        <tr v-for="(detalle,index) in arraryDetallesMovimiento" :key="detalle.id">
+                        <tr v-for="(detalle,index) in arraryDetallesMovimiento" :key="detalle.id" >
                             <td>
                                 <button type="button" @click="eliminarDetalle(index)" class="btn btn-danger btn-sm">
                                     <i class="fas fa-times-circle"></i>
@@ -111,6 +111,9 @@
                 <div class="modal-dialog modal-primary modal-xl" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
+                        <vs-alert warn>
+                            <strong>Alerta!!!</strong> Los productos con de color amarillo en el precio, tiene la vigencia vencida por lo tanto al finalizar el pedido un asesor se comunicará en caso de haber cambios.
+                        </vs-alert>
                             <h4 class="modal-title" v-text="tituloModal"></h4>
                             <button type="button" class="close" @click="AbrirModal()" aria-label="Close">
                               <span aria-hidden="true">×</span>
@@ -142,19 +145,30 @@
                                     </thead>
 
                                     <tbody>
-                                        <tr v-for="articulo in listarArticulosPaginate" :key="articulo.id" :class="{'vendidos' : articulo.Venta >0}">
+                                        <tr v-for="articulo in listarArticulosPaginate" :key="articulo.id"  >
                                             <td v-text="articulo.CodTercero"></td>
                                             <td class="texto-derecha" v-text="articulo.Item"></td>
                                             <td v-text="articulo.Descripcion"></td>
                                             <td v-text="articulo.RefFabricante"></td>
                                             <td v-text="articulo.NmMarca"></td>
                                             <td v-text="articulo.UMM"></td>
-                                            <td class="texto-derecha" v-text="FormatoMoneda(articulo.Precio,2)"></td>
+                                            <td class="texto-derecha" :class="{'prod-vencido' : articulo.FhHasta < moment().format('YYYY-MM-DD')}" v-text="FormatoMoneda(articulo.Precio,2)">
+                                                
+                                            </td>
                                             <td class="texto-derecha" v-text="articulo.CantMinimaVenta"></td>
                                             <td>
-                                                <button type="button"  @click="agregarDetalleModal(articulo)" class="btn btn-success btn-sm" >
-                                                <i class="fas fa-check"></i>
+                                                <button type="button"  @click="agregarDetalleModal(articulo)" class="btn btn-success btn-sm" flat >
+                                                    <i class="fas fa-check"></i>
                                                 </button>
+                                                <!--<vs-tooltip warn>
+                                                    <button type="button"  @click="agregarDetalleModal(articulo)" class="btn btn-success btn-sm" flat >
+                                                    <i class="fas fa-check"></i>
+                                                    </button>
+                                                    <template #tooltip>
+                                                      Este producto tiene el precio vencido
+                                                    </template>
+                                                </vs-tooltip>-->
+                                               
                                             </td>
                                         </tr>
                                     </tbody>
@@ -176,6 +190,7 @@
                                 </ul>
                             </div>
                         </div>
+                        
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @click="AbrirModal()">Cerrar</button>
                         </div>
@@ -264,6 +279,7 @@ export default {
             TotalIva:0,
             Total:0,
             active:false,
+            moment:moment
 
         }
     },
@@ -395,7 +411,9 @@ export default {
                     icon :'success',
                     type :'success',
                     title :'',
-                    text:'El articulo '+articulo.Descripcion+' se agrego"'
+                    text:'El articulo '+articulo.Descripcion+' se agrego"',
+                    showConfirmButton: false,
+                    timer: 1200
                 })
             }
         },
@@ -608,7 +626,7 @@ export default {
     mounted() {
         this.IdDir = this.IdDireccion;
         this.CargarDireccion(this.IdDireccion);
-        
+        console.log(moment().format('YYYY-MM-DD'))
     },
 }
 </script>

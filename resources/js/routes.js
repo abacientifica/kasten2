@@ -185,7 +185,7 @@ export default new Router({
         },
 
         {
-            path: '/pedidos/ver/:id',
+            path: '/pedidos/ver/:iddoc/:id',
             component: PedidosVer,
             name: 'pedidos.ver',
             props: true,

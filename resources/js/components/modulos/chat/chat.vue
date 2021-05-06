@@ -109,6 +109,11 @@ export default {
             if(this.selectContact && this.selectContact.Usuario == mensaje.from){
                 this.setNuevoMensaje(mensaje);
             }
+            var sound = new Howl({
+                src: ['/ringtone/notificacion.mp3']
+            });
+            sound.play();
+
             const noti = this.$vs.notification({
                 
                 progress: 'auto',
@@ -119,6 +124,7 @@ export default {
                 title: mensaje.from,
                 text: mensaje.text
             });
+            
             this.getListarContactos();
         },
     },

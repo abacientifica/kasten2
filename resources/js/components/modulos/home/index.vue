@@ -47,7 +47,7 @@
                     <template #title class="aling-center">
                     Hola {{usuario.Nombres}} !!!
                     </template>
-                    Kasten es un software ERP de entorno web desarrollado para el de manejo Aba  científica, cualquier uso no autorizado de este programa será sancionado como la ley lo estipula para los derechos de autor, para mayor información comuníquese al (4) 444 6303 Ext 220 o al email sistemas@aba.com.co
+                    Kasten es un software ERP de entorno web desarrollado para el manejo de Aba  científica, cualquier uso no autorizado de este programa será sancionado como la ley lo estipula para los derechos de autor, para mayor información comuníquese al (4) 444 6303 Ext 220 o al email sistemas@aba.com.co
                     <br>Bienvenido y esperamos que sea de su mayor utilidad.
                 </vs-alert>
             </div>

@@ -258,3 +258,7 @@
 .img-navbar-aba {
     background: white
 }
+
+.prod-vencido {
+    background: rgb(255, 200, 129) !important;
+}

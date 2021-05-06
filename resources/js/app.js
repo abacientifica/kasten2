@@ -39,6 +39,9 @@ Vue.use(Vuesax, {
 import Swal from 'sweetalert2'
 window.Swal = Swal;
 
+import Howler from 'howler'
+window.Howler = Howler;
+
 import moment from 'moment';
 moment.locale('es');
 window.moment = moment;
