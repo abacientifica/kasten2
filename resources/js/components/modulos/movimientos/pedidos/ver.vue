@@ -329,6 +329,7 @@ export default {
             active:false,
             msgAnulacion:'',
             AptoAnular:true,
+            MovActual:this.$attrs.id
         }
     },
     computed: {
@@ -403,12 +404,13 @@ export default {
          * Obtenemos el listado de detalles
          */
         ListarMovimiento(IdMov,IdDoc){
-            let url ="/movimiento/"+IdDoc+'/'+IdMov;
+            let url ="/movimiento/"+IdDoc+'/'+this.MovActual;
             let me = this;
             const loader = this.loaderk();
             axios.get(url).then(response=>{    
                 this.inicializarPagination();
                 if(response.data.msg == "no_encontrado"){
+                    loader.close();
                     me.$router.push('/*');
                     return;
                 }
