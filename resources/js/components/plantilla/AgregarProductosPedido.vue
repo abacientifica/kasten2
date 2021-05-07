@@ -112,7 +112,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                         <vs-alert warn>
-                            <strong>Alerta!!!</strong> Los productos con de color amarillo en el precio, tiene la vigencia vencida por lo tanto al finalizar el pedido un asesor se comunicará en caso de haber cambios.
+                            <strong>Alerta!!!</strong> Los productos de color amarillo en el precio, tiene la vigencia vencida por lo tanto al finalizar el pedido un asesor se comunicará en caso de haber cambios.
                         </vs-alert>
                             <h4 class="modal-title" v-text="tituloModal"></h4>
                             <button type="button" class="close" @click="AbrirModal()" aria-label="Close">
@@ -561,19 +561,29 @@ export default {
         },
 
         EmitirEventoProductos(){
-            let i
-            for(i =0;i<this.arraryDetallesMovimiento.length;i++){
-                this.ValidarDatos(this.arraryDetallesMovimiento[i]);
-            }
-            if(this.arrMensajeError.length == 0){
-                EventBus.$emit('arraryDetallesMovimiento',this.arraryDetallesMovimiento);
-                console.log("Se emitio el evento registrar detalles");
-            }
-            else{
-                this.modalShowErr = true;
-            }
+             Swal.fire({
+                title: 'Estas seguro(a) de crear el pedido ?',
+                showDenyButton: false,
+                showCancelButton: true,
+                confirmButtonText: `Crear`,
+                confirmButtonColor: '#28a745',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let i
+                    for(i =0;i<this.arraryDetallesMovimiento.length;i++){
+                        this.ValidarDatos(this.arraryDetallesMovimiento[i]);
+                    }
+                    if(this.arrMensajeError.length == 0){
+                        EventBus.$emit('arraryDetallesMovimiento',this.arraryDetallesMovimiento);
+                        console.log("Se emitio el evento registrar detalles");
+                    }
+                    else{
+                        this.modalShowErr = true;
+                    }
+                }
+            })
         }
-
     },
 
     computed: {
