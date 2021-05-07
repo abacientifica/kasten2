@@ -65,7 +65,7 @@ export default {
     props:['IdMovimiento'],
     data() {
         return {
-            nIdMovimiento:0,
+            nIdMovimiento:this.IdMovimiento,
             arrLogs:[],
             modalShow: false,
             mostrarModal: {
@@ -119,10 +119,9 @@ export default {
         verLog(){
            let me = this;
             axios.get('/log/lista',{params:{
-                'nIdMovimiento':this.nIdMovimiento
+                'nIdMovimiento':this.IdMovimiento
             }}).then(function (response) {
                 var respuesta = response.data;
-                console.log(respuesta)
                 me.arrLogs = respuesta.logs;
                 me.inicializarPagination();
                 me.modalShow = true;

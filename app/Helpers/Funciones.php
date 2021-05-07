@@ -219,9 +219,73 @@ class Funciones{
         }
     }
 
+    public static function AnularMovimiento($IdMovimiento){
+        try{
+            DB::beginTransaction();
+            $Movimiento = Movimientos::with('documento')->find($IdMovimiento);
+            $Movimiento->Estado = "ANULADA";
+            $Movimiento->Anulado = 1;
+            \Funciones::DevolverCantidades($IdMovimiento, $Movimiento->documento->AfectaCantRef, $Movimiento->documento->Tp);
+            MovimientosDet::where('IdMovimiento',$IdMovimiento)->update([
+                'Estado'=>'ANULADO'
+            ]);
+
+            $Movimiento->VrIva = 0;
+            $Movimiento->VrDcto = 0;
+            $Movimiento->VrOtros = 0;
+            $Movimiento->VrRetencion = 0;
+            $Movimiento->SubTotal = 0;
+            $Movimiento->VrFletes = 0;
+            $Movimiento->VrRteIva = 0;
+            $Movimiento->Total = 0;
+            $Movimiento->Costo = 0;
+            $Movimiento->VrRteFuente = 0;
+            $Movimiento->VrRteCree = 0;
+            $Movimiento->save();
+            //Volver a abrir los documentos enlace
+            /*$MovDetLib = MovimientosDetRecord::finder()->FindAllBy_IdMovimiento($IdMovimiento);
+            for ($i = 0; $i < count($MovDetLib); $i++) {
+                if ($MovDetLib[$i]->Enlace != NULL)
+                    MovimientosDetRecord::AbrirAutoDet($MovDetLib[$i]->Enlace);
+            }
+
+            for ($i = 0; $i < count($MovDetLib); $i++) {
+                if ($MovDetLib[$i]->IdDocumento == 1) {
+                    $Item = ItemRecord::finder()->FindByPk($MovDetLib[$i]->Id_Item);
+                    $Item->CantOC = $Item->CantOC + $MovDetLib[$i]->Cantidad;
+                    $Item->save();
+                }
+            }*/
+            MovimientosDet::where('IdMovimiento',$IdMovimiento)->update([
+                'Cantidad'=>0,
+                'Total'=>0, 
+                'Precio'=>0, 
+                'Costo'=>0, 
+                'CostoPromedio'=>0, 
+                'SubTotal'=>0, 
+                'PorIva'=>0, 
+                'CantDescuento'=>0, 
+                'CantDescuento'=>0, 
+                'Enlace'=>NULL
+            ]);
+            DB::commit();
+            return [
+                'status'=>200,
+                'msg'=>'exito'
+            ];
+        }
+        catch(Exception $e){
+            DB::rollBack();
+            return [
+                'status'=>500,
+                'msg'=>'Ocurrio un error'.$e->getMessage()
+            ];
+        }
+    }
+
     public function DesAutorizarMovimiento(Request $request){
         try{
-            $Movimientos = Movimientos::findOrFail($IdMovimiento);
+            $Movimiento = Movimientos::findOrFail($IdMovimiento);
             $Movimientos->Estado = "DIGITADA";
             $Movimientos->Autorizado = 1;
             $Movimientos->IdAutoriza = \Auth::user()->Usuario;
@@ -290,6 +354,24 @@ class Funciones{
         $LogNew->Usuario = $strUsuario;
         $LogNew->Fecha = date('y-m-d H:i:s');
         $LogNew->save();
+    }
+
+    public static function DevolverCantidades($IdMovimiento, $AfectaCantRef, $TpDocumento) {
+        if ($AfectaCantRef == 1) {
+            if ($TpDocumento == 8) {
+                $sql = "Select IdMovimientoDet, Id_Item, Cantidad, Enlace,IdDocumento from movimientos_det where Operacion=0 and IdMovimiento=" . $IdMovimiento;
+            } else {
+                $sql = "Select IdMovimientoDet, Id_Item, Cantidad, Enlace,IdDocumento from movimientos_det where IdMovimiento=" . $IdMovimiento;
+            }
+            $MovDet = Movimientos::select($sql)->get();
+            $TReg = count($MovDet);
+            for ($i = 0; $i < $TReg; $i++) {
+                if ($MovDet[$i]->Enlace != NULL) {
+                    $sql = "UPDATE movimientos_det SET CantAfectada=CantAfectada-" . $MovDet[$i]->Cantidad . " WHERE IdMovimientoDet=" . $MovDet[$i]->Enlace;
+                    $rstMovDet = MovimientosDet::select($sql);
+                }
+            }
+        }
     }
 
     function   mime_content_type($filename) {
