@@ -39,14 +39,15 @@
                     
                 </div>
                 <div class="card-body">
-                    <div class="col-md-12 btn-group-justified"  style="display:flex" v-if="fillMovimiento.cEstado == 'DIGITADA' || fillMovimiento.cEstado == 'AUTORIZADA' || fillMovimiento.cEstado == 'CERRADA'">
+                    <div class="col-md-12 btn-group-justified"  style="display:flex" >
                         <button class="btn btn-success btn-margin-left" v-if="fillMovimiento.cEstado =='AUTORIZADA'" @click.prevent="NotificarPedido()"><i class="fas fa-bell"></i> Enviar Alerta Servicio Cliente</button>
                         <button class="btn btn-primary btn-margin-left" v-if="fillMovimiento.cEstado =='AUTORIZADA'" @click.prevent="setGenerarDocumento()"><i class="fas fa-print"></i> Imprimir</button>
+                        <button class="btn btn-warning btn-margin-left" v-if="fillMovimiento.cEstado =='AUTORIZADA' && AptoAnular " @click.prevent="active=!active" ><i class="fas fa-ban"></i> Anular</button>
                         <button class="btn btn-success btn-margin-left" v-if="fillMovimiento.cEstado == 'DIGITADA' && accionMovimiento==0" @click.prevent="Autorizar()"><i class="fas fa-check"></i> Autorizar</button>
                         <button class="btn btn-primary btn-margin-left" v-if="fillMovimiento.cEstado == 'DIGITADA' && accionMovimiento==0" @click.prevent="Editar()"><i class="fas fa-edit"></i> Editar</button>
                         <button class="btn btn-success btn-margin-left" v-if="fillMovimiento.cEstado == 'DIGITADA' && accionMovimiento==1" @click.prevent="ActualizarDatos()"><i class="fas fa-check"></i> Guardar Cambios</button>
                         <button class="btn btn-warning btn-margin-left" v-if="fillMovimiento.cEstado == 'DIGITADA' && accionMovimiento==1" @click.prevent="Editar()"><i class="fas fa-times-circle"></i> Cancelar Edición</button>
-                        <logacciones :IdMovimiento ="this.fillMovimiento.nIdMovimiento"></logacciones>
+                        <logacciones :IdMovimiento ="fillMovimiento.nIdMovimiento"></logacciones>
                     </div><hr>
                     <div class="form-group row border">
                         <div class="col-md-3">
@@ -250,13 +251,37 @@
                 </div>
             </div>
         </div>
+        <template>
+            <div class="center">
+            <vs-dialog v-model="active">
+                <template #header>
+                <h4 class="not-margin">
+                    Hola {{usuario.Nombres}}
+                </h4>
+                </template>
+
+
+                <div class="con-form">
+                    <textarea class="form-control" v-model="msgAnulacion" placeholder="Describe la causa de la anulación...">
+                    
+                    </textarea>
+                </div>
+                <vs-button block warn :disabled="msgAnulacion!=''?false:true" @click.prevent="AnularMovimiento()">
+                    Anular
+                </vs-button>
+            </vs-dialog>
+            </div>
+        </template>
+
     </div>
+    
 </template>
 <script>
 import Swal from 'sweetalert2'
 export default {
     data() {
         return {
+            usuario:'',
             direccion:[],
             arrMensajeError:[],
             OpPedido:8,
@@ -301,6 +326,9 @@ export default {
             //Fin variables paginacion
             moment:moment,
             fullscreenLoading:false,
+            active:false,
+            msgAnulacion:'',
+            AptoAnular:true,
         }
     },
     computed: {
@@ -318,6 +346,13 @@ export default {
                 var objeto = this.fillMovimiento;
                 porIva = objeto['nVrIva'] ;
                 resultado = objeto['nSubTotal'];
+            }
+            for(var i=0;i< this.ListarMovimientosDetPaginate.length;i++){
+                var objeto = this.ListarMovimientosDetPaginate[i];
+                if((objeto['Cantidad'] - objeto['CantAfectada']) != objeto['Cantidad']){
+                    this.AptoAnular = false;
+                    break;
+                }
             }
             this.fillMovimiento.nVrIva = porIva;
             return resultado;
@@ -354,6 +389,13 @@ export default {
             }
             return PagesArray;
         },
+        mensajeAnular(){
+            if(!this.active){
+                this.msgAnulacion ='';
+            }
+            return this.msgAnulacion;
+        }
+
     },
     methods: {
 
@@ -433,14 +475,14 @@ export default {
         Autorizar(){
             let me = this;
             let url ="/movimiento/autorizar";
-            this.fullscreenLoading = true;
+            const loader = this.loaderk();
             axios.put(url,{
                 params:{
                     'nIdMovimiento':me.fillMovimiento.nIdMovimiento
                 }
             }).then(response=>{    
                 let respuesta = response.data;
-                this.fullscreenLoading = false;
+                loader.close();
                 Swal.fire({
                     position: 'top-center',
                     icon: 'success',
@@ -448,14 +490,16 @@ export default {
                     showConfirmButton: false,
                     timer: 1500
                 });
-                me.ListarMovimiento(me.fillMovimiento.nIdMovimiento);
+
+                me.ListarMovimiento(me.fillMovimiento.nIdMovimiento,me.fillMovimiento.nIdDocumento);
+                
 
             }).catch(error =>{
                 if(error.response.status ==401){
                     me.$router.push({name: 'login'})
                     location.reload();
                     sessionStorage.clear();
-                    this.fullscreenLoading = false;
+                    loader.close();
                 }
             })
         },
@@ -484,7 +528,7 @@ export default {
                         showConfirmButton: false,
                         timer: 1300
                     });
-                    me.ListarMovimiento(me.fillMovimiento.nIdMovimiento);
+                    me.ListarMovimiento(me.fillMovimiento.nIdMovimiento,me.fillMovimiento.nIdDocumento);
                     me.Editar();
                 })
                 .catch(function (error) {
@@ -573,7 +617,7 @@ export default {
                             showConfirmButton: false,
                             timer: 1500
                         });
-                        me.ListarMovimiento(detalle.IdMovimiento);
+                        me.ListarMovimiento(detalle.IdMovimiento,me.fillMovimiento.nIdDocumento);
 
                     }).catch(error =>{
                         console.log(error)
@@ -692,6 +736,38 @@ export default {
             .catch(function (error) {
                 loader.close();
                 if (error.response.data.status == 401) {
+                    this.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                    loader.close();
+                }
+            });
+        },
+
+        AnularMovimiento(){
+            const loader = this.loaderk();
+            let me =this;
+            axios.put('/movimiento/anularMovimiento',{
+                'nIdMov':me.fillMovimiento.nIdMovimiento,
+                'nIdDoc':me.fillMovimiento.nIdDocumento,
+                'Comentarios': me.msgAnulacion,
+            }).then(function (response) {
+                me.active = false;
+                me.ListarMovimiento(me.fillMovimiento.nIdMovimiento,me.fillMovimiento.nIdDocumento);
+                Swal.fire({
+                    position: 'top-center',
+                    icon: response.data.status == 200 ? 'success' : 'danger',
+                    title: response.data.msg,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                loader.close();
+                
+            })
+            .catch(function (error) {
+                loader.close();
+                console.log(error)
+                if (error.response.status == 401) {
                     this.$router.push({name: 'login'})
                     location.reload();
                     sessionStorage.clear();

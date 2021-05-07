@@ -10,6 +10,7 @@ use App\Model\Movimientos;
 use App\Model\Documentos;
 use App\Model\MovimientosDet;
 use App\Model\Terceros;
+use App\Model\RevisionDoc;
 
 class MovimientosController extends Controller
 {
@@ -267,6 +268,38 @@ class MovimientosController extends Controller
             return[
                 'msg'=>$e,
                 'status'=>501
+            ];
+        }
+    }
+
+    public function anularMovimiento(Request $request){
+        try {
+            DB::beginTransaction();
+            $Mov = Movimientos::with('documento')->Find($request->nIdMov);
+            if ($Mov->Importado == 0 && $Mov->Contabilizado == 0) {
+                $MovAnulado = \Funciones::anularMovimiento($request->nIdMov);
+                if ($MovAnulado['status'] == 200) {
+                    $Anulaciones = new RevisionDoc();
+                    $Anulaciones->Tipo = 1;
+                    $Anulaciones->IdConcepto = 13;
+                    $Anulaciones->IdMovimiento = $request->nIdMov;
+                    $Anulaciones->FhRevision = date('Y-m-d H:i:s');
+                    $Anulaciones->IdUsuario = \Auth::user()->Usuario;
+                    $Anulaciones->Comentarios = $request->Comentarios;
+                    $Anulaciones->save();
+                    \Funciones::CrearLog(1, $Mov->IdMovimiento, \Auth::user()->Usuario);
+                }
+            } 
+            DB::commit();
+            return [
+                'status'=>200,
+                'msg'=>$Mov->documento->Nombre." #".$Mov->NroDocumento.", anulado con exito !!!"
+            ];
+        } catch (Exception $e) {
+            DB::rollBack();
+            return [
+                'status'=>500,
+                'msg'=>'Ocurrio un error'.$e->getMessage()
             ];
         }
     }

@@ -104,7 +104,7 @@ import Swal from 'sweetalert2'
                         showConfirmButton: false,
                         timer: 1300
                     });
-                    me.$router.push('/pedidos/ver/'+respuesta.movimiento)
+                    me.$router.push('/pedidos/ver/'+me.IdDocPed+'/'+respuesta.movimiento)
                 })
                 .catch(function (error) {
                     console.log(error);
