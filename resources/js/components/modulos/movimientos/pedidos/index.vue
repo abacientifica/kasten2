@@ -58,17 +58,21 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group row">
-                                <label class="col-md-3 col-form-label">Fecha Desde</label>
+                                <label class="col-md-3 col-form-label">Rago Fecha</label>
                                 <div class="col-md-9">
-                                    <input type="date" class="form-control" v-model="fillMovimiento.cFechaDesde"  @keyup.enter="ListarMovimientos()"/>
-                                </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group row">
-                                <label class="col-md-3 col-form-label">Fecha Hasta</label>
-                                <div class="col-md-9">
-                                    <input type="date" class="form-control" v-model="fillMovimiento.cFechaHasta"  @keyup.enter="ListarMovimientos()"/>
+                                    <el-date-picker
+                                        v-model="fillMovimiento.oRangoFechas"
+                                        class="form-control"
+                                        type="daterange"
+                                        align="right"
+                                        unlink-panels
+                                        range-separator="A"
+                                        start-placeholder="Desde"
+                                        end-placeholder="Hasta"
+                                        :picker-options="pickerOptions"
+                                        format="yyyy-MM-dd"
+                                        value-format="yyyy-MM-dd">
+                                    </el-date-picker>
                                 </div>
                                 </div>
                             </div>
@@ -176,6 +180,7 @@ export default {
                 nIdDireccion:'',
                 cFechaDesde:'',
                 cFechaHasta:'',
+                oRangoFechas:''
             },
             OpPedido:8,
             ImagenPerfil:'',
@@ -219,6 +224,36 @@ export default {
             },
             usuario:[],
             moment:moment,
+            pickerOptions: {
+                shortcuts: [{
+                    text: 'Ult. Semana',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                        console.log(start)
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: 'Ult. Mes',
+                        onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: 'Ult. 3 Meses',
+                        onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }]
+            },
+        value1: '',
+        value2: ''
         }
     },
     computed: {
@@ -270,7 +305,8 @@ export default {
                 'nIdDocumento' : 61,
                 'nIdDireccion': this.fillMovimiento.nIdDireccion,
                 'cFechaDesde' : this.fillMovimiento.cFechaDesde,
-                'cFechaHasta' : this.fillMovimiento.cFechaHasta
+                'cFechaHasta' : this.fillMovimiento.cFechaHasta,
+                'oRangoFechas' : this.fillMovimiento.oRangoFechas
             }}).then(response=>{    
                 this.inicializarPagination();
                 if(response.data.movimientos.length){

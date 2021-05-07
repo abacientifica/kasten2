@@ -18,12 +18,12 @@ Vue.component('NuevoMovimiento', require('./components/plantilla/NuevoMovimiento
 Vue.component('AgregarProductosPedido', require('./components/plantilla/AgregarProductosPedido.vue').default);
 Vue.component('AgregarProductosMovimiento', require('./components/plantilla/AgregarProductosMovimiento.vue').default);
 Vue.component('logacciones', require('./components/plantilla/acciones/logacciones.vue').default);
-
+import locale from 'element-ui/lib/locale/lang/es';
 import router from './routes';
 
 import ElementUI from 'element-ui';
 
-window.Vue.use(ElementUI); //Con esta declaracion lo utilizamos en todo el sitio
+window.Vue.use(ElementUI, { locale }); //Con esta declaracion lo utilizamos en todo el sitio
 import 'element-ui/lib/theme-chalk/index.css';
 import vSelect from "vue-select";
 

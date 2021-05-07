@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Movimientos;
 
+use PDF;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -33,8 +34,8 @@ class MovimientosController extends Controller
             if($Filtros->nIdDireccion){
                 $Movimientos = $Movimientos->where('IdDireccion',$Filtros->nIdDireccion );
             }
-            if($Filtros->cFechaDesde !='' && $Filtros->cFechaHasta !=''){
-                $Movimientos = $Movimientos->where('FhAutoriza','>=',$Filtros->cFechaDesde)->where('FhAutoriza','<=',$Filtros->cFechaHasta);
+            if($Filtros->oRangoFechas){
+                $Movimientos = $Movimientos->whereBetween('FhAutoriza',[$Filtros->oRangoFechas[0],$Filtros->oRangoFechas[1]]);
             }
             $Movimientos = $Movimientos->where('IdDireccion','<>','');
             
@@ -239,7 +240,9 @@ class MovimientosController extends Controller
         if(!$request->ajax()) return redirect("/");
         try{
             $MovAutorizado = \Funciones::AutorizarMovimiento($request->params['nIdMovimiento']);
-            $arMovimiento = Movimientos::find($request->params['nIdMovimiento']);
+            $arMovimiento = Movimientos::with('tercero','tercero.asesorservcliente')->find($request->params['nIdMovimiento']);
+            $EmailAsesor = $arMovimiento->tercero->asesorservcliente->Email;
+            $EmailAsesor = !filter_var($EmailAsesor,FILTER_VALIDATE_EMAIL) ? 'auxsistemas@aba.com.co' : $EmailAsesor;
             if($MovAutorizado == true){
                 \Funciones::Consecutivo($request->params['nIdMovimiento']);
                 //Enviamos el Email de alerta a el asesor
@@ -249,7 +252,7 @@ class MovimientosController extends Controller
                 return[
                     'msg'=>"El movimiento ha sido autorizado con exito !!".$request->params['nIdMovimiento'],
                     'status'=>201,
-                    'Email'=>\Funciones::EnviarEmail('Autorización Pedido Externo','auxsistemas@aba.com.co',$strMensaje)
+                    'Email'=>\Funciones::EnviarEmail('Autorización Pedido Externo',$EmailAsesor,$strMensaje)
                 ];
                 
             }
@@ -405,5 +408,19 @@ class MovimientosController extends Controller
                 'status'=>500
             ];
         }
+    }
+
+    public function setGenerarDocumento(Request $request){
+        $Movimiento = Movimientos::with('documento','asesor','tercero','tercero.asesorservcliente','direccion','fpago','condentrega')->where('IdMovimiento',$request->nIdMov)->where('IdDocumento',$request->nIdDoc)->get();
+        $MovimientosDet = MovimientosDet::with('item','item.listacostosdet','item.listacostosdet.marca')->where('IdMovimiento',$request->nIdMov)->where('IdDocumento',$request->nIdDoc)->get();
+        $pdf = PDF::loadView('pdf.pedidos.ver',[
+            'movimiento'=>$Movimiento,
+            'movimientos_det'=>$MovimientosDet
+        ]);
+        \Funciones::CrearLog(7, $Movimiento[0]->IdMovimiento, \Auth::user()->Usuario);
+        return $pdf->download('invoice.pdf');
+        /*return [
+            'pdf'=>$request->nIdMovimiento
+        ];*/
     }
 }

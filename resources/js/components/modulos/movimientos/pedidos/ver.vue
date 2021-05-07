@@ -41,7 +41,7 @@
                 <div class="card-body">
                     <div class="col-md-12 btn-group-justified"  style="display:flex" v-if="fillMovimiento.cEstado == 'DIGITADA' || fillMovimiento.cEstado == 'AUTORIZADA' || fillMovimiento.cEstado == 'CERRADA'">
                         <button class="btn btn-success btn-margin-left" v-if="fillMovimiento.cEstado =='AUTORIZADA'" @click.prevent="NotificarPedido()"><i class="fas fa-bell"></i> Enviar Alerta Servicio Cliente</button>
-                        <button class="btn btn-primary btn-margin-left" v-if="fillMovimiento.cEstado =='AUTORIZADA'" @click.prevent="NotificarPedido()"><i class="fas fa-print"></i> Imprimir</button>
+                        <button class="btn btn-primary btn-margin-left" v-if="fillMovimiento.cEstado =='AUTORIZADA'" @click.prevent="setGenerarDocumento()"><i class="fas fa-print"></i> Imprimir</button>
                         <button class="btn btn-success btn-margin-left" v-if="fillMovimiento.cEstado == 'DIGITADA' && accionMovimiento==0" @click.prevent="Autorizar()"><i class="fas fa-check"></i> Autorizar</button>
                         <button class="btn btn-primary btn-margin-left" v-if="fillMovimiento.cEstado == 'DIGITADA' && accionMovimiento==0" @click.prevent="Editar()"><i class="fas fa-edit"></i> Editar</button>
                         <button class="btn btn-success btn-margin-left" v-if="fillMovimiento.cEstado == 'DIGITADA' && accionMovimiento==1" @click.prevent="ActualizarDatos()"><i class="fas fa-check"></i> Guardar Cambios</button>
@@ -300,7 +300,7 @@ export default {
             perPage: 15,
             //Fin variables paginacion
             moment:moment,
-            fullscreenLoading:false
+            fullscreenLoading:false,
         }
     },
     computed: {
@@ -363,6 +363,7 @@ export default {
         ListarMovimiento(IdMov,IdDoc){
             let url ="/movimiento/"+IdDoc+'/'+IdMov;
             let me = this;
+            const loader = this.loaderk();
             axios.get(url).then(response=>{    
                 this.inicializarPagination();
                 if(response.data.msg == "no_encontrado"){
@@ -392,11 +393,14 @@ export default {
                     this.fillMovimiento.cNmCliente = Datos.tercero.NombreCorto;
                     this.fillDetallesMov = response.data.movimientos_det;
                     this.CargarDireccion(Datos.IdDireccion);
+                    loader.close();
                 }
                 else{
+                    loader.close();
                     this.listMovimientos = [];
                 }
             }).catch(error =>{
+                loader.close();
                 if(error.response.status ==401){
                     this.$router.push({name: 'login'})
                     location.reload();
@@ -667,6 +671,43 @@ export default {
                 }
             });
         },
+
+        setGenerarDocumento(){
+            const loader = this.loaderk();
+            var config = {
+                responseType : 'blob',
+            }
+
+            axios.post('/movimiento/setGenerarDocumento',{
+                'nIdMov':this.fillMovimiento.nIdMovimiento,
+                'nIdDoc':this.fillMovimiento.nIdDocumento,
+            },config).then(function (response) {
+                
+                var oMyBlob = new Blob([response.data], {type : 'application/pdf'}); // the blob
+                var url = URL.createObjectURL(oMyBlob);
+                window.open(url);
+                loader.close();
+                //console.log(url);
+            })
+            .catch(function (error) {
+                loader.close();
+                if (error.response.data.status == 401) {
+                    this.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                    loader.close();
+                }
+            });
+        },
+
+        loaderk() {
+            return this.$vs.loading({
+                type : 'square',
+                background: '#babaea',
+                color: '#fff',
+                text:'Cargando...'
+            });
+        }
     },
     mounted() {
         this.ListarMovimiento(this.$attrs.id,this.$attrs.iddoc);
@@ -692,6 +733,6 @@ export default {
             this.ListarMovimiento(this.$attrs.id,this.$attrs.iddoc);
         });
     },
-
+    
 }
 </script>
