@@ -56,6 +56,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::put('/movimiento/notificar','Movimientos\MovimientosController@NotificarMovimiento');
     Route::put('/movimiento/EliminarDet','Movimientos\MovimientosController@EliminarMovimientoDet');
     Route::put('/movimiento/agregarProducto','Movimientos\MovimientosController@AgregarProducto');
+    Route::post('/movimiento/setGenerarDocumento','Movimientos\MovimientosController@setGenerarDocumento');
+    
 
     //Lista rutas documentos
     Route::get('/documentos/lista','Administracion\DocumentosController@index');

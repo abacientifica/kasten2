@@ -32468,3 +32468,7 @@ a.text-muted:hover {
 .prod-vencido {
     background: rgb(255, 200, 129) !important;
 }
+
+.el-date-editor {
+    width: 100% !important;
+}
