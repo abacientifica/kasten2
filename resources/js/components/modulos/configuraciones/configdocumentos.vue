@@ -42,6 +42,11 @@
                                             <button type="button"  @click="AbrirModal('documento','agregar',config)" class="btn btn-warning btn-sm" >
                                                 <i class="fas fa-pencil-alt"></i>
                                             </button> 
+                                            <button type="button"  class="btn btn-warning btn-sm" >
+                                                <router-link :to="'/configuracion/documentos/edit/'+config.IdDocumento">
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                </router-link>
+                                            </button> 
                                         </td>
                                         <td v-text="config.IdDocumento"></td>
                                         <td v-text="config.Nombre"></td>

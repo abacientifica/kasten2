@@ -95,4 +95,14 @@ class ControladorGeneral extends Controller
             'logs'=>$Datos
         ];
     }
+
+    public function CargarCamposTablas(Request $request){
+        if(!$request->ajax())  return  redirect('/'); 
+        $IdMovimiento = $request->nIdMovimiento;
+        $sql = "SHOW FULL columns from cotizaciones_det";
+        $Datos = DB::select($sql);
+        return [
+            'campos'=>$Datos
+        ];
+    }
 }
