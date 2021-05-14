@@ -28,134 +28,134 @@
                     </template>
                 </div>
                 <div class="card-body">
-                <div class="container-fluid">
-                    <div class="card card-info">
-                    <div class="card-header bg-head ">
-                        <h3 class="card-title">Criterios de Busqueda</h3>
-                    </div>
-                    <div class="card-info">
-                        <div class="card-body">
-                        <form role="form">
+                    <div class="container-fluid">
+                        <div class="card card-info">
+                        <div class="card-header bg-head ">
+                            <h3 class="card-title">Criterios de Busqueda</h3>
+                        </div>
+                        <div class="card-info">
+                            <div class="card-body">
+                            <form role="form">
+                                <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                    <label class="col-md-3 col-form-label">Nro. Documento</label>
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control" v-model="fillMovimiento.nNroDocumento" @keyup.enter="ListarMovimientos()"/>
+                                    </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                    <label class="col-md-3 col-form-label">Estado</label>
+                                    <div class="col-md-9">
+                                        <el-select v-model="fillMovimiento.cEstado" placeholder="Seleccione un estado" clearable @keyup.enter="ListarMovimientos()">
+                                        <el-option v-for="item in listEstados" :key="item.value" :label="item.label" :value="item.value">
+                                        </el-option>
+                                        </el-select>
+                                    </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                    <label class="col-md-3 col-form-label">Rago Fecha</label>
+                                    <div class="col-md-9">
+                                        <el-date-picker
+                                            v-model="fillMovimiento.oRangoFechas"
+                                            class="form-control"
+                                            type="daterange"
+                                            align="right"
+                                            unlink-panels
+                                            range-separator="A"
+                                            start-placeholder="Desde"
+                                            end-placeholder="Hasta"
+                                            :picker-options="pickerOptions"
+                                            format="yyyy-MM-dd"
+                                            value-format="yyyy-MM-dd">
+                                        </el-date-picker>
+                                    </div>
+                                    </div>
+                                </div>
+                                
+                                </div>
+                            </form>
+                            </div>
+                        </div>
+                        <div class="card-footer">
                             <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group row">
-                                <label class="col-md-3 col-form-label">Nro. Documento</label>
-                                <div class="col-md-9">
-                                    <input type="text" class="form-control" v-model="fillMovimiento.nNroDocumento" @keyup.enter="ListarMovimientos()"/>
-                                </div>
-                                </div>
+                            <div class="col-md4 offset-4">
+                                <button class="btn btn-flat btn-info" @click.prevent="ListarMovimientos()" v-loading.fullscreen.lock="fullscreenLoading">
+                                Buscar
+                                </button>
+                                <button class="btn btn-flat btn-default" @click.prevent="LimpiarFiltro()">
+                                Limpiar
+                                </button>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group row">
-                                <label class="col-md-3 col-form-label">Estado</label>
-                                <div class="col-md-9">
-                                    <el-select v-model="fillMovimiento.cEstado" placeholder="Seleccione un estado" clearable @keyup.enter="ListarMovimientos()">
-                                    <el-option v-for="item in listEstados" :key="item.value" :label="item.label" :value="item.value">
-                                    </el-option>
-                                    </el-select>
-                                </div>
-                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group row">
-                                <label class="col-md-3 col-form-label">Rago Fecha</label>
-                                <div class="col-md-9">
-                                    <el-date-picker
-                                        v-model="fillMovimiento.oRangoFechas"
-                                        class="form-control"
-                                        type="daterange"
-                                        align="right"
-                                        unlink-panels
-                                        range-separator="A"
-                                        start-placeholder="Desde"
-                                        end-placeholder="Hasta"
-                                        :picker-options="pickerOptions"
-                                        format="yyyy-MM-dd"
-                                        value-format="yyyy-MM-dd">
-                                    </el-date-picker>
-                                </div>
-                                </div>
-                            </div>
-                            
-                            </div>
-                        </form>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <div class="row">
-                        <div class="col-md4 offset-4">
-                            <button class="btn btn-flat btn-info" @click.prevent="ListarMovimientos()" v-loading.fullscreen.lock="fullscreenLoading">
-                            Buscar
-                            </button>
-                            <button class="btn btn-flat btn-default" @click.prevent="LimpiarFiltro()">
-                            Limpiar
-                            </button>
                         </div>
                         </div>
-                    </div>
-                    </div>
-                    <div class="card-info">
-                    <div class="card-body">
-                        <div class="card-header">
-                        <h3 class="card-title">Bandeja Resultados</h3>
-                        <div class="card-body table-responsive">
-                            <template v-if="ListarMovimientosPaginate.length <= 0">
-                            <div class="callout callout-info">
-                                <h5>Sin Resultados</h5>
-                            </div>
-                            </template>
-                            <table class="table table-hover table-bordered table-striped table-sm" v-else>
-                            <thead class="bg-info">
-                                <tr>
-                                <th class="texto-centrado">Nro</th>
-                                <th class="texto-centrado">Orden Compra</th>
-                                <th class="texto-centrado">Dirección</th>
-                                <th class="texto-centrado">Fecha Pedido</th>
-                                <th class="texto-centrado">Fecha Entrega</th>
-                                <th class="texto-centrado">Total</th>
-                                <th class="texto-centrado">Estado</th>
-                                <th class="texto-centrado">Comentarios</th>
-                                <th class="texto-centrado">Opcion</th>
-                                </tr>
-                            </thead>
-                            <tbody v-if="ListarMovimientosPaginate.length >0">
-                                <tr v-for="(mov) in ListarMovimientosPaginate" :key="mov.IdMovimiento">
-                                    <td class="texto-derecha" v-text="mov.NroDocumento"></td>
-                                    <td v-text="mov.Soporte"></td>
-                                    <td v-text="mov.direccion.NmDireccion"></td>
-                                    <td>{{moment(mov.FhAutoriza).format('MMMM DD YYYY, h:mm:ss a')}}</td>
-                                    <td>{{moment(mov.Fecha2).format('MMMM DD YYYY')}}</td>
-                                    <td class="texto-derecha" v-text="FormatoMoneda(mov.Total >0 ? mov.Total:0,2)"></td>
-                                    <td v-text="mov.Estado"></td>
-                                    <td v-text="mov.Comentarios"></td>
-                                    <td>
-                                        <router-link  :to="'/pedidos/ver/'+mov.IdDocumento+'/'+mov.IdMovimiento" class="btn btn-info btn-sm" v-if="listPermisosFilterByRolUser.includes('pedidos.ver') || listPermisosFilterByRolUser.includes('administrador.sistema')">
-                                            <i class="fas fa-eye"></i>
-                                        </router-link>
-                                    </td>
-                                </tr>
-                            </tbody>
-                            </table>
-                            <div class="card-footer clearfix">
-                                <ul class="pagination pagination-sm m-0 float-rigth">
-                                    <li class="page-item" v-if="this.pageNumber > 0">
-                                    <a href="#" class="page-link" @click.prevent="pagePrev()" >Ant</a>
-                                    </li>
+                        <div class="card-info">
+                        <div class="card-body">
+                            <div class="card-header">
+                            <h3 class="card-title">Bandeja Resultados</h3>
+                            <div class="card-body table-responsive">
+                                <template v-if="ListarMovimientosPaginate.length <= 0">
+                                <div class="callout callout-info">
+                                    <h5>Sin Resultados</h5>
+                                </div>
+                                </template>
+                                <table class="table table-hover table-bordered table-striped table-sm" v-else>
+                                <thead class="bg-info">
+                                    <tr>
+                                    <th class="texto-centrado">Nro</th>
+                                    <th class="texto-centrado">Orden Compra</th>
+                                    <th class="texto-centrado">Dirección</th>
+                                    <th class="texto-centrado">Fecha Pedido</th>
+                                    <th class="texto-centrado">Fecha Entrega</th>
+                                    <th class="texto-centrado">Total</th>
+                                    <th class="texto-centrado">Estado</th>
+                                    <th class="texto-centrado">Comentarios</th>
+                                    <th class="texto-centrado">Opcion</th>
+                                    </tr>
+                                </thead>
+                                <tbody v-if="ListarMovimientosPaginate.length >0">
+                                    <tr v-for="(mov) in ListarMovimientosPaginate" :key="mov.IdMovimiento">
+                                        <td class="texto-derecha" v-text="mov.NroDocumento"></td>
+                                        <td v-text="mov.Soporte"></td>
+                                        <td v-text="mov.direccion.NmDireccion"></td>
+                                        <td>{{moment(mov.FhAutoriza).format('MMMM DD YYYY, h:mm:ss a')}}</td>
+                                        <td>{{moment(mov.Fecha2).format('MMMM DD YYYY')}}</td>
+                                        <td class="texto-derecha" v-text="FormatoMoneda(mov.Total >0 ? mov.Total:0,2)"></td>
+                                        <td v-text="mov.Estado"></td>
+                                        <td v-text="mov.Comentarios"></td>
+                                        <td>
+                                            <router-link  :to="'/pedidos/ver/'+mov.IdDocumento+'/'+mov.IdMovimiento" class="btn btn-info btn-sm" v-if="listPermisosFilterByRolUser.includes('pedidos.ver') || listPermisosFilterByRolUser.includes('administrador.sistema')">
+                                                <i class="fas fa-eye"></i>
+                                            </router-link>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                </table>
+                                <div class="card-footer clearfix">
+                                    <ul class="pagination pagination-sm m-0 float-rigth">
+                                        <li class="page-item" v-if="this.pageNumber > 0">
+                                        <a href="#" class="page-link" @click.prevent="pagePrev()" >Ant</a>
+                                        </li>
 
-                                    <li class="page-item" v-for="(page, index) in pagesList" :key="index" :class="page == pageNumber ? 'active' : ''">
-                                    <a href="#" class="page-link" @click.prevent="selectPage(page)">{{ page + 1 }}</a>
-                                    </li>
+                                        <li class="page-item" v-for="(page, index) in pagesList" :key="index" :class="page == pageNumber ? 'active' : ''">
+                                        <a href="#" class="page-link" @click.prevent="selectPage(page)">{{ page + 1 }}</a>
+                                        </li>
 
-                                    <li class="page-item" v-if="pageNumber < pageCount - 1">
-                                    <a href="#" class="page-link" @click.prevent="nextPage()">Sig</a>
-                                    </li>
-                                </ul>
+                                        <li class="page-item" v-if="pageNumber < pageCount - 1">
+                                        <a href="#" class="page-link" @click.prevent="nextPage()">Sig</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                             </div>
                         </div>
                         </div>
                     </div>
-                    </div>
-                </div>
                 </div>
             </div>
         </div>

@@ -512,7 +512,7 @@ export default {
 
         ActualizarDatos(){
             let me = this;
-            this.fullscreenLoading = true;
+            const loader = this.loaderk();
             this.ValidarDatos();
             if(this.arrMensajeError.length <=0){
                 axios.put('/movimiento/editar',{
@@ -522,7 +522,7 @@ export default {
                     }
                 }).then(function (response) {
                     var respuesta = response.data;
-                    this.fullscreenLoading = false;
+                    loader.close();
                     Swal.fire({
                         position: 'top-center',
                         icon: 'success',
@@ -535,7 +535,7 @@ export default {
                 })
                 .catch(function (error) {
                     console.log(error);
-                    this.fullscreenLoading = false;
+                    loader.close();
                     if (error.response.data.status == 401) {
                         this.$router.push({name: 'login'})
                         location.reload();

@@ -19,6 +19,7 @@ import PedidosCrear from './components/modulos/movimientos/pedidos/create.vue';
 import RepVentas from './components/modulos/reportes/ventas.vue';
 import RepVentasGrilla from './components/modulos/reportes/ventasgeneral.vue';
 import Chat from './components/modulos/chat/chat.vue';
+import EditarCamposDocumentos from './components/modulos/configuraciones/vercamposdocumentos.vue';
 
 //rutas configuracion documentos
 import ConfigurarDocumentos from './components/modulos/configuraciones/configdocumentos.vue';
@@ -213,6 +214,15 @@ export default new Router({
             beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);
             }
+        },
+        {
+            path: '/configuracion/documentos/edit/:iddoc',
+            component: EditarCamposDocumentos,
+            name: 'camposdocumentos.index',
+            props: true,
+            /*beforeEnter: (to, from, next) => {
+                verificarAcceso(to, from, next);
+            }*/
         },
 
         //REPORTES
