@@ -8,6 +8,13 @@ use App\Model\Conceptos;
 use App\Model\Direcciones;
 class ControladorGeneral extends Controller
 {
+    public function __construct()
+    {
+        if(!\Auth::check()){
+           return  redirect('/login');
+        }
+    }
+
     
     public function ObtenerAsesores(Request $request)
     {

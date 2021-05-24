@@ -96,22 +96,30 @@
                             <p>Config. Documentos</p>
                         </router-link>
                     </li>
+                    <li class="nav-item">
+                        <router-link :to="'/ayudas/index'" class="nav-link">
+                            <i class="nav-icon fas fa-cogs"></i>
+                            <p>Config. Ayudas</p>
+                        </router-link>
+                    </li>
                 </template>
             </template>
             <template v-if="listPermisos.includes('reporte.ventas.index') || listPermisos.includes('administrador.sistema') ">
                 <li class="nav-header">REPORTES</li>
-                <li class="nav-item">
-                    <template v-if="listPermisos.includes('reporte.ventas.index') || listPermisos.includes('administrador.sistema')">
+                <template v-if="listPermisos.includes('reporte.ventas.index') || listPermisos.includes('administrador.sistema')">
+                    <li class="nav-item">
                         <router-link :to="'/reportes/ventas'" class="nav-link">
                             <i class="nav-icon fas fa-chart-bar"></i>
                             <p>Reporte Ventas Grafico</p>
                         </router-link>
+                    </li>
+                    <li class="nav-item">
                         <router-link :to="'/reportes/ventas/grilla'" class="nav-link">
                             <i class="nav-icon fas fa-table"></i>
                             <p>Reporte Ventas Tabla</p>
                         </router-link>
-                    </template>
-                </li>
+                    </li>
+                </template>
             </template>
             <template v-if="listPermisos.includes('chat.index') || listPermisos.includes('administrador.sistema') ">
                 <li class="nav-header">CHAT INTERNO</li>

@@ -35,6 +35,8 @@
         "moment": "^2.29.1",
         "pusher-js": "^7.0.3",
         "sweetalert2": "^10.13.0",
+        "vue-dragscroll": "^3.0.0",
+        "vue-pdf": "^4.2.0",
         "vue-property-decorator": "^8.5.1",
         "vue-router": "^3.4.9",
         "vue-select": "^3.11.2",

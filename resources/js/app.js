@@ -18,6 +18,9 @@ Vue.component('NuevoMovimiento', require('./components/plantilla/NuevoMovimiento
 Vue.component('AgregarProductosPedido', require('./components/plantilla/AgregarProductosPedido.vue').default);
 Vue.component('AgregarProductosMovimiento', require('./components/plantilla/AgregarProductosMovimiento.vue').default);
 Vue.component('logacciones', require('./components/plantilla/acciones/logacciones.vue').default);
+Vue.component('visualizar-archivo', require('./components/modulos/archivos/verdocumento.vue').default);
+Vue.component('ayudas', require('./components/modulos/ayudas/listaAyudas.vue').default);
+Vue.component('modal', require('./components/plantilla/modal/modal.vue').default);
 import locale from 'element-ui/lib/locale/lang/es';
 import router from './routes';
 
@@ -56,7 +59,9 @@ const app = new Vue({
         warningTimer: null, //Muestra el mensaje de alerta de cierre de session
         logoutTimer: null, //El tiempo que va esperar si no confirma el cierre de session 
         warningZone: false, // se puede utilizar para mostrar un mensaje de alerta.
-        usuario: []
+        usuario: [],
+        listaPermisosByUser: [],
+        listPermisosFilter: []
     },
 
     destroyed() {
@@ -133,6 +138,11 @@ const app = new Vue({
                     location.reload();
                     sessionStorage.clear();
                     this.fullscreenLoading = false;
+                } else {
+                    this.$router.push({ name: 'login' })
+                    location.reload();
+                    sessionStorage.clear();
+                    this.fullscreenLoading = false;
                 }
             }).catch(error => {
                 if (error.response.status == 401) {
@@ -140,9 +150,49 @@ const app = new Vue({
                     location.reload();
                     sessionStorage.clear();
                     this.fullscreenLoading = false;
+                } else {
+                    this.$router.push({ name: 'login' })
+                    location.reload();
+                    sessionStorage.clear();
+                    this.fullscreenLoading = false;
                 }
             })
-        }
+        },
+
+        RefrescarPermisos() {
+            let usuario = JSON.parse(sessionStorage.getItem('authUser'));
+            let url = "/permiso/ObtenerPermisosByUsuario";
+            axios.get(url, {
+                params: {
+                    'nIdRol': usuario.IdRol,
+                    'cUsuario': usuario.Usuario
+                }
+            }).then((response) => {
+                let Datos = response.data;
+                this.listaPermisosByUser = Datos.permisos;
+                this.filterPermisosByUsuario();
+            }).catch(error => {
+                console.log(error)
+                if (error.response.status == 401) {
+                    this.$router.push({ name: 'login' })
+                    location.reload();
+                    sessionStorage.clear();
+                    this.fullscreenLoading = false;
+                }
+            })
+        },
+
+
+        filterPermisosByUsuario() {
+            let me = this;
+            me.listaPermisosByUser.map(function(x, y) {
+                if (x.slug != null) {
+                    me.listPermisosFilter.push(x.slug);
+                }
+            })
+            sessionStorage.setItem('listPermisosFilterByRolUser', JSON.stringify(me.listPermisosFilter));
+            EventBus.$emit("notififyRolPermisosByUser", sessionStorage.getItem('listPermisosFilterByRolUser'));
+        },
     },
 
     mounted() {
@@ -151,6 +201,11 @@ const app = new Vue({
             window.addEventListener(event, this.resetTimer);
         }, this);
         this.usuario = JSON.parse(sessionStorage.getItem('authUser'));
+
+        this.permisos = JSON.parse(sessionStorage.getItem('listPermisosFilterByRolUser'));
+        if (this.usuario != '' && (this.permisos == null)) {
+            this.RefrescarPermisos();
+        }
     },
 
 

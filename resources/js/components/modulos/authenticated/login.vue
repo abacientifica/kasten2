@@ -153,5 +153,9 @@ export default {
         },
 
     },
+
+    mounted() {
+        
+    },
 }
 </script>

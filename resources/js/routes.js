@@ -24,6 +24,12 @@ import EditarCamposDocumentos from './components/modulos/configuraciones/vercamp
 //rutas configuracion documentos
 import ConfigurarDocumentos from './components/modulos/configuraciones/configdocumentos.vue';
 
+//Ayudas Kasten
+import AyudasKasten from './components/modulos/ayudas/index.vue';
+import Ayudas from './components/modulos/ayudas/ayudas.vue';
+import AyudasItems from './components/modulos/ayudas/ayudasitem.vue';
+
+//Pagina 404
 import Pagina404 from './components/plantilla/404.vue';
 
 function verificarAcceso(to, from, next) {
@@ -50,19 +56,20 @@ function verificarAcceso(to, from, next) {
         next('/login')
     }
 }
+
 export default new Router({
     routes: [{
             path: '/login',
             component: Login,
             name: 'login',
-            /*beforeEnter: (to, from, next) => {
+            beforeEnter: (to, from, next) => {
                 let authUser = JSON.parse(sessionStorage.getItem('authUser'));
                 if (authUser) {
                     next({ name: 'home.index' });
                 } else {
                     next();
                 }
-            }*/
+            }
         },
 
         {
@@ -257,6 +264,38 @@ export default new Router({
             path: '/chat',
             component: Chat,
             name: 'chat.index',
+            props: true,
+            /*beforeEnter: (to, from, next) => {
+                verificarAcceso(to, from, next);
+            }*/
+        },
+
+        //Ayudas Kasten
+        /**Ruta del chat */
+        {
+            path: '/ayudas/index',
+            component: AyudasKasten,
+            name: 'ayudas.index',
+            props: true,
+            /*beforeEnter: (to, from, next) => {
+                verificarAcceso(to, from, next);
+            }*/
+        },
+
+        {
+            path: '/ayudas/kasten/:id',
+            component: Ayudas,
+            name: 'ayudas.kasten',
+            props: true,
+            /*beforeEnter: (to, from, next) => {
+                verificarAcceso(to, from, next);
+            }*/
+        },
+
+        {
+            path: '/ayuda/detalles/:id',
+            component: AyudasItems,
+            name: 'ayuda.detalles',
             props: true,
             /*beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);
