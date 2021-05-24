@@ -91,7 +91,13 @@ export default {
                
             })
             .catch(function (error) {
-                console.log(error);
+                console.log("Error desde la consola "+error)
+                if(error.status == 419  || error.status == 401 || 1 ){
+                    sessionStorage.clear();
+                    location.reload();
+                    this.$router.push({name: 'login'})
+                    
+                }
             });
         },
 
@@ -105,7 +111,12 @@ export default {
                 me.loadVentas();
             })
             .catch(function (error) {
-                console.log(error);
+                if(error.status == 419 || error.status == 401){
+                    location.reload();
+                    sessionStorage.clear();
+                    this.$router.push({name: 'login'})
+                    
+                }
             });
         },
 

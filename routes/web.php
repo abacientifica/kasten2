@@ -101,6 +101,21 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/chat/getListarContactos', 'Administracion\ChatController@ListaContactos');
     Route::get('/chat/getListarConversaciones', 'Administracion\ChatController@ListaConversaciones');
     Route::post('/chat/setRegistrarMensaje', 'Administracion\ChatController@setRegistrarMensaje');
+
+    //Ayudas
+    Route::get('/ayudas/lista', 'Administracion\AyudasKastenController@index');
+    Route::post('/ayudas/guardar', 'Administracion\AyudasKastenController@registrarAyuda');
+    Route::post('/ayudas/registrarAyudaKasten', 'Administracion\AyudasKastenController@registrarAyudaDet');
+    Route::post('/ayudas/registrarAyudaItem', 'Administracion\AyudasKastenController@registrarAyudaItem');
+    Route::get('/ayuda/ListaAyudasDet', 'Administracion\AyudasKastenController@ObtenerAyudas');
+    Route::get('/ayuda/ListaItems', 'Administracion\AyudasKastenController@ObtenerAyudasItems');
+    Route::get('/ayuda/ObtenerAyudaDet', 'Administracion\AyudasKastenController@ObtenerAyudaDet');
+    Route::put('/ayuda/ActualizarAyuda', 'Administracion\AyudasKastenController@ActualizarAyuda');
+    Route::put('/ayuda/ActualizarAyudaDet', 'Administracion\AyudasKastenController@ActualizarAyudaDet');
+    Route::put('/ayuda/ActualizarAyudaDetItem', 'Administracion\AyudasKastenController@ActualizarAyudaDetItem');
+    Route::put('/ayuda/EliminarAyuda', 'Administracion\AyudasKastenController@EliminarAyuda');
+    Route::put('/ayuda/EliminarAyudaDet', 'Administracion\AyudasKastenController@EliminarAyudaDet');
+
 });
 Route::get('/{optional?}', function () {
 return view('app');

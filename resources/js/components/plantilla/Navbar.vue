@@ -33,6 +33,7 @@
                 </el-autocomplete>
             </div>
             </form>
+            
 
             <ul class="nav navbar-nav ml-auto">
                 <div class="menu-rigth" >
@@ -156,6 +157,9 @@ export default {
             this.getListarRolPermisosByUser();
         });
         this.getListarRolPermisosByUser();
+        if(JSON.parse(sessionStorage.getItem('listPermisosFilterByRolUser'))== null){
+            sessionStorage.setItem('authUser',JSON.stringify(this.usuario));
+        }
     }
     
 }

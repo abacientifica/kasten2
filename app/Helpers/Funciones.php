@@ -446,4 +446,51 @@ class Funciones{
             return 'application/octet-stream';
         }
     }
+
+    public static function obteneInformacionArchivo($Mime){
+        $Row = '';
+        $Mime = str_replace('data:','',$Mime);
+        switch ($Mime) {
+            case $Mime === 'image/png';
+                $Row = 'png-image/png';
+               
+                break;
+
+            case $Mime === 'image/jpeg';
+                $Row = 'jpeg-image/jpeg';
+               
+                break;
+
+            case $Mime === 'image/jpeg';
+                $Row = 'jpeg-image/jpeg';
+               
+                break;
+
+            case $Mime === 'image/gif';
+                $Row = 'gif-image/gif';
+               
+                break;
+
+            case $Mime === 'application/pdf';
+                $Row = 'pdf-application/pdf';
+               
+                break;
+
+            case $Mime === 'application/octet-stream';
+                $Row = 'pdf-application/pdf';
+               
+                break;
+
+            case $Mime === 'application/vnd.ms-office';
+                $Row = "xls-application/vnd.ms-excel";
+               
+                break;
+        }
+
+        $Row = explode('-',$Row);
+        return [
+            'ext'=>$Row[0],
+            'tipo'=>'data:'.$Row[1]
+        ];
+    }
 }
