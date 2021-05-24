@@ -45,10 +45,8 @@
 </template>
 <script>
 import pdf from 'vue-pdf'
-import { dragscroll } from 'vue-dragscroll'
 export default {
     props:["archivo","descripcion","ver"],
-    directives: { dragscroll },
 	components: {
 		pdf: pdf
     },
