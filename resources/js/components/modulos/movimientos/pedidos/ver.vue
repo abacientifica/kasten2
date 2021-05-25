@@ -19,24 +19,24 @@
         <div class="content container-fluid">
             <div class="card">
                 <div class="card-header bg-info">
-                    <template v-if="listPermisosFilterByRolUser.includes('pedidos.crear')">
-                        <div class="card-tools">
-                            <template v-if="listPermisosFilterByRolUser.includes('pedidos.crear') || listPermisosFilterByRolUser.includes('administrador.sistema')">
-                                <div class="card-tools">
-                                    <router-link class="btn btn-info btn-sm" :to="'/pedidos/crear/'+this.OpPedido">
-                                        <i class="fas fa-plus-square"></i> Nuevo Pedido
-                                    </router-link>
-                                </div>
-                            </template>
-                        </div>
-                    </template>
+                    <b class="aling-left" v-text="fillMovimiento.cNmCliente"></b>
                     <div class="card-tools">
-                        <router-link class="btn btn-info btn-sm" :to="'/pedidos/index'">
-                            <i class="fas fa-arrow-left"></i> Regresar
-                        </router-link>
+                        <div class="row">
+                            <div class="btn-group">
+                                <template v-if="listPermisosFilterByRolUser.includes('pedidos.crear')">
+                                    <template v-if="listPermisosFilterByRolUser.includes('pedidos.crear') || listPermisosFilterByRolUser.includes('administrador.sistema')">
+                                            <router-link class="btn btn-info btn-sm" :to="'/pedidos/crear/'+this.OpPedido">
+                                                <i class="fas fa-plus-square"></i> Nuevo Pedido
+                                            </router-link>
+                                    </template>
+                                </template>
+                                <router-link class="btn btn-info btn-sm" :to="'/pedidos/index'">
+                                    <i class="fas fa-arrow-left"></i> Regresar
+                                </router-link>
+                                <modal :titulo="'Ayudas Pedidos'" :iddoc="fillMovimiento.nIdDocumento" :url="'pedidos.crear'"></modal>
+                            </div>
+                        </div>
                     </div>
-                    <b v-text="fillMovimiento.cNmCliente"></b>
-                    
                 </div>
                 <div class="card-body">
                     <div class="col-md-12 btn-group-justified"  style="display:flex" >

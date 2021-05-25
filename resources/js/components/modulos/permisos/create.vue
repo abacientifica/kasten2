@@ -23,7 +23,7 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="card card-info">
-                                <div class="card-header">
+                                <div class="card-header bg-info">
                                     <h3 class="card-title">Formulario Registrar Permiso</h3>
                                 </div>
                                 <div class="card-body">

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
 class AyudasKastenController extends Controller
 {
     public function index(Request $request){
+        if(!$request->ajax()) return redirect("/");
         try {
             $ayudas = AyudasKasten::select('ayudas_kasten.id','ayudas_kasten.Nombre','IdDoc','IdSlug','Usuario','documentos.Nombre as NmDoc','permisos.nombre as Url')->
             leftjoin('documentos','documentos.IdDocumento','ayudas_kasten.IdDoc')->
@@ -32,6 +33,7 @@ class AyudasKastenController extends Controller
     }
 
     public function registrarAyuda(Request $request){
+        if(!$request->ajax()) return redirect("/");
         try {
             $ayuda = new AyudasKasten();
             $ayuda->Nombre = $request->params['NmAyuda'];
@@ -54,6 +56,7 @@ class AyudasKastenController extends Controller
     }
 
     public function registrarAyudaDet(Request $request){
+        if(!$request->ajax()) return redirect("/");
         try {
             $ayuda = new AyudasKastenDet();
             $ayuda->IdAyuda = $request->params['IdAyuda'];
@@ -86,6 +89,7 @@ class AyudasKastenController extends Controller
     }
 
     public function registrarAyudaItem(Request $request){
+        if(!$request->ajax()) return redirect("/");
         try {
             $ayuda = new AyudasKastenDetItem();
             $ayuda->IdAyudaDet = $request->fillCrearAyudaDet['IdAyudaDet'];
@@ -118,6 +122,7 @@ class AyudasKastenController extends Controller
     }
         
     public function ObtenerAyudaDet(Request $request){
+        if(!$request->ajax()) return redirect("/");
         try {
             $ayudasdet = AyudasKastenDet::findOrFail($request->id);
             return[
@@ -153,6 +158,7 @@ class AyudasKastenController extends Controller
     }
 
     public function ObtenerAyudasItems(Request $request){
+        if(!$request->ajax()) return redirect("/");
         try {
             $ayudasitems = AyudasKastenDetItem::all();
             return[
@@ -170,6 +176,7 @@ class AyudasKastenController extends Controller
     }
 
     public function ActualizarAyuda(Request $request){
+        if(!$request->ajax()) return redirect("/");
         try {
             $ayuda = AyudasKasten::find($request->params['id']);
             $ayuda->Nombre = $request->params['NmAyuda'];
@@ -191,6 +198,7 @@ class AyudasKastenController extends Controller
     }
 
     public function ActualizarAyudaDet(Request $request){
+        if(!$request->ajax()) return redirect("/");
         try {
             $ayuda =  AyudasKastenDet::findOrFail($request->params['id']);
             $ayuda->TituloAyuda = $request->params['TituloAyuda'];
@@ -225,6 +233,7 @@ class AyudasKastenController extends Controller
     }
 
     public function ActualizarAyudaDetItem(Request $request){
+        if(!$request->ajax()) return redirect("/");
         try {
             $ayuda =  AyudasKastenDetItem::findOrFail($request->id);
             $ayuda->IdAyudaDet = $request->fillCrearAyudaDet['IdAyudaDet'];
@@ -308,6 +317,42 @@ class AyudasKastenController extends Controller
                 'status'=>500,
                 'msg'=> "Ocurrio un error en la transacción" .$e->getMessage(),
                 'ayuda'=>[]
+            ];
+        }
+    }
+
+
+    public function ObtenerAyudasKasten(Request $request){
+        if(!$request->ajax()) return redirect("/");
+        try {
+            $iddoc = $request->iddoc;
+            $url = $request->url;
+            $Sql = "select ayudas_kasten_det.* from ayudas_kasten_det
+                    LEFT JOIN ayudas_kasten on ayudas_kasten.id = ayudas_kasten_det.IdAyuda
+                    LEFT JOIN documentos on documentos.IdDocumento = ayudas_kasten.IdDoc
+                    LEFT JOIN permisos on permisos.id = ayudas_kasten.IdSlug 
+                    where 1";
+            
+            if($iddoc !='' && $url !=''){
+                $Sql .= " and (ayudas_kasten.IdDoc =".$iddoc." or permisos.slug like '%".$url."%')";
+            }
+            else if($iddoc !='' ){
+                $Sql .= " and ayudas_kasten.IdDoc =".$iddoc;
+            }
+            else if($url !=''){
+                $Sql .= " and permisos.slug like '%".$url."%'";
+            }
+            $ayudasdet = DB::select($Sql);
+            return[
+                'status'=>201,
+                'msg'=> "consulta exitosa",
+                'ayudas'=>$ayudasdet
+            ];
+        } catch (Exception $e) {
+            return[
+                'status'=>500,
+                'msg'=> "Ocurrio un error en la consulta" .$e->getMessage(),
+                'ayudas'=>[]
             ];
         }
     }

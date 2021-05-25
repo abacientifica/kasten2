@@ -21,9 +21,12 @@
                 <div class="card-header">
                     <template v-if="listPermisosFilterByRolUser.includes('pedidos.crear') || listPermisosFilterByRolUser.includes('administrador.sistema')">
                         <div class="card-tools">
-                            <router-link class="btn btn-info btn-sm" :to="'/pedidos/crear/'+this.OpPedido">
+                            <div class="row">
+                                <router-link class="btn btn-info btn-sm" :to="'/pedidos/crear/'+this.OpPedido" style="margin-right: 1rem">
                                 <i class="fas fa-plus-square"></i> Nuevo Pedido
-                            </router-link>
+                                </router-link>
+                                <modal :titulo="'Ayudas Pedidos'" :iddoc="this.OpPedido" :url="'pedidos.crear'"></modal>
+                            </div>
                         </div>
                     </template>
                 </div>
