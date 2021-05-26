@@ -92,7 +92,7 @@ export default {
             })
             .catch(function (error) {
                 console.log("Error desde la consola "+error)
-                if(error.status == 419  || error.status == 401 || 1 ){
+                if(error.status == 419  || error.status == 401){
                     sessionStorage.clear();
                     location.reload();
                     this.$router.push({name: 'login'})
