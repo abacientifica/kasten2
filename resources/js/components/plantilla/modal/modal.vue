@@ -1,30 +1,34 @@
 <template>
     <div>
     
-    <el-button type="text" @click="outerVisible = true" class="btn btn-secondary"><i class="fas fa-question-circle"></i></el-button>
-    
-    <el-dialog title="Outer Dialog" :visible.sync="outerVisible">
-        <el-dialog
-            width="30%"
-            title="Inner Dialog"
-            :visible.sync="innerVisible"
-            append-to-body>
-        </el-dialog>
+    <a @click="outerVisible = true" class="btn btn-secondary btn-sm fas fa-question-circle margin-left-1"></a>
+    <el-dialog :title="titulo" :visible.sync="outerVisible">
+        <ayudas :iddoc="iddoc" :url="slug" ></ayudas>
         <div slot="footer" class="dialog-footer">
-        <el-button @click="outerVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="innerVisible = true">open the inner Dialog</el-button>
+        <el-button @click="outerVisible = false">Cerrar</el-button>
         </div>
     </el-dialog>
     </div>
 </template>
 <script>
 export default {
-    props:['titulo','icono','opcion'],
+    props:['titulo','iddoc','url'],
     data() {
         return {
-            titulo:'',
+            opcion:'',
+            doc: '',
+            slug:'',
             outerVisible: false,
-            innerVisible: false
+            innerVisible: false,
+
+            modalShow: false,
+            mostrarModal: {
+                display: 'block',
+                background: '#0000006b',
+            },
+            ocultarModal: {
+                display: 'none',
+            },
         }
     },
 }

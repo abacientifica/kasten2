@@ -115,6 +115,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::put('/ayuda/ActualizarAyudaDetItem', 'Administracion\AyudasKastenController@ActualizarAyudaDetItem');
     Route::put('/ayuda/EliminarAyuda', 'Administracion\AyudasKastenController@EliminarAyuda');
     Route::put('/ayuda/EliminarAyudaDet', 'Administracion\AyudasKastenController@EliminarAyudaDet');
+    Route::get('/ayuda/ObtenerAyudasKasten', 'Administracion\AyudasKastenController@ObtenerAyudasKasten');
 
 });
 Route::get('/{optional?}', function () {

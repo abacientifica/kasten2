@@ -14,9 +14,12 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-tools">
-                        <router-link class="btn btn-info btn-sm" :to="'/pedidos/index'">
-                            <i class="fas fa-arrow-left"></i> Regresar
-                        </router-link>
+                        <div class="row">
+                            <router-link class="btn btn-info btn-sm" :to="'/pedidos/index'">
+                                <i class="fas fa-arrow-left"></i> Regresar
+                            </router-link>
+                            <modal :titulo="'Ayudas Pedidos'" :iddoc="IdDocPed" :url="'pedidos.crear'"></modal>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">

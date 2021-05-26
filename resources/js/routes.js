@@ -277,9 +277,9 @@ export default new Router({
             component: AyudasKasten,
             name: 'ayudas.index',
             props: true,
-            /*beforeEnter: (to, from, next) => {
+            beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);
-            }*/
+            }
         },
 
         {

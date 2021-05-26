@@ -51,7 +51,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="item in ListarAyudasItemPaginate" :key="item.IdDocumento">
+                                <tr v-for="(item,index) in ListarAyudasItemPaginate" :key="item.IdDocumento">
                                     <td>
                                         <button type="button"  class="btn btn-info btn-sm" >
                                             <router-link :to="'/ayuda/detalles/'+item.id">
@@ -67,7 +67,7 @@
                                     </td>
                                     <td v-text="item.TituloAyuda"></td>
                                     <td v-text="item.Descripcion"></td>
-                                    <td><a @click="verDocPdf()"><visualizar-archivo  v-if="item.Imagen !=null" :archivo="item.Imagen"  :descripcion="item.Descripcion" :ver="verPdf"></visualizar-archivo></a></td>
+                                    <td><a  v-if="item.Imagen !=null"  @click.prevent="verDocPdf(item)"><visualizar-archivo v-model="archivo"  :archivo="item.Imagen"  :descripcion="item.Descripcion" :titulo="item.TituloAyuda" :ver="verPdf" :key="index"></visualizar-archivo></a></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -147,6 +147,7 @@
 export default {
     data() {
         return {
+            archivo:false,
             modal:0,
             tituloModal:'',
             mensajeError:[],
@@ -184,6 +185,11 @@ export default {
             accionModal:'',
             tituloModal:'',
             verPdf:false,
+            //variables Archivo
+            RutaArchivo:null,
+            DescripcionArchivo:null,
+            tituloArchivo:null
+
 
         }
     },
@@ -460,8 +466,18 @@ export default {
             }
         },
 
-        verDocPdf(){
+        verDocPdf(item){
             this.verPdf=true;
+            this.archivo = true;
+        },
+
+        cerrarVisor(){
+            console.log("Recibio emision cerrar")
+            this.verPdf=false;
+            this.RutaArchivo=null;
+            this.DescripcionArchivo=null;
+            this.tituloArchivo=null;
+            console.log(this.RutaArchivo)
         },
 
 
@@ -478,6 +494,7 @@ export default {
         selectPage(page) {
             this.pageNumber = page;
         },    
+
     },
 
     mounted() {//Inicializa el constructor
