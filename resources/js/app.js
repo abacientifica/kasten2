@@ -204,7 +204,7 @@ const app = new Vue({
 
         this.permisos = JSON.parse(sessionStorage.getItem('listPermisosFilterByRolUser'));
         if (this.usuario != '' && (this.permisos == null)) {
-            this.RefrescarPermisos();
+            //this.RefrescarPermisos();
         }
     },
 
