@@ -93,7 +93,6 @@ export default {
             .catch(function (error) {
                 let msgerror = error.message.split(" ");
                 let coderror = msgerror.find(error => error == '401');
-                console.log(msgerror)
                 if(coderror == 401 || coderror == 419){
                     sessionStorage.clear();
                     localStorage.clear();
