@@ -17,11 +17,15 @@
                         
                     </div>
                     <div class="modal-body">
-                        <input type="checkbox" v-model="show">
-                        <input v-model.number="page" type="number" style="width: 5em"> /{{numPages}}
-                        <button class="btn btn-info btn-sm" @click="rotate += 90">&#x27F3;</button>
-                        <button class="btn btn-info btn-sm" @click="rotate -= 90">&#x27F2;</button>
-                        <button class="btn btn-success btn-sm" @click="$refs.pdf.print()">guardar</button>
+                        <div class="card-tools" style="display:flex">
+                            Pagina :
+                            <select class="form-control col-md-1" v-model.number="page">
+                                <option v-for="index in numPages" :key="index.index" v-text="index"></option>
+                            </select>  De : {{numPages}}
+                            <button class="btn btn-info btn-sm" @click="rotate += 90">&#x27F3;</button>
+                            <button class="btn btn-info btn-sm" @click="rotate -= 90">&#x27F2;</button>
+                            <button class="btn btn-success btn-sm" @click="$refs.pdf.print()"><i class="fas fa-save"></i> Guardar</button>
+                        </div>
                         <div style="width: 100%; overflow: auto;height: 600px;">
                             <div v-if="loadedRatio > 0 && loadedRatio < 1" style="background-color: green; color: white; text-align: center" :style="{ width: loadedRatio * 100 + '%' }">{{ Math.floor(loadedRatio * 100) }}%</div>
                             <pdf v-if="show" ref="pdf" style="border: 1px solid #333366" :src="src" :page="page" :rotate="rotate" @password="password" @progress="loadedRatio = $event" @error="error" @num-pages="numPages = $event" @link-clicked="page = $event"></pdf>
