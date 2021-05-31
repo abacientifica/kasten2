@@ -33,9 +33,9 @@ import AyudasItems from './components/modulos/ayudas/ayudasitem.vue';
 import Pagina404 from './components/plantilla/404.vue';
 
 function verificarAcceso(to, from, next) {
-    let authUser = JSON.parse(sessionStorage.getItem('authUser'));
-    if (authUser) {
-        let listaPermisosByUser = JSON.parse(sessionStorage.getItem('listPermisosFilterByRolUser'));
+    let authUser = JSON.parse(localStorage.getItem('authUser'));
+    if (authUser && validUsuario()) {
+        let listaPermisosByUser = JSON.parse(localStorage.getItem('listPermisosFilterByRolUser'));
         if (listaPermisosByUser.includes(to.name) || listaPermisosByUser.includes('administrador.sistema') || to.name == 'home.index') {
             next();
         } else {
@@ -55,6 +55,24 @@ function verificarAcceso(to, from, next) {
     } else {
         next('/login')
     }
+}
+
+function validUsuario() {
+    let user = true;
+    axios.get('/authenticated/getRefrescarUsaurioAutentificado').then(function(response) {
+        if (response.data.length > 0) {
+            user = true;
+        }
+    }).catch((error) => {
+        let msgerror = error.message.split(" ");
+        let coderror = msgerror.find(error => error == '401') ? msgerror.find(error => error == '401') : msgerror.find(error => error == '419');
+        if (coderror == 401 || coderror == 419) {
+            sessionStorage.clear();
+            localStorage.clear();
+        }
+        user = false;
+    });
+    return user;
 }
 
 export default new Router({

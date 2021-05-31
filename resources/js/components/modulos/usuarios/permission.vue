@@ -322,6 +322,7 @@ export default {
                         }
                     });
                     sessionStorage.setItem('listPermisosFilterByRolUser',JSON.stringify(this.listPermisosUserFilter));
+                    localStorage.setItem('listPermisosFilterByRolUser',JSON.stringify(this.listPermisosUserFilter));
                     EventBus.$emit("notififyRolPermisosByUser",me.listPermisosUserFilter);
                 }
             },

@@ -255,7 +255,7 @@ class MovimientosController extends Controller
                 $strMensaje = "El usuario  " . \Auth::user()->Nombres . " " . \Auth::user()->Apellidos . " de la institución " . $DatosCliente[0]->NombreCorto . " acaba de autorizar el pedido externo " . $arMovimiento->IdMovimiento;
                 //Se comenta el envio de email
                 return[
-                    'msg'=>"El movimiento ha sido autorizado con exito !!".$request->params['nIdMovimiento'],
+                    'msg'=>"El movimiento ha sido autorizado con exito !!",
                     'status'=>201,
                     'Email'=>\Funciones::EnviarEmail('Autorización Pedido Externo',$EmailAsesor,$strMensaje)
                 ];

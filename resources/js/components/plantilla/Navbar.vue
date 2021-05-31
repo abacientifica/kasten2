@@ -137,13 +137,18 @@ export default {
                 if (response.data.code == 204) {
                     this.$router.push({name: 'login'})
                     location.reload();
+                    localStorage.clear();
                     sessionStorage.clear();
                     this.fullscreenLoading = false;
                 }
             }).catch(error => {
-                if (error.response.status == 401) {
+                let msgerror = error.message.split(" ");
+                let coderror = msgerror.find(error => error == '401') ?  msgerror.find(error => error == '401') :  msgerror.find(error => error == '419');
+                coderror =='' ? msgerror.find(error => error == '401') :msgerror.find(error => error == '419');
+                if(coderror == 401 || coderror == 419){
                     this.$router.push({name: 'login'})
                     location.reload();
+                    localStorage.clear();
                     sessionStorage.clear();
                     this.fullscreenLoading = false;
             }

@@ -49,8 +49,10 @@ export default {
                     sessionStorage.clear();
                 }
             }).catch(error => {
-                console.log("Error"+error)
-                if (error.response.status == 401) {
+                let msgerror = error.message.split(" ");
+                let coderror = msgerror.find(error => error == '401') ?  msgerror.find(error => error == '401') :  msgerror.find(error => error == '419');
+                coderror =='' ? msgerror.find(error => error == '401') :msgerror.find(error => error == '419');
+                if(coderror == 401 || coderror == 419){
                     this.$router.push({name: 'login'})
                     location.reload();
                     sessionStorage.clear();
@@ -65,7 +67,7 @@ export default {
         });
         //Con json.parse recuperamos un arreglo de json.
         //console.log(JSON.parse(sessionStorage.getItem('listPermisosFilterByRolUser')));
-        this.listPermisosFilterByRolUser = sessionStorage.getItem('listPermisosFilterByRolUser');
+        this.listPermisosFilterByRolUser = localStorage.getItem('listPermisosFilterByRolUser');
         //console.log(this.listPermisosFilterByRolUser)
         EventBus.$on('notififyRolPermisosByUser',data =>{
             console.log("Evento ejecutado desde component App.vue")
