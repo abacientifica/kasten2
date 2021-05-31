@@ -140,19 +140,11 @@ const app = new Vue({
             this.fullscreenLoading = true;
             var url = '/authenticated/logout'
             axios.post(url).then(response => {
-                if (response.data.code == 204) {
-                    this.$router.push({ name: 'login' })
-                    location.reload();
-                    localStorage.clear();
-                    sessionStorage.clear();
-                    this.fullscreenLoading = false;
-                } else {
-                    this.$router.push({ name: 'login' })
-                    location.reload();
-                    sessionStorage.clear();
-                    localStorage.clear();
-                    this.fullscreenLoading = false;
-                }
+                this.$router.push({ name: 'login' })
+                location.reload();
+                sessionStorage.clear();
+                localStorage.clear();
+                this.fullscreenLoading = false;
             }).catch(error => {
                 if (error.response.status == 401) {
                     this.$router.push({ name: 'login' })
