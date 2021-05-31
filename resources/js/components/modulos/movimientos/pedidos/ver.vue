@@ -789,8 +789,8 @@ export default {
     },
     mounted() {
         this.ListarMovimiento(this.$attrs.id,this.$attrs.iddoc);
-        this.listPermisosFilterByRolUser = sessionStorage.getItem('listPermisosFilterByRolUser');
-        this.usuario = JSON.parse(sessionStorage.getItem('authUser'));
+        this.listPermisosFilterByRolUser = localStorage.getItem('listPermisosFilterByRolUser');
+        this.usuario = JSON.parse(localStorage.getItem('authUser'));
         if(this.usuario.Tipo == 2){
             this.OpPedido = 61;
         }
