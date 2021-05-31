@@ -30,6 +30,8 @@ window.Vue.use(ElementUI, { locale }); //Con esta declaracion lo utilizamos en t
 import 'element-ui/lib/theme-chalk/index.css';
 import vSelect from "vue-select";
 
+import Vuex, { mapActions, mapGetters } from 'vuex'
+
 import Vuesax from 'vuesax'
 import 'vuesax/dist/vuesax.css' //Vuesax styles
 Vue.use(Vuesax, {
@@ -49,10 +51,14 @@ import moment from 'moment';
 moment.locale('es');
 window.moment = moment;
 
+import VueSessionStorage from 'vue-sessionstorage'
+Vue.use(VueSessionStorage)
+import store from './store'
+
 const app = new Vue({
     el: '#app',
     router,
-
+    store,
     data: {
         //Variables para el cierre de session automatico
         events: ['click', 'mousemove', 'mousedown', 'scroll', 'keypress', 'load'],
@@ -73,8 +79,9 @@ const app = new Vue({
     },
 
     methods: {
-        //Inicio metodos para cierre de sesion automatico 
 
+
+        //Inicio metodos para cierre de sesion automatico 
         setTimers: function() {
             //Iniciamos el contador
             this.warningTimer = setTimeout(this.warningMessage, 14 * 60 * 1000); // 14 minutos  60 * 1000
@@ -136,23 +143,27 @@ const app = new Vue({
                 if (response.data.code == 204) {
                     this.$router.push({ name: 'login' })
                     location.reload();
+                    localStorage.clear();
                     sessionStorage.clear();
                     this.fullscreenLoading = false;
                 } else {
                     this.$router.push({ name: 'login' })
                     location.reload();
                     sessionStorage.clear();
+                    localStorage.clear();
                     this.fullscreenLoading = false;
                 }
             }).catch(error => {
                 if (error.response.status == 401) {
                     this.$router.push({ name: 'login' })
                     location.reload();
+                    localStorage.clear();
                     sessionStorage.clear();
                     this.fullscreenLoading = false;
                 } else {
                     this.$router.push({ name: 'login' })
                     location.reload();
+                    localStorage.clear();
                     sessionStorage.clear();
                     this.fullscreenLoading = false;
                 }
@@ -193,6 +204,8 @@ const app = new Vue({
             sessionStorage.setItem('listPermisosFilterByRolUser', JSON.stringify(me.listPermisosFilter));
             EventBus.$emit("notififyRolPermisosByUser", sessionStorage.getItem('listPermisosFilterByRolUser'));
         },
+
+        ...mapActions('PermisosUsuario', ['SET_PERMISOS']),
     },
 
     mounted() {
@@ -200,11 +213,15 @@ const app = new Vue({
         this.events.forEach(function(event) {
             window.addEventListener(event, this.resetTimer);
         }, this);
-        this.usuario = JSON.parse(sessionStorage.getItem('authUser'));
-
-        this.permisos = JSON.parse(sessionStorage.getItem('listPermisosFilterByRolUser'));
-        if (this.usuario != '' && (this.permisos == null)) {
-            //this.RefrescarPermisos();
+        this.usuario = JSON.parse(sessionStorage.getItem('authUser')) ? JSON.parse(sessionStorage.getItem('authUser')) : JSON.parse(localStorage.getItem('authUser'));
+        if (this.usuario) {
+            //this.permisos = JSON.parse(sessionStorage.getItem('listPermisosFilterByRolUser'));
+            //console.log(this.usuario.Usuario)
+            this.SET_PERMISOS(this.usuario.Usuario);
+        } else {
+            this.SET_PERMISOS(null);
+            localStorage.clear();
+            sessionStorage.clear();
         }
     },
 

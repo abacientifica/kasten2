@@ -98,7 +98,12 @@ class PermisosController extends Controller
 
     public function ObtenerPermisosUsuario(Request $request){
         if(!$request->ajax()) return redirect("/");
-
+        
+        $IdRol = isset($request->nIdRol) ? $request->nIdRol : 0;
+        if($IdRol == 0){
+            $user = DB::select("select * from usuarios where Usuario ='".$request->cUsuario."'");
+            $IdRol = $user[0]->IdRol >0 ? $user[0]->IdRol : 0;
+        }
         $Sql = "select permisos.id,permisos.nombre,permisos.slug from usuarios
                 LEFT JOIN permisos_usuario on permisos_usuario.usuario = usuarios.Usuario
                 LEFT JOIN permisos on permisos.id = permisos_usuario.id_permiso
@@ -106,7 +111,7 @@ class PermisosController extends Controller
                 union 
                 select permisos.id,permisos.nombre,permisos.slug from roles_permisos
                 LEFT JOIN permisos on permisos.id = roles_permisos.id_permiso
-                where  roles_permisos.id_rol = ".$request->nIdRol;
+                where  roles_permisos.id_rol = ".$IdRol;
         $Permisos = DB::select($Sql);
         return ["permisos"=>$Permisos];
     }

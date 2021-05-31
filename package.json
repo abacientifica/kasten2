@@ -40,6 +40,8 @@
         "vue-property-decorator": "^8.5.1",
         "vue-router": "^3.4.9",
         "vue-select": "^3.11.2",
-        "vuesax": "^4.0.1-alpha.25"
+        "vue-sessionstorage": "^1.0.0",
+        "vuesax": "^4.0.1-alpha.25",
+        "vuex": "^3.6.2"
     }
 }

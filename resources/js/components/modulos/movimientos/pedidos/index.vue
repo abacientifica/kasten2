@@ -533,7 +533,7 @@ export default {
     },
     mounted() {
        
-        this.listPermisosFilterByRolUser = sessionStorage.getItem('listPermisosFilterByRolUser');
+        this.listPermisosFilterByRolUser = localStorage.getItem('listPermisosFilterByRolUser');
         this.listPermisosFilterByRolUser == null ? [] : this.listPermisosFilterByRolUser;
         this.usuario = JSON.parse(sessionStorage.getItem('authUser'));
         if(this.usuario.Tipo == 2){

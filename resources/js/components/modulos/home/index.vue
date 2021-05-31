@@ -91,9 +91,12 @@ export default {
                
             })
             .catch(function (error) {
-                console.log("Error desde la consola "+error)
-                if(error.status == 419  || error.status == 401){
+                let msgerror = error.message.split(" ");
+                let coderror = msgerror.find(error => error == '401');
+                console.log(msgerror)
+                if(coderror == 401 || coderror == 419){
                     sessionStorage.clear();
+                    localStorage.clear();
                     location.reload();
                     this.$router.push({name: 'login'})
                     
@@ -111,9 +114,13 @@ export default {
                 me.loadVentas();
             })
             .catch(function (error) {
-                if(error.status == 419 || error.status == 401){
-                    location.reload();
+                let msgerror = error.message.split(" ");
+                let coderror = msgerror.find(error => error == '401') ?  msgerror.find(error => error == '401') :  msgerror.find(error => error == '419');
+                coderror =='' ? msgerror.find(error => error == '401') :coderror;
+                if(coderror == 401 || coderror == 419){
                     sessionStorage.clear();
+                    localStorage.clear();
+                    location.reload();
                     this.$router.push({name: 'login'})
                     
                 }
