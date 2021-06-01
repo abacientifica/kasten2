@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\MessageBag;
+use App\Events\UserLogin;
 class LoginController extends Controller
 {
     /*
@@ -35,6 +36,7 @@ class LoginController extends Controller
         $errors = new MessageBag;
         $rpta = Auth::attempt(['Usuario'=>$request->cUsuario,'password'=>$request->cContrasena,'Inactivo'=>0]);
         if($rpta){
+            event(new UserLogin(\Auth::user()));
             return [
                 'authUser'=> \Auth::user(),
                 'status'=>200
