@@ -11,6 +11,7 @@ use App\Model\Documentos;
 use App\Model\MovimientosDet;
 use App\Model\Terceros;
 use App\Model\RevisionDoc;
+use App\Model\Item;
 
 class MovimientosController extends Controller
 {
@@ -79,6 +80,7 @@ class MovimientosController extends Controller
             $DatosMovimientoDetalle = $request->params['arraryDetallesMovimiento'];
 
             $Doc =  Documentos::findOrFail($DatosMovimiento['nIdDocumento']);
+            
             if($DatosMovimiento['nIdTercero'] >0){
                 $Tercero = Terceros::findOrFail($DatosMovimiento['nIdTercero']);
             }
@@ -113,6 +115,7 @@ class MovimientosController extends Controller
             $TotalEnc = 0; 
             foreach ( $DatosMovimientoDetalle as  $ep => $det ) {
                 $MovimientoDet = new MovimientosDet();
+                $Item = Item::findOrFail($det['Id_Item']);
                 $MovimientoDet->IdMovimiento = $arMovimiento->IdMovimiento;
                 $MovimientoDet->TpDocumento = $arMovimiento->TpDocumento;
                 $MovimientoDet->IdDocumento = $arMovimiento->IdDocumento;
@@ -125,6 +128,7 @@ class MovimientosController extends Controller
                 $MovimientoDet->PorIva = $det['Iva'];
                 $MovimientoDet->Precio = $det['Precio'];
                 $MovimientoDet->Estado ='DIGITADO';
+                $MovimientoDet->UM = $Item->UMM;
 
                 //iva
                 $TotalIva = ((($MovimientoDet->Precio - $MovimientoDet->TotalDescuento) * $MovimientoDet->PorIva) / 100) * $MovimientoDet->Cantidad;
@@ -252,7 +256,7 @@ class MovimientosController extends Controller
                 \Funciones::Consecutivo($request->params['nIdMovimiento']);
                 //Enviamos el Email de alerta a el asesor
                 $DatosCliente = \Funciones::ObtenerTercero($arMovimiento->IdTercero);
-                $strMensaje = "El usuario  " . \Auth::user()->Nombres . " " . \Auth::user()->Apellidos . " de la institución " . $DatosCliente[0]->NombreCorto . " acaba de autorizar el pedido externo " . $arMovimiento->IdMovimiento;
+                $strMensaje = "El usuario  " . \Auth::user()->Nombres . " " . \Auth::user()->Apellidos . " de la institución " . $DatosCliente[0]->NombreCorto . " acaba de autorizar el pedido externo " . $arMovimiento->NroDocumento;
                 //Se comenta el envio de email
                 return[
                     'msg'=>"El movimiento ha sido autorizado con exito !!",
@@ -390,6 +394,7 @@ class MovimientosController extends Controller
             $TotalEnc = 0; 
             foreach ( $DatosMovimientoDetalle as  $ep => $det ) {
                 $MovimientoDet = new MovimientosDet();
+                $Item = Item::findOrFail($det['Id_Item']);
                 $MovimientoDet->IdMovimiento = $arMovimiento->IdMovimiento;
                 $MovimientoDet->TpDocumento = $arMovimiento->TpDocumento;
                 $MovimientoDet->IdDocumento = $arMovimiento->IdDocumento;
@@ -402,6 +407,7 @@ class MovimientosController extends Controller
                 $MovimientoDet->PorIva = $det['Iva'];
                 $MovimientoDet->Precio = $det['Precio'];
                 $MovimientoDet->Estado ='DIGITADO';
+                $MovimientoDet->UM = $Item->UMM;
                 $MovimientoDet->save();
             }
             $MovDets = MovimientosDet::where('IdMovimiento',$arMovimiento->IdMovimiento)->get();
