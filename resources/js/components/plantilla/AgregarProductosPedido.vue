@@ -247,7 +247,8 @@ export default {
                 cUMM:'',
                 cReferencia:'',
                 nCantidad:0,
-                nCantMinimaVenta:0
+                nCantMinimaVenta:0,
+                nIdLista:''
             },
             filtroProd:'',
             tituloModal:'',
@@ -322,6 +323,7 @@ export default {
                     me.fillProdNuevo.cNmMarca = respuesta.NmMarca;
                     me.fillProdNuevo.nCantMinimaVenta = respuesta.CantMinimaVenta;
                     me.fillProdNuevo.nCantidad = 1;
+                    me.fillProdNuevo.nIdLista = respuesta.IdListaPreciosDet
                 }
                 else{
                     me.$vs.notification({
@@ -405,7 +407,8 @@ export default {
                     Precio:articulo.Precio,
                     Iva:articulo.Iva,
                     UMM:articulo.UMM,
-                    UMV:articulo.UMV
+                    UMV:articulo.UMV,
+                    IdLista : articulo.IdListaPreciosDet
                 });
                 Swal.fire({
                     icon :'success',
@@ -497,6 +500,7 @@ export default {
                     'Iva':this.fillProdNuevo.nIva,
                     'Cantidad':this.fillProdNuevo.nCantidad,
                     'CantMinimaVenta':this.fillProdNuevo.nCantMinimaVenta,
+                    'IdLista':this.fillProdNuevo.nIdLista,
                 });
 
                 let prodNuevo = this.fillProdNuevo;
@@ -510,7 +514,8 @@ export default {
                 prodNuevo.cUMM='';
                 prodNuevo.cReferencia='';
                 prodNuevo.nCantidad=0;
-                prodNuevo.nCantMinimaVenta=0
+                prodNuevo.nCantMinimaVenta=0,
+                prodNuevo.nIdLista=''
             }
         },
 

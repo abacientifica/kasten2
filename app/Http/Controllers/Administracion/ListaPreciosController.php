@@ -22,7 +22,7 @@ class ListaPreciosController extends Controller
             $MarcasTercero = DB::select("select * from marcas_terceros where IdTercero=".$Direccion->IdTercero);
             $Sql = "select `lista_precios_det`.`Id_Item` as `Item`, `item`.`Descripcion` as `Descripcion`, `item`.`Disponible` as `Disponible`, `item`.`Inactivo` as `Inactivo`, lista_precios_det.Precio,
                     `item`.`Por_Iva` as `Por_Iva`,'' as Venta,'0' as Cantidad,item.Por_Iva as Iva,lista_precios_det.FhHasta
-                    ,NmMarca,CodTercero,lista.CantMinimaVenta,if(FCCompraCliente >0 , FCCompraCliente, FactorVenta) as FactorVenta,lista_precios_det.UMV,item.UMM,lista.RefFabricante
+                    ,NmMarca,CodTercero,lista.CantMinimaVenta,if(FCCompraCliente >0 , FCCompraCliente, FactorVenta) as FactorVenta,lista_precios_det.UMV,item.UMM,lista.RefFabricante,lista_precios_det.IdListaPreciosDet
                     from  lista_precios_det
                     LEFT JOIN lista_precios on lista_precios.IdListaPrecios = lista_precios_det.IdListaPrecios
                     LEFT JOIN direcciones on direcciones.IdDireccion = ".$IdDir."
@@ -37,15 +37,16 @@ class ListaPreciosController extends Controller
                 $Sql.= " and  marcas.IdMarca in (select marcas_terceros.IdMarca from marcas_terceros where IdTercero = '".$Direccion->IdTercero."')";
             }
             if($limit != ''){
-                $Sql.= " and lista_precios.IdListaPrecios = ".$Direccion->IdListaPreciosDireccion." and  lista_precios_det.FhHasta >= DATE_SUB(CURDATE(),INTERVAL 12 MONTH) and item.Inactivo=0 and IdKit =0 order by Venta DESC limit 1";
+                $Sql.= " and lista_precios.IdListaPrecios = ".$Direccion->IdListaPreciosDireccion." and  lista_precios_det.FhHasta >= DATE_SUB(CURDATE(),INTERVAL 24 MONTH) and item.Inactivo=0 and IdKit =0 order by Venta DESC limit 1";
             }
             else{
-                $Sql.= " and lista_precios.IdListaPrecios = ".$Direccion->IdListaPreciosDireccion." and  lista_precios_det.FhHasta >= DATE_SUB(CURDATE(),INTERVAL 12 MONTH) and item.Inactivo=0 and IdKit =0 order by Venta DESC limit 100";
+                $Sql.= " and lista_precios.IdListaPrecios = ".$Direccion->IdListaPreciosDireccion." and  lista_precios_det.FhHasta >= DATE_SUB(CURDATE(),INTERVAL 24 MONTH) and item.Inactivo=0 and IdKit =0 order by Venta DESC limit 100";
             }
             $Lista = DB::select($Sql);
         }
         return[
-            'productos'=>$Lista
+            'productos'=>$Lista,
+            'sql'=>$Sql
         ];
     }
 }
