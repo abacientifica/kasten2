@@ -12,6 +12,7 @@ use App\Model\MovimientosDet;
 use App\Model\Terceros;
 use App\Model\RevisionDoc;
 use App\Model\Item;
+use App\Model\ListaPreciosDet;
 
 class MovimientosController extends Controller
 {
@@ -124,6 +125,7 @@ class MovimientosController extends Controller
                 $MovimientoDet->Cantidad = $det['Cantidad'];
                 $MovimientoDet->CantFactor = $MovimientoDet->Cantidad;
                 $MovimientoDet->Operacion = $Doc->Operacion;
+                $MovimientoDet->IdLista = $det['IdLista']; 
                 $MovimientoDet->Factor = 1;
                 $MovimientoDet->PorIva = $det['Iva'];
                 $MovimientoDet->Precio = $det['Precio'];
@@ -403,6 +405,7 @@ class MovimientosController extends Controller
                 $MovimientoDet->Cantidad = $det['Cantidad'];
                 $MovimientoDet->CantFactor = $MovimientoDet->Cantidad;
                 $MovimientoDet->Operacion = $Doc->Operacion;
+                $MovimientoDet->IdLista = $det['IdLista']; ;
                 $MovimientoDet->Factor = 1;
                 $MovimientoDet->PorIva = $det['Iva'];
                 $MovimientoDet->Precio = $det['Precio'];
@@ -440,7 +443,7 @@ class MovimientosController extends Controller
             DB::commit();
             return[
                 'msg'=>"El producto fue agregado correctamente",
-                'status'=>200
+                'status'=>200,
             ];
 
         }

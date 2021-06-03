@@ -271,7 +271,8 @@ export default {
                     Precio:articulo.Precio,
                     Iva:articulo.Iva,
                     UMM:articulo.UMM,
-                    UMV:articulo.UMV
+                    UMV:articulo.UMV,
+                    IdLista : articulo.IdListaPreciosDet
                 });
                 let me = this;
                 axios.put('/movimiento/agregarProducto',{params:{
