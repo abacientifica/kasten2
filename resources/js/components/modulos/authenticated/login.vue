@@ -22,7 +22,7 @@
                         </div>
                         <div class="row">
                             <div class="col-6">
-                            <button class="btn btn-primary px-4" @click.prevent="login()" v-loading.fullscreen.lock="fullscreenloading">Acceder</button><hr>
+                            <button class="btn btn-primary px-4" @click.prevent="login()" v-loading.fullscreen.lock="fullscreenloading" :disabled="!fillLogin.cUsuario || !fillLogin.cContrasena ? true:false">Acceder</button><hr>
                             Recuerdame <input type="checkbox" name="recuerda" id="recuerda">
                             </div>
                         </div>
@@ -77,6 +77,9 @@ export default {
                     sessionStorage.setItem('authUser',JSON.stringify(response.data.authUser));
                     //this.loginSucces();
                     loader.close();
+                }
+                if(response.data.status == 401){
+                    this.loginFailed();
                 }
             }).catch((error)=>{
                 let msgerror = error.message.split(" ");
