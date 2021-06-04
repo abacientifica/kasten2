@@ -256,16 +256,16 @@ class MovimientosController extends Controller
             $EmailAsesor = !filter_var($EmailAsesor,FILTER_VALIDATE_EMAIL) ? 'auxsistemas@aba.com.co' : $EmailAsesor;
             if($MovAutorizado == true){
                 \Funciones::Consecutivo($request->params['nIdMovimiento']);
+                $Mov =Movimientos::with('documento')->find($request->params['nIdMovimiento']);
                 //Enviamos el Email de alerta a el asesor
                 $DatosCliente = \Funciones::ObtenerTercero($arMovimiento->IdTercero);
-                $strMensaje = "El usuario  " . \Auth::user()->Nombres . " " . \Auth::user()->Apellidos . " de la institución " . $DatosCliente[0]->NombreCorto . " acaba de autorizar el pedido externo " . $arMovimiento->NroDocumento;
+                $strMensaje = "El usuario  " . \Auth::user()->Nombres . " " . \Auth::user()->Apellidos . " de la institución " . $DatosCliente[0]->NombreCorto . " acaba de autorizar el pedido externo " . $Mov->NroDocumento;
                 //Se comenta el envio de email
                 return[
                     'msg'=>"El movimiento ha sido autorizado con exito !!",
                     'status'=>201,
                     'Email'=>\Funciones::EnviarEmail('Autorización Pedido Externo',$EmailAsesor,$strMensaje)
                 ];
-                
             }
             else{
                 return[
@@ -276,7 +276,7 @@ class MovimientosController extends Controller
         }
         catch(Exception $e){
             return[
-                'msg'=>$e,
+                'msg'=>"Ups.. ocurrio un error al autorizr el movimiento :".$e->getMessage(),
                 'status'=>501
             ];
         }

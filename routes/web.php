@@ -69,7 +69,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/conceptos/lista/{IdDoc}', 'ControladorGeneral@CargarConceptosDocumentos')->name('conceptos.lista');
     Route::get('/formaspago/lista', 'ControladorGeneral@CargarFormasDePago')->name('formaspago.lista');
     Route::get('/documentos/ObtenerDocTp', 'Administracion\DocumentosController@ObtenerDocumentosTp')->name('documentos.obtenertp');
-    //Route::get('/documentos/campos/', 'ControladorGeneral@CargarCamposTablas')->name('campos.documentos');
+    Route::get('/documento/campos/', 'ControladorGeneral@CargarCamposTablas')->name('campos.documentos');
 
     //Rutas log de acciones
     Route::get('/log/lista', 'ControladorGeneral@LogMovimientos');

@@ -431,6 +431,9 @@ export default {
             if(this.Is_Float(articulo.Cantidad)){
                 this.arrMensajeError.push("La cantidad minima de venta es "+articulo.CantMinimaVenta+", debe ser igual o multiplos de esta");
             }
+            if(articulo.IdLista == '' || articulo.IdLista == 0 ){
+                this.arrMensajeError.push("El cod "+articulo.IId_Item+" no quedo bien enlazado, debes quitarlo y volverlo agregar si el problema continúa comunicarse con el areá de soporte");
+            }
         },
 
         eliminarDetalle(index){
