@@ -497,11 +497,24 @@ export default {
                 
 
             }).catch(error =>{
+                console.log(error.response.data.line)
                 if(error.response.status ==401){
                     me.$router.push({name: 'login'})
                     location.reload();
                     sessionStorage.clear();
                     loader.close();
+                }
+                if(error.response.status == 500 || error.response.status == 501){
+                    loader.close();
+                    let message = error.response.data.message;
+                    let linea = error.response.data.line;
+                    Swal.fire({
+                        position: 'top-center',
+                        icon: 'error',
+                        title: "Ups.. Ocurrio un error al autorizar el movimiento, intenta nuevamente.",
+                        text :message + 'linea : '+ linea ,
+                        showConfirmButton: true
+                    });
                 }
             })
         },

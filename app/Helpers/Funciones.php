@@ -4,9 +4,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Model\Movimientos;
 use App\Model\MovimientosDet;
+use App\Model\Direcciones;
 use App\Model\Documentos;
 use App\Model\Item;
 use App\Model\Log;
+use App\Model\ListaPreciosDet;
 use App\Exception\Handler;
 
 class Funciones{
@@ -444,6 +446,29 @@ class Funciones{
         }
         else {
             return 'application/octet-stream';
+        }
+    }
+
+    public static function DevListaPreciosDet($intIdItem, $intIdTercero, $intIdDireccion,$IdKit =0) {
+        if($IdKit =='' || $IdKit == null){
+            $IdKit = 0;
+        }
+        if ($intIdItem != NULL || $intIdItem != "") {
+            $arDireccion = Direcciones::findOrFail($intIdDireccion);
+            /*$strSql = "SELECT lista_precios_det.*
+                   FROM lista_precios_det 
+                   LEFT JOIN lista_precios ON lista_precios_det.IdListaPrecios = lista_precios.IdListaPrecios
+                   WHERE Inactivo = 0 AND lista_precios_det.IdListaPrecios = " . $arDireccion->IdListaPreciosDireccion . " AND Id_Item = " . $intIdItem . " AND lista_precios.Inactiva = 0 and IdKit=".$IdKit;
+            $arListaPreciosDet = DB::select($strSql); //ListaPreciosDetRecord::finder()->FindBySql($strSql);*/
+            $arListaPreciosDet = DB::table('lista_precios_det')
+            ->leftJoin('lista_precios','lista_precios.IdListaPrecios','=','lista_precios_det.IdListaPrecios')->
+            where('Inactivo',0)->
+            where('lista_precios_det.IdListaPrecios',$arDireccion->IdListaPreciosDireccion)->
+            where('Id_Item',$intIdItem)->where('lista_precios.Inactiva',0)->where('IdKit',$IdKit)->first();
+            return $arListaPreciosDet;
+        }
+        else{
+            return [];
         }
     }
 

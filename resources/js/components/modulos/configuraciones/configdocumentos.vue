@@ -43,7 +43,7 @@
                                                 <i class="fas fa-pencil-alt"></i>
                                             </button> 
                                             <button type="button"  class="btn btn-warning btn-sm" >
-                                                <router-link :to="'/configuracion/documentos/edit/'+config.IdDocumento">
+                                                <router-link :to="'/configuracion/documentos/edit/'+config.IdDocumento" :Documento="config.Nombre">
                                                     <i class="fas fa-pencil-alt"></i>
                                                 </router-link>
                                             </button> 
@@ -92,7 +92,7 @@
                         <div class="form-group row">
                             <div class="col-md-6">
                                 <div class="input-group">
-                                    <input type="text" id="txtBuscar" v-model="filtcampos" @keyup.enter="CargarCampos()" v-on:change="CargarCampos()" class="form-control" placeholder="Texto a buscar">
+                                    <input type="text" id="txtBuscarmodal" v-model="filtcampos" @keyup.enter="CargarCampos()" v-on:change="CargarCampos()" class="form-control" placeholder="Texto a buscar">
                                     <button type="submit" @click="CargarCampos()" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
                                 </div>
                             </div>
