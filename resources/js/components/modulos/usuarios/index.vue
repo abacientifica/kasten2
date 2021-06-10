@@ -708,7 +708,7 @@ export default {
                 params:{
                     'Usuario': this.userSelect.Usuario,
                     'Mensaje' : this.msgCerrarSesion,
-                    'Todos': this.CerrarTodos
+                    'Todos': this.CerrarTodos ? 'todos' : 'individual'
                 }
             }).then((response)=>{
                
