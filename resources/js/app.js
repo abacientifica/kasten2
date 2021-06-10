@@ -215,6 +215,26 @@ const app = new Vue({
             localStorage.clear();
             sessionStorage.clear();
         }
+
+        if (this.usuario) {
+            Echo.private(`logout.${this.usuario.Usuario}`).listen('LogoutUser', (e) => {
+                console.log(e.usuario.mensaje)
+                let mensaje = e.usuario.mensaje;
+                Swal.fire({
+                    position: 'top-center',
+                    icon: 'warning',
+                    title: 'Alerta !!',
+                    text: mensaje,
+                    timer: 4000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                }).then((result) => {
+                    if (result.dismiss === Swal.DismissReason.timer) {
+                        this.logout();
+                    }
+                })
+            });
+        }
     },
 
 
