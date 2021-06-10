@@ -228,6 +228,7 @@ const app = new Vue({
                     timer: 4000,
                     timerProgressBar: true,
                     showConfirmButton: false,
+                    allowOutsideClick: false
                 }).then((result) => {
                     if (result.dismiss === Swal.DismissReason.timer) {
                         this.logout();

@@ -156,7 +156,7 @@ class UsuariosController extends Controller {
         $Usuario = $request->Usuario;
         $Mensaje = $request->Mensaje;
         $Todos = $request->Todos;
-        if($Todos){
+        if($Todos == 'todos'){
             $usuarios = User::where( 'Inactivo', 0)->get();
             foreach($usuarios as $user){
                 $Datos = [
