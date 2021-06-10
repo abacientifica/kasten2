@@ -27,6 +27,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::put('/usuarios/inactivar/{id?}','Administracion\UsuariosController@InaActivarUsuario');
     Route::put('/usuarios/activar/{id?}','Administracion\UsuariosController@ActivarUsuario');
     Route::put('/usuarios/actualizarpass','Administracion\UsuariosController@ActualizarContrasenas');
+    Route::get('/usuarios/cerrarsesion/','Administracion\UsuariosController@CerrarSesionUsuario');
 
     //Lista rutas roles
     Route::get('/roles/lista','Administracion\RolesController@index');

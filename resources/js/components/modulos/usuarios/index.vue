@@ -28,6 +28,10 @@
                             <button class="btn btn-success btn-sm" @click.prevent="actualizarContrasenas()" data-toggle="modal">
                             <i class="fas fa-user-edit"></i> Actualizar Contraseñas
                             </button>
+
+                            <button class="btn btn-info btn-sm" @click="ValidarFinalizacionSesion(),CerrarTodos = true">
+                                <i class="fas fa-user-clock"> </i>Cerrar Sesion Todos
+                            </button>
                         </div>
                     </template>
                 </div>
@@ -167,6 +171,9 @@
                                     <router-link :to="{name:'usuario.perfil',params:{id:user.Usuario}}"  class="btn btn-info btn-sm">
                                         <i class="fas fa-eye"> </i> Perfil
                                     </router-link>
+                                    <button class="btn btn-info btn-sm" @click="ValidarFinalizacionSesion(user)">
+                                        <i class="fas fa-user-clock"> </i>Cerrar Sesion
+                                    </button>
                                 </td>
                                 </tr>
                             </tbody>
@@ -293,6 +300,27 @@
                 </div>
             </div>
         </div>
+        <template>
+            <div class="center">
+            <vs-dialog @close="ValidarFinalizacionSesion('')" v-model="active">
+                <template #header>
+                <h4 class="not-margin">
+                    Hola especifica el motivo.
+                </h4>
+                </template>
+
+
+                <div class="con-form">
+                    <textarea class="form-control" v-model="msgCerrarSesion" placeholder="Describe el motivo de finalización de sesión...">
+                    
+                    </textarea>
+                </div>
+                <vs-button block warn :disabled="msgCerrarSesion!=''?false:true" @click.prevent="CerrarSesionUsuario()">
+                    Cerrar
+                </vs-button>
+            </vs-dialog>
+            </div>
+        </template>
     </div>
 </template>
 <script>
@@ -350,6 +378,10 @@ export default {
             ocultarModal: {
                 display: "none",
             },
+            active:false,
+            msgCerrarSesion:'',
+            userSelect:[],
+            CerrarTodos:false,
         }
     },
     computed: {
@@ -385,6 +417,16 @@ export default {
             }
             return PagesArray;
         },
+        userActive(user){
+            /*console.log("Entro"+user)
+            if(!this.active){
+                this.userSelect = [];
+            }
+            else{   
+                this.userSelect = user;
+            }*/
+            return true;
+        }
     },
     methods: {
         /**
@@ -659,6 +701,32 @@ export default {
                 }
             });
         },
+
+        CerrarSesionUsuario(){
+            this.active = false;
+            axios.get('/usuarios/cerrarsesion/',{
+                params:{
+                    'Usuario': this.userSelect.Usuario,
+                    'Mensaje' : this.msgCerrarSesion,
+                    'Todos': this.CerrarTodos
+                }
+            }).then((response)=>{
+               
+                this.userSelect = [];
+                this.CerrarTodos = false
+            }).catch(error=>{
+                this.active = false;
+                this.userSelect = [];
+                this.CerrarTodos = false
+            })
+        },
+
+        ValidarFinalizacionSesion(user = []){
+            this.userSelect = user;
+            if(user){
+                this.active = true;
+            }
+        }
     },
     mounted() {
         this.listarUsuarios();

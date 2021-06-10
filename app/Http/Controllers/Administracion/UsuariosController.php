@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Events\LogoutUser;
 use App\User;
 
 class UsuariosController extends Controller {
@@ -131,6 +132,7 @@ class UsuariosController extends Controller {
         }
 
     }
+
     public function InaActivarUsuario(Request $request){
         if(!$request->ajax()) return redirect("/");
         try{
@@ -148,6 +150,37 @@ class UsuariosController extends Controller {
                 'error'=>$e->getMessage()
             ];
         }
+    }
+
+    public function CerrarSesionUsuario(Request $request){
+        $Usuario = $request->Usuario;
+        $Mensaje = $request->Mensaje;
+        $Todos = $request->Todos;
+        if($Todos){
+            $usuarios = User::where( 'Inactivo', 0)->get();
+            foreach($usuarios as $user){
+                $Datos = [
+                    'mensaje'=>$Mensaje,
+                    'user'=>$user->Usuario
+                ];
+                broadcast(new LogoutUser($Datos));
+            }
+            return [
+                'Usuarios '=>$usuarios
+            ];
+        }
+        else{
+            $Datos = [
+                'mensaje'=>$Mensaje,
+                'user'=>$Usuario
+            ];
+            broadcast(new LogoutUser($Datos));
+
+            return [
+                $Usuario
+            ];
+        }
+        
     }
 
 }
