@@ -72,6 +72,12 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/documentos/ObtenerDocTp', 'Administracion\DocumentosController@ObtenerDocumentosTp')->name('documentos.obtenertp');
     Route::get('/documento/campos/', 'ControladorGeneral@CargarCamposTablas')->name('campos.documentos');
 
+    //Configuracion campos documentos
+    Route::get('/documentos/config/list/{IdDocumento}', 'Administracion\ConfiguracionDocumentos\ConfiguracionColumnasController@ObtenerConfiguracion')->name('configdoc.list');
+    Route::put('/documentos/config/save', 'Administracion\ConfiguracionDocumentos\ConfiguracionColumnasController@GuardarConfiguracion')->name('configdoc.save'); 
+    Route::get('/documentos/tablas/transacciones', 'Administracion\DocumentosController@ObtenerTablasTransaccionales')->name('tablas.transacciones');
+    Route::put('/documentos/tablas/transacciones/save', 'Administracion\DocumentosController@GuardarTablasMaestrasDocumentos')->name('save.tablasmaestras');
+
     //Rutas log de acciones
     Route::get('/log/lista', 'ControladorGeneral@LogMovimientos');
 

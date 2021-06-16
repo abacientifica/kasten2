@@ -105,8 +105,8 @@ class ControladorGeneral extends Controller
 
     public function CargarCamposTablas(Request $request){
         if(!$request->ajax())  return  redirect('/'); 
-        $IdMovimiento = $request->nIdMovimiento;
-        $sql = "SHOW FULL columns from cotizaciones_det";
+        $Tabla = $request->tabla;
+        $sql = "SHOW FULL columns from ".$Tabla;
         $Datos = DB::select($sql);
         return [
             'campos'=>$Datos
