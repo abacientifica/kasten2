@@ -17,8 +17,12 @@ class DocumentosController extends Controller
         } 
         $Criterio = $request->criterio;
         $Filtro = $request->buscar;
+        $IdDoc = isset($request->iddoc) ? $request->iddoc : 0;
         if($request->Tp > 0){
             $documentos = Documentos::select('IdDocumento','Nombre','Consecutivo')->where("Tp",$request->Tp);
+        }
+        else if($IdDoc > 0){
+            $documentos = Documentos::find($IdDoc);
         }
         else{
             $documentos = Documentos::where('Tp','<>',0);
@@ -44,7 +48,7 @@ class DocumentosController extends Controller
             $Sql.=" having(Existe is not null)";
         }
         $StrSql = "select config_documentos.*,
-                    (select config_documentos_det.AliasCampo from config_documentos_det where config_documentos_det.IdCampo= config_documentos.IdCampo and  config_documentos_det.IdDoc = 61) as Existe
+                    (select config_documentos_det.AliasCampo from config_documentos_det where config_documentos_det.IdCampo= config_documentos.IdCampo and  config_documentos_det.IdDoc = ".$IdDoc.") as Existe
                     from config_documentos where  1 ";
         if(isset($request->filtro) && $request->filtro !=''){
             $StrSql .=" and  ( config_documentos.IdCampo like '%".$request->filtro."%')";
@@ -109,5 +113,45 @@ class DocumentosController extends Controller
             'documentos'=> $documentos
         ];
     }
+
+    public function GuardarTablasMaestrasDocumentos(Request $request){
+        if(!$request->ajax()){
+            return  redirect('/');
+        }
+        try{
+            $IdDocumento = $request->params['IdDoc'];
+            $TablaMaestra = $request->params['tablaMaestra'];
+            $TablaMaestraDetalles = $request->params['tablaMaestraDetalles'];
+
+            $Documento = Documentos::find($IdDocumento);
+            $Documento->TablaMaster = $TablaMaestra;
+            $Documento->TablaMasterDet = $TablaMaestraDetalles;
+            $Documento->UsuarioConfig = \Auth::user()->Usuario;
+            $Documento->FechaConfig = date("Y-m-d H:i:s");
+            $Documento->save();
+            return[
+                'status'=>200,
+                'msg'=>'Tablas maestras actualizadas con exito.'
+            ];
+        }
+        catch(Exception $e){
+
+        }
+    }
+
+    public function ObtenerTablasTransaccionales(Request $request){
+        if(!$request->ajax()){
+            return  redirect('/');
+        }
+        $tablas = DB::select("select table_name  from information_schema.tables  WHERE table_type = 'BASE TABLE' and
+                            (table_name = 'movimientos' or table_name = 'movimientos_det' or table_name = 'cotizaciones'
+                            or table_name = 'cotizaciones_det' or table_name = 'recibos' or table_name = 'recibos_det' or table_name = 'plantillas' or table_name = 'plantillas_det')
+                            ORDER BY table_name");
+        return [
+            'tablas'=> $tablas
+        ];
+    }
+
+    
 
 }

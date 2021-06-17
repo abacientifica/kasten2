@@ -40,13 +40,12 @@
                                     <tr v-for="config in ListarDocumentosPaginate" :key="config.IdDocumento">
                                         <td>
                                             <button type="button"  @click="AbrirModal('documento','agregar',config)" class="btn btn-warning btn-sm" >
-                                                <i class="fas fa-pencil-alt"></i>
+                                                Maestro<i class="fas fa-pencil-alt"></i>
                                             </button> 
-                                            <button type="button"  class="btn btn-warning btn-sm" >
-                                                <router-link :to="'/configuracion/documentos/edit/'+config.IdDocumento" :Documento="config.Nombre">
-                                                    <i class="fas fa-pencil-alt"></i>
-                                                </router-link>
-                                            </button> 
+                                            
+                                            <router-link class="btn btn-primary btn-sm" :Documento="config"  :to="{name : 'camposdocumentos.index',params:{ iddoc : config.IdDocumento }}">
+                                                Detalles<i class="fas fa-pencil-alt"></i>
+                                            </router-link>
                                         </td>
                                         <td v-text="config.IdDocumento"></td>
                                         <td v-text="config.Nombre"></td>
