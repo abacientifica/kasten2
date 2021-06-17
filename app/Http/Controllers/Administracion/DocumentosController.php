@@ -8,6 +8,7 @@ use App\Model\ConfigDocumentos;
 use App\Model\Documentos;
 use Illuminate\Support\Facades\DB;
 use App\Model\ConfigDocumentosDet;
+use App\Model\TpDocumentos;
 
 class DocumentosController extends Controller
 {
@@ -140,15 +141,36 @@ class DocumentosController extends Controller
     }
 
     public function ObtenerTablasTransaccionales(Request $request){
-        if(!$request->ajax()){
-            return  redirect('/');
-        }
+        if(!$request->ajax()) return  redirect('/');
+        
         $tablas = DB::select("select table_name  from information_schema.tables  WHERE table_type = 'BASE TABLE' and
                             (table_name = 'movimientos' or table_name = 'movimientos_det' or table_name = 'cotizaciones'
                             or table_name = 'cotizaciones_det' or table_name = 'recibos' or table_name = 'recibos_det' or table_name = 'plantillas' or table_name = 'plantillas_det')
                             ORDER BY table_name");
         return [
             'tablas'=> $tablas
+        ];
+    }
+
+    public function ObtenerTiposDocumentos(Request $request){
+        if(!$request->ajax()) return  redirect('/');
+        $IdTp = isset($request->IdTp) ? $request->IdTp : null;
+        $Sql = "select * from tpdocumentos where ActivoKasten2 = 1";
+        if($IdTp){
+            $Sql.=" and IdTpDocumento = ".$IdTp;
+        }
+        $tpdocs = DB::select($Sql);
+        return [
+            'tpdocumentos'=> $tpdocs
+        ];
+    }
+
+    public function ObtenerTipoDocumento(Request $request){
+        if(!$request->ajax()) return  redirect('/');
+        $IdTp = isset($request->id) ? $request->id : null;
+        $TpDocumento = TpDocumentos::with('documentos')->find($IdTp);
+        return [
+            'tpdocumento'=> $TpDocumento
         ];
     }
 

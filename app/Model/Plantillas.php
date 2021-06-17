@@ -11,4 +11,8 @@ class Plantillas extends Model
     protected $primaryKey ='IdPlantilla';
 
     public $timestamps = false;
+
+    public function tercero(){
+        return $this->hasOne('App\Model\Terceros','IdTercero','IdTerceroPlant');
+    }
 }
