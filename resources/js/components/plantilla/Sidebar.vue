@@ -61,6 +61,26 @@
                     </li>
                 </template>
             </template>
+
+            <li class="nav-item has-treeview">
+            <a href="#" class="nav-link" v-if="NumDocs >0">
+              <i class="nav-icon fas fa-copy"></i>
+              <p>
+                Documentos
+                <i class="fas fa-angle-left right"></i>
+                <span class="badge badge-info right">{{NumDocs}}</span>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li  v-for="item in tiposDocs" :key="item.IdTpDocumento" class="nav-item">
+                <router-link  class="nav-link" :to="'/tpdocumento/lista/'+item.IdTpDocumento">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p v-text="item.NmTpDocumento"></p>
+                </router-link>
+              </li>
+            </ul>
+          </li>
+
             <template v-if="listPermisos.includes('usuarios.index','roles.index','permisos.index')">
                 <li class="nav-header">ADMINISTRACIÓN</li>
                 <template v-if="listPermisos.includes('usuarios.index')">
@@ -142,7 +162,9 @@ export default {
     data() {
         return {
             fullscreenloading:false,
-            rutas:''
+            rutas:'',
+            tiposDocs:[],
+            NumDocs:0,
         }
     },
     methods: {
@@ -164,10 +186,35 @@ export default {
                     this.fullscreenLoading = false;
                 }
             })
+        },
+
+        getTiposDocumentos(){
+            let me = this;
+            var url = '/documentos/tipos/lista'
+            axios.get(url).then(response => {
+                let respuesta = response.data;
+                //me.tiposDocs = respuesta.tpdocumentos;
+                respuesta.tpdocumentos.map(function(e){
+                    if((e.DirGeneralK2 &&  me.listPermisos.includes(e.DirGeneralK2)) || (e.DirGeneralK2 && me.listPermisos.includes('administrador.sistema'))){
+                        me.tiposDocs.push(e);
+                        me.NumDocs++;
+                    }
+                })
+            }).catch(error => {
+                if (error.response.status == 401) {
+                    this.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                    this.fullscreenLoading = false;
+                }
+            })
         }
+
     },
     mounted() {
         this.rutas = this.ruta
+        this.getTiposDocumentos();
+        console.log(this.tiposDocs);
     },
 }
 </script>

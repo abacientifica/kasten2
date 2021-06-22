@@ -35,7 +35,7 @@
                                 <div class="form-group row">
                                 <label class="col-md-3 col-form-label">Tabla Maestra</label>
                                 <div class="col-md-9">
-                                    <el-select v-model="tablaMaestra" placeholder="Seleccione una tabla" clearable :disabled="value4.length >0 ? true :false">
+                                    <el-select v-model="tablaMaestra" placeholder="Seleccione una tabla" filterable clearable :disabled="value4.length >0 ? true :false">
                                         <el-option v-for="(item,index) in tablas" :key="index" :label="item.label" :value="item.value">
                                         </el-option>
                                     </el-select>
@@ -46,7 +46,7 @@
                                 <div class="form-group row">
                                 <label class="col-md-3 col-form-label">Tabla Detalles</label>
                                 <div class="col-md-9">
-                                    <el-select v-model="tablaMaestraDetalles" placeholder="Seleccione una tabla" clearable :disabled="value4.length >0 ? true :false" @change="CargarCampos(tablaMaestraDetalles)">
+                                    <el-select v-model="tablaMaestraDetalles" placeholder="Seleccione una tabla" filterable clearable :disabled="value4.length >0 ? true :false" @change="CargarCampos(tablaMaestraDetalles)">
                                         <el-option v-for="(item,index) in tablas" :key="index" :label="item.label" :value="item.value">
                                         </el-option>
                                     </el-select>

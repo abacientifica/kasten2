@@ -70,6 +70,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/conceptos/lista/{IdDoc}', 'ControladorGeneral@CargarConceptosDocumentos')->name('conceptos.lista');
     Route::get('/formaspago/lista', 'ControladorGeneral@CargarFormasDePago')->name('formaspago.lista');
     Route::get('/documentos/ObtenerDocTp', 'Administracion\DocumentosController@ObtenerDocumentosTp')->name('documentos.obtenertp');
+    Route::get('/documentos/tipos/lista', 'Administracion\DocumentosController@ObtenerTiposDocumentos')->name('documentos.tipos');
+    Route::get('/documentos/tipo/{id}', 'Administracion\DocumentosController@ObtenerTipoDocumento')->name('documento.tipo');
     Route::get('/documento/campos/', 'ControladorGeneral@CargarCamposTablas')->name('campos.documentos');
 
     //Configuracion campos documentos

@@ -20,7 +20,9 @@ import RepVentas from './components/modulos/reportes/ventas.vue';
 import RepVentasGrilla from './components/modulos/reportes/ventasgeneral.vue';
 import Chat from './components/modulos/chat/chat.vue';
 import EditarCamposDocumentos from './components/modulos/configuraciones/vercamposdocumentos.vue';
-
+import ListaDocTpDocumentos from './components/modulos/tiposdocumentos/index.vue';
+//Plantillas Clientes
+import PlantillasClientes from './components/modulos/plantillas/index.vue';
 //rutas configuracion documentos
 import ConfigurarDocumentos from './components/modulos/configuraciones/configdocumentos.vue';
 
@@ -189,6 +191,12 @@ export default new Router({
         },
 
         /** RUTAS MOVIMIENTOS **/
+        {
+            path: '/tpdocumento/lista/:IdTp',
+            component: ListaDocTpDocumentos,
+            name: 'tpdocumentos.documento',
+            props: true,
+        },
 
         {
             path: '/pedidos/documentos/:tp',
@@ -224,6 +232,18 @@ export default new Router({
             path: '/pedidos/crear/:iddoc',
             component: PedidosCrear,
             name: 'pedidos.crear',
+            props: true,
+            beforeEnter: (to, from, next) => {
+                verificarAcceso(to, from, next);
+            }
+        },
+
+        //PLANTILLAS CLIENTES
+
+        {
+            path: '/plantillas/clientes/index',
+            component: PlantillasClientes,
+            name: 'plantillas_clientes.index',
             props: true,
             beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);
