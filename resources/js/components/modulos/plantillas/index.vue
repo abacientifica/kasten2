@@ -19,13 +19,13 @@
         <div class="content container-fluid">
             <div class="card">
                 <div class="card-header">
-                    <template v-if="listPermisosFilterByRolUser.includes('pedidos.crear') || listPermisosFilterByRolUser.includes('administrador.sistema')">
+                    <template v-if="listPermisosFilterByRolUser.includes('plantillas_clientes.crear') || listPermisosFilterByRolUser.includes('administrador.sistema')">
                         <div class="card-tools">
                             <div class="row">
-                                <router-link class="btn btn-info btn-sm" :to="'/pedidos/crear/'+this.OpPedido" style="margin-right: 1rem">
-                                <i class="fas fa-plus-square"></i> Nuevo Pedido
+                                <router-link class="btn btn-info btn-sm" :to="'/plantillas/clientes/crear'" style="margin-right: 1rem">
+                                <i class="fas fa-plus-square"></i> Nueva Plantilla
                                 </router-link>
-                                <modal :titulo="'Ayudas Pedidos'" :iddoc="this.OpPedido" :url="'pedidos.crear'"></modal>
+                                <modal :titulo="'Ayudas Plantillas'" :iddoc="this.OpPedido" :url="'pedidos.crear'"></modal>
                             </div>
                         </div>
                     </template>
@@ -42,9 +42,9 @@
                                 <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group row">
-                                    <label class="col-md-3 col-form-label">Nro. Documento</label>
+                                    <label class="col-md-3 col-form-label">Id Plantilla</label>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" v-model="fillMovimiento.nNroDocumento" @keyup.enter="ListarMovimientos()"/>
+                                        <input type="text" class="form-control" v-model="fillPlantilla.nNroDocumento" @keyup.enter="ListarPlantillas()"/>
                                     </div>
                                     </div>
                                 </div>
@@ -52,7 +52,7 @@
                                     <div class="form-group row">
                                     <label class="col-md-3 col-form-label">Estado</label>
                                     <div class="col-md-9">
-                                        <el-select v-model="fillMovimiento.cEstado" placeholder="Seleccione un estado" clearable @keyup.enter="ListarMovimientos()">
+                                        <el-select v-model="fillPlantilla.cEstado" placeholder="Seleccione un estado" clearable @keyup.enter="ListarPlantillas()">
                                         <el-option v-for="item in listEstados" :key="item.value" :label="item.label" :value="item.value">
                                         </el-option>
                                         </el-select>
@@ -61,10 +61,25 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group row">
+                                    <label class="col-md-3 col-form-label">Cliente</label>
+                                    <div class="col-md-9">
+                                        <v-select
+                                            @search="selectTerceros"
+                                            label="NombreCorto"
+                                            :options="arrayTerceros"
+                                            placeholder="Buscar Tercero..."
+                                            @input="getDatosTercero"   
+                                        >
+                                        </v-select>
+                                    </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group row">
                                     <label class="col-md-3 col-form-label">Rago Fecha</label>
                                     <div class="col-md-9">
                                         <el-date-picker
-                                            v-model="fillMovimiento.oRangoFechas"
+                                            v-model="fillPlantilla.oRangoFechas"
                                             class="form-control"
                                             type="daterange"
                                             align="right"
@@ -74,7 +89,8 @@
                                             end-placeholder="Hasta"
                                             :picker-options="pickerOptions"
                                             format="yyyy-MM-dd"
-                                            value-format="yyyy-MM-dd">
+                                            value-format="yyyy-MM-dd"
+                                            @keyup.enter="ListarPlantillas()">
                                         </el-date-picker>
                                     </div>
                                     </div>
@@ -87,7 +103,7 @@
                         <div class="card-footer">
                             <div class="row">
                             <div class="col-md4 offset-4">
-                                <button class="btn btn-flat btn-info" @click.prevent="ListarMovimientos()" v-loading.fullscreen.lock="fullscreenLoading">
+                                <button class="btn btn-flat btn-info" @click.prevent="ListarPlantillas()" v-loading.fullscreen.lock="fullscreenLoading">
                                 Buscar
                                 </button>
                                 <button class="btn btn-flat btn-default" @click.prevent="LimpiarFiltro()">
@@ -102,7 +118,7 @@
                             <div class="card-header">
                             <h3 class="card-title">Bandeja Resultados</h3>
                             <div class="card-body table-responsive">
-                                <template v-if="ListarMovimientosPaginate.length <= 0">
+                                <template v-if="ListarPlantillasPaginate.length <= 0">
                                 <div class="callout callout-info">
                                     <h5>Sin Resultados</h5>
                                 </div>
@@ -110,29 +126,31 @@
                                 <table class="table table-hover table-bordered table-striped table-sm" v-else>
                                 <thead class="bg-info">
                                     <tr>
-                                    <th class="texto-centrado">Nro</th>
-                                    <th class="texto-centrado">Orden Compra</th>
+                                    <th class="texto-centrado">Fecha</th>
+                                    <th class="texto-centrado">Tercero</th>
                                     <th class="texto-centrado">Dirección</th>
-                                    <th class="texto-centrado">Fecha Pedido</th>
-                                    <th class="texto-centrado">Fecha Entrega</th>
-                                    <th class="texto-centrado">Total</th>
+                                    <th class="texto-centrado">Nombre</th>
+                                    <th class="texto-centrado">Entrega Propuesta</th>
+                                    <th class="texto-centrado">Periodo</th>
                                     <th class="texto-centrado">Estado</th>
+                                    <th class="texto-centrado">Usuario</th>
                                     <th class="texto-centrado">Comentarios</th>
                                     <th class="texto-centrado">Opcion</th>
                                     </tr>
                                 </thead>
-                                <tbody v-if="ListarMovimientosPaginate.length >0">
-                                    <tr v-for="(mov) in ListarMovimientosPaginate" :key="mov.IdMovimiento">
-                                        <td class="texto-derecha" v-text="mov.NroDocumento"></td>
-                                        <td v-text="mov.Soporte"></td>
-                                        <td v-text="mov.direccion.NmDireccion"></td>
-                                        <td>{{moment(mov.FhAutoriza).format('MMMM DD YYYY, h:mm:ss a')}}</td>
-                                        <td>{{moment(mov.Fecha2).format('MMMM DD YYYY')}}</td>
-                                        <td class="texto-derecha" v-text="FormatoMoneda(mov.Total >0 ? mov.Total:0,2)"></td>
-                                        <td v-text="mov.Estado"></td>
-                                        <td v-text="mov.Comentarios"></td>
+                                <tbody v-if="ListarPlantillasPaginate.length >0">
+                                    <tr v-for="det in ListarPlantillasPaginate" :key="det.IdPlantilla">
+                                        <td>{{moment(det.FhPlantilla).format('MMMM DD YYYY, h:mm:ss a')}}</td>
+                                        <td>{{det.tercero.NombreCorto}}</td>
+                                        <td v-text="det.direccion.Direccion"></td>
+                                        <td v-text="det.NmPlantilla"></td>
+                                        <td>{{moment(det.FhEntregaPropuesta).format('MMMM DD YYYY')}}</td>
+                                        <td v-text="det.Periodo"></td>
+                                        <td v-text="det.Estado"></td>
+                                        <td v-text="det.Usuario"></td>
+                                        <td v-text="det.Comentarios"></td>
                                         <td>
-                                            <router-link  :to="'/pedidos/ver/'+mov.IdDocumento+'/'+mov.IdMovimiento" class="btn btn-info btn-sm" v-if="listPermisosFilterByRolUser.includes('pedidos.ver') || listPermisosFilterByRolUser.includes('administrador.sistema')">
+                                            <router-link  :to="'/plantillas/clientes/ver/'+det.IdPlantilla" class="btn btn-info btn-sm" v-if="listPermisosFilterByRolUser.includes('plantillas_clientes.ver') || listPermisosFilterByRolUser.includes('administrador.sistema')">
                                                 <i class="fas fa-eye"></i>
                                             </router-link>
                                         </td>
@@ -165,17 +183,16 @@
     </div>
 </template>
 <script>
+import vSelect from "vue-select";
 import Swal from 'sweetalert2'
 export default {
     data() {
         return {
-            Form: new FormData(),
             //Al cambiar a true muestra el loading
             fullscreenLoading:false,
             listPermisosFilterByRolUser:[],
             moment:moment,
-            //Objeto usuario para realizar consultas de usuarios.
-            fillMovimiento:{
+            fillPlantilla:{
                 nNroDocumento:'',
                 nIdMovimiento:'',
                 nIdTercero:'',
@@ -186,21 +203,8 @@ export default {
                 oRangoFechas:''
             },
             OpPedido:8,
-            ImagenPerfil:'',
-            //Con este objeto enviados los datos del usuarios nuevo o el que vamos a actualizar
-            fillCrearUsuario:{
-                cUsuario : '',
-                nIdtercero: '',
-                cContrasena : '',
-                cNombres : '',
-                cApellidos : '',
-                cCargo:'',
-                cCorreo:'',
-                nIdRol:'',
-                cImagen:'',
-            },
             //Contiene la lista de usuarios recuperada
-            listMovimientos: [],
+            listPlantillas: [],
             //LLena el combo de estados en el filtro
             listEstados: [
                 { value: 'DIGITADA', label: "DIGITADA" },
@@ -255,19 +259,23 @@ export default {
                     }
                 }]
             },
-        value1: '',
-        value2: ''
+            value1: '',
+            value2: '',
+            arrayTerceros: []
         }
+    },
+    components:{
+        "v-select": vSelect
     },
     computed: {
         //Obtener el numero de las paginas
         pageCount() {
-            let a = this.listMovimientos.length;
+            let a = this.listPlantillas.length;
             let b = this.perPage;
             return Math.ceil(a / b);
         },
         //Obtener Registros paginados el valor de 5 se puede cambiar por el deseado
-        ListarMovimientosPaginate() {
+        ListarPlantillasPaginate() {
             //0 * 5 =0 inicio
             //1 + 5 = 5 fin
             //0 - (5-1) slice desde hasta
@@ -278,10 +286,10 @@ export default {
 
             let inicio = this.pageNumber * this.perPage;
             let fin = inicio + this.perPage;
-            return this.listMovimientos.slice(inicio, fin);
+            return this.listPlantillas.slice(inicio, fin);
         },
         pagesList() {
-            let a = this.listMovimientos.length;
+            let a = this.listPlantillas.length;
             let b = this.perPage;
             let PageCoun = Math.ceil(a / b);
             let count = 0;
@@ -294,47 +302,81 @@ export default {
         },
     },
     methods: {
-        /**
-         * Obtenemos el listado de usuarios
-         */
-        ListarMovimientos(IdTercero= this.fillMovimiento.nIdtercero){
+
+        ListarPlantillas(IdTercero= this.fillPlantilla.nIdtercero){
             this.fullscreenLoading = true;
-            let url ="/movimientos/lista";
+            let url ="/plantillas/clientes/lista";
             axios.get(url,{params:{
-                'nNroDocumento' : this.fillMovimiento.nNroDocumento,
-                'nIdMovimiento' : this.fillMovimiento.nIdMovimiento,
-                'nIdTercero' : IdTercero,
-                'cEstado' : this.fillMovimiento.cEstado,
-                'nIdDocumento' : 61,
-                'nIdDireccion': this.fillMovimiento.nIdDireccion,
-                'cFechaDesde' : this.fillMovimiento.cFechaDesde,
-                'cFechaHasta' : this.fillMovimiento.cFechaHasta,
-                'oRangoFechas' : this.fillMovimiento.oRangoFechas
+                'Id' : this.fillPlantilla.nIdMovimiento,
+                'IdTercero' : this.fillPlantilla.nIdTercero,
+                'Estado' : this.fillPlantilla.cEstado,
+                'oRangoFechas' : this.fillPlantilla.oRangoFechas
             }}).then(response=>{    
                 this.inicializarPagination();
-                if(response.data.movimientos.length){
-                    this.listMovimientos = response.data.movimientos;
+                if(response.data.plantillas.length){
+                    this.listPlantillas = response.data.plantillas;
+                    /*this.listPlantillas.map(function(e){
+                        console.log(e.tercero.NombreCorto)
+                    })*/
                 }
                 else{
-                    this.listMovimientos = [];
+                    this.listPlantillas = [];
                 }
                 this.fullscreenLoading = false;
             }).catch(error =>{
-                if(error.response.status ==401){
+                console.log(error)
+                this.fullscreenLoading = false;
+                let msgerror = error.message.split(" ");
+                let coderror = msgerror.find(error => error == '401') ?  msgerror.find(error => error == '401') :  msgerror.find(error => error == '419');
+                coderror =='' ? msgerror.find(error => error == '401') :msgerror.find(error => error == '419');
+                if(coderror == 401 || coderror == 419){
+                    this.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                }
+            })
+        },
+
+        selectTerceros(search,loading){
+            let me=this;
+            loading(true);
+            var url= '/terceros/lista';
+            axios.get(url,{
+                params:{
+                    'filtro':search
+                }
+            }).then(function (response) {
+                let respuesta = response.data;
+                q: search;
+                me.arrayTerceros = respuesta.terceros;
+                loading(false);
+            })
+            .catch(function (error) {
+                 if (error.response.status == 401) {
                     this.$router.push({name: 'login'})
                     location.reload();
                     sessionStorage.clear();
                     this.fullscreenLoading = false;
                 }
-            })
+            });
+        },
+
+        getDatosTercero(val1){
+            let me = this;
+            try{
+                me.fillPlantilla.nIdTercero = val1.IdTercero;
+            }
+            catch(error){
+                this.fillPlantilla.nIdTercero = 0;
+            }
         },
 
         LimpiarFiltro(){
-            this.fillMovimiento.cNombre ='';
-            this.fillMovimiento.cUsuario ='';
-            this.fillMovimiento.cCorreo ='';
-            this.fillMovimiento.cEstado =1;
-            this.ListarMovimientos();
+            this.fillPlantilla.cNombre ='';
+            this.fillPlantilla.cUsuario ='';
+            this.fillPlantilla.cCorreo ='';
+            this.fillPlantilla.cEstado =1;
+            this.ListarPlantillas();
         },
 
         /*Inicio Metodos Paguinacion*/
@@ -352,161 +394,7 @@ export default {
         },    
         /*Fin Metodos Paginacion*/
 
-        ValidarDatos(){
-            if(this.validarRegistro()){
-                this.ActualizarUsuario();
-            }
-        },
-
-        /**
-         * Valida los campos del formulario editar o registrar
-         */
-        validarRegistro() {
-            this.error = true;
-            this.mensajeError = [];
-            let Datos = this.fillCrearUsuario;
-
-            if (!Datos.cUsuario) {
-                this.mensajeError.push("El usuario es obligatorio");
-            }
-
-            if (!Datos.cNombres) {
-                this.mensajeError.push("Los nombres son obligatorios");
-            }
-
-            if (!Datos.cApellidos) {
-                this.mensajeError.push("Los apellidos son obligatorios");
-            }
-
-            if (!Datos.cCorreo) {
-                this.mensajeError.push("El correo es obligatorio");
-            }
-
-            if (!Datos.cContrasena && this.accionModal ==0) {
-                this.mensajeError.push("La contraseña es obligatorio");
-            }
-
-            if (!Datos.nIdRol) {
-                this.mensajeError.push("El rol es obligatorio");
-            }
-
-            if (!Datos.cCargo) {
-                this.mensajeError.push("El cargo es obligatorio");
-            }
-
-            if (this.mensajeError.length) {
-                this.error = false;
-            }
-            return this.error;
-        },
-
-        /**
-         * Actualiza el usuario
-         */
-        ActualizarUsuario() {
-            let url = "/usuarios/editar";
-            axios.put(url, {
-                'fillCrearUsuario' : this.fillCrearUsuario,
-            })
-            .then((response) => {
-                this.ListarMovimientos();
-                this.cerrarModal();
-            }).catch(error =>{
-                if(error.response.status ==401){
-                    this.$router.push({name: 'login'})
-                    location.reload();
-                    sessionStorage.clear();
-                    this.fullscreenLoading = false;
-                }
-            })
-        },
-
-        /**
-         * op 1 = usuarios nuevo,2 =editar usuario
-         */
-        abrirModal(op,data=[]) {
-            this.showModal = true;
-            if(op = 1){
-                this.accionModal = 0;
-                this.tituloModal ="Crear Nuevo Usuario";
-            }
-            if(op = 2){
-                this.accionModal = 1;
-                this.getListRoles();
-                this.tituloModal ="Actualizar Usuario "+ data.Nombres;
-                this.fillCrearUsuario.cUsuario = data.Usuario;
-                this.fillCrearUsuario.nIdtercero = data.IdTercero;
-                this.fillCrearUsuario.cContrasena = data.Contrasena;
-                this.fillCrearUsuario.cNombres = data.Nombres;
-                this.fillCrearUsuario.cApellidos = data.Apellidos;
-                this.fillCrearUsuario.cCargo = data.Cargo;
-                this.fillCrearUsuario.cCorreo = data.Email;
-                this.fillCrearUsuario.nIdRol = data.IdRol ==0 ? '': data.IdRol;
-                this.fillCrearUsuario.cImagen = '';
-                this.ImagenPerfil = data.imagen;
-            }
-        },
-
-        cerrarModal(){
-            this.showModal = false;
-            this.accionModal = 0;
-            this.limpiarFormulario();
-        },
-
-        limpiarFormulario(){
-            this.fillCrearUsuario.cUsuario = '';
-            this.fillCrearUsuario.nIdtercero = '';
-            this.fillCrearUsuario.cContrasena = '';
-            this.fillCrearUsuario.cNombres = '';
-            this.fillCrearUsuario.cApellidos = '';
-            this.fillCrearUsuario.cCargo = '';
-            this.fillCrearUsuario.cCorreo = '';
-            this.fillCrearUsuario.nIdRol = '';
-            this.fillCrearUsuario.cImagen = '';
-        },
-
-        /**
-         * Carga las propiedades del input file
-         */
-        getFile(e) {
-            this.fillCrearUsuario.cImagen = e.target.files[0];
-            this.CargarImagen(this.fillCrearUsuario.cImagen);
-        },
-
-        /**
-         * Obtiene la imagen del input file 
-         */
-        CargarImagen(file){
-            //FileReader me permite leer archivos
-            let leerImagen = new FileReader();
-
-            //El evento onload se dispara despues de ejecutar readAsDataURL
-            leerImagen.onload = (e)=>{
-                this.ImagenPerfil = e.target.result;
-                this.fillCrearUsuario.cImagen = this.ImagenPerfil;
-            }
-            leerImagen.readAsDataURL(file);
-        },
-
-        /**
-         * Carga los roles del combo rol usuario
-         */
-        getListRoles() {
-            let url = "/roles/lista";
-            axios .get(url).then((response) => {
-                if(response.data.roles.length >0){
-                    this.listRoles = response.data.roles;
-                }
-            }).catch(error =>{
-                if(error.response.status ==401){
-                    this.$router.push({name: 'login'})
-                    location.reload();
-                    sessionStorage.clear();
-                    this.fullscreenLoading = false;
-                }
-            });
-        },
-
+       
         FormatoMoneda(amount=0, decimals) {
             var sign = (amount.toString().substring(0, 1) == "-");
 
@@ -538,15 +426,16 @@ export default {
         this.usuario = JSON.parse(sessionStorage.getItem('authUser'));
         if(this.usuario.Tipo == 2){
             this.OpPedido = 61;
-            this.fillMovimiento.nIdtercero = this.usuario.IdTercero;
+            this.fillPlantilla.nIdtercero = this.usuario.IdTercero;
             if(this.usuario.IdDireccion >0){
-                this.fillMovimiento.nIdDireccion = this.usuario.IdDireccion;
+                this.fillPlantilla.nIdDireccion = this.usuario.IdDireccion;
             }
         }
         else{
             this.OpPedido = 8;
         }
-        this.ListarMovimientos(this.fillMovimiento.nIdtercero);
+        this.ListarPlantillas(this.fillPlantilla.nIdtercero);
+        
     },
 
 }

@@ -21,8 +21,12 @@ import RepVentasGrilla from './components/modulos/reportes/ventasgeneral.vue';
 import Chat from './components/modulos/chat/chat.vue';
 import EditarCamposDocumentos from './components/modulos/configuraciones/vercamposdocumentos.vue';
 import ListaDocTpDocumentos from './components/modulos/tiposdocumentos/index.vue';
+
 //Plantillas Clientes
 import PlantillasClientes from './components/modulos/plantillas/index.vue';
+import PlantillasClientesCrear from './components/modulos/plantillas/create.vue';
+import PlantillasClientesVer from './components/modulos/plantillas/ver.vue';
+
 //rutas configuracion documentos
 import ConfigurarDocumentos from './components/modulos/configuraciones/configdocumentos.vue';
 
@@ -33,6 +37,7 @@ import AyudasItems from './components/modulos/ayudas/ayudasitem.vue';
 
 //Pagina 404
 import Pagina404 from './components/plantilla/404.vue';
+import TestSistemas from './components/modulos/test/index.vue';
 
 function verificarAcceso(to, from, next) {
     let authUser = JSON.parse(localStorage.getItem('authUser'));
@@ -96,6 +101,15 @@ export default new Router({
             path: '/',
             component: Home,
             name: 'home.index',
+            beforeEnter: (to, from, next) => {
+                verificarAcceso(to, from, next);
+            }
+        },
+
+        {
+            path: '/test',
+            component: TestSistemas,
+            name: 'test.index',
             beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);
             }
@@ -244,6 +258,26 @@ export default new Router({
             path: '/plantillas/clientes/index',
             component: PlantillasClientes,
             name: 'plantillas_clientes.index',
+            props: true,
+            beforeEnter: (to, from, next) => {
+                verificarAcceso(to, from, next);
+            }
+        },
+
+        {
+            path: '/plantillas/clientes/crear',
+            component: PlantillasClientesCrear,
+            name: 'plantillas_clientes.crear',
+            props: true,
+            beforeEnter: (to, from, next) => {
+                verificarAcceso(to, from, next);
+            }
+        },
+
+        {
+            path: '/plantillas/clientes/ver/:id',
+            component: PlantillasClientesVer,
+            name: 'plantillas_clientes.ver',
             props: true,
             beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);

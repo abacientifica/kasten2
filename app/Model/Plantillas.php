@@ -15,4 +15,12 @@ class Plantillas extends Model
     public function tercero(){
         return $this->hasOne('App\Model\Terceros','IdTercero','IdTerceroPlant');
     }
+    
+    public function direccion(){
+        return $this->hasOne('App\Model\Direcciones','IdDireccion','IdDireccionPlant');
+    }
+
+    public function plantillasdet(){
+        return $this->hasMany('App\Model\PlantillasDet','IdPlantilla','IdPlantilla');
+    }
 }
