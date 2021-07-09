@@ -21,6 +21,7 @@ Vue.component('logacciones', require('./components/plantilla/acciones/logaccione
 Vue.component('visualizar-archivo', require('./components/modulos/archivos/verdocumento.vue').default);
 Vue.component('ayudas', require('./components/modulos/ayudas/listaAyudas.vue').default);
 Vue.component('modal', require('./components/plantilla/modal/modal.vue').default);
+Vue.component('homologar-plantillas', require('./components/plantilla/plantillasclientes/Homologar.vue').default);
 import locale from 'element-ui/lib/locale/lang/es';
 import router from './routes';
 
@@ -53,6 +54,7 @@ window.moment = moment;
 
 import VueSessionStorage from 'vue-sessionstorage'
 Vue.use(VueSessionStorage)
+
 import store from './store'
 
 const app = new Vue({

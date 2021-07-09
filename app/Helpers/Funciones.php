@@ -8,6 +8,7 @@ use App\Model\Direcciones;
 use App\Model\Documentos;
 use App\Model\Item;
 use App\Model\Log;
+use App\Model\LogPlantillas;
 use App\Model\ListaPreciosDet;
 use App\Exception\Handler;
 
@@ -518,4 +519,215 @@ class Funciones{
             'tipo'=>'data:'.$Row[1]
         ];
     }
+
+    public static function CargarDetallesPlantillaClientes($IdPlantilla,$IdDoc=83){
+        
+        $Sql = "select IdPlantillaDet,plantillas_det.CodCliente,plantillas_det.Grupo,plantillas_det.IdItemCliente,plantillas_det.DescripcionCliente,plantillas_det.MarcaSugerida,plantillas_det.UMCliente,plantillas_det.CantidadConsumo,
+                plantillas_det.ComentariosCliente
+                ,plantillas_det.PrecioTecho,plantillas_det.PrecioSugerido,plantillas_det.MesesConsumo,plantillas_det.CantConsumoMesDet,IF(plantillas_det.AceptaAlternativa = 1,'SI','NO') AS  AceptaAlternativa ,
+                plantillas_det.MarcaAsesor, IF(plantillas_det.ReqMuestras = 1,'SI','NO') as ReqMuestras, plantillas_det.CantMuestras ,ComentariosMuestras ,
+                terceros.NombreCorto as Prov,item.Id_Item as ItemAba,item.Descripcion as DescripcionAba,lista_costos_prov.NmListaCostos, lista_costos_prov_det.CategoriaPortafolio,NmMarca,lista_costos_prov_det.CodProveedor,lista_costos_prov_det.RefFabricante,
+                lista_costos_prov_det.Presentacion,lista_costos_prov_det.UMC,lista_costos_prov_det.UMV,plantillas_det.FactorCliente as FactorCliente,plantillas_det.CantUMMAbaMes,lista_costos_prov_det.CostoUMM,plantillas_det.PrecioTechoUMM,plantillas_det.SubTotalConsumo,
+                if(plantillas_det.PrecioTecho >0 , plantillas_det.CantidadConsumo * plantillas_det.PrecioTecho, plantillas_det.CantidadConsumo * lista_costos_prov_det.CostoUMM) as SubTotalVenta,format((plantillas_det.PrecioTecho - lista_costos_prov_det.CostoUMM ) /plantillas_det.PrecioTecho , 2) as UtilVsTecho,'' as FhUltimaFact,'' as ItemContrato,IF(Revisado = 1, 'SI','NO')  as Revisado,
+                IF(lista_costos_prov_det.HabCotizar =1 ,'SI','NO') as HabCotizar,if(Autorizado is null,'',if(Autorizado =1,'SI','NO')) as Autorizado,plantillas_det.ComentariosHM,EnlaceCot,IdListaCostosDetPlantDet
+                from plantillas_det
+                LEFT JOIN lista_costos_prov_det  on lista_costos_prov_det.IdListaCostosProvDet = plantillas_det.IdListaCostosDetPlantDet  
+                LEFT JOIN lista_costos_prov_det as ListaDet on ListaDet.IdListaCostosProvDet = lista_costos_prov_det.IdListaDetReferencia
+                LEFT JOIN item on item.Id_Item = lista_costos_prov_det.Id_Item
+                LEFT JOIN marcas on marcas.IdMarca = lista_costos_prov_det.IdMarca
+                LEFT JOIN lista_costos_prov on lista_costos_prov.IdListaCostosProv = lista_costos_prov_det.IdListaCostosProv
+                LEFT JOIN lista_costos_prov as ListaProv on ListaProv.IdListaCostosProv = ListaDet.IdListaCostosProv
+                LEFT JOIN terceros on terceros.IdTercero = if(lista_costos_prov_det.IdListaDetReferencia is NULL,lista_costos_prov.IdTercero,ListaProv.IdTercero)
+                LEFT JOIN terceros as cliente on cliente.IdTercero = plantillas_det.IdTerceroCliente
+                where plantillas_det.IdPlantilla =" . $IdPlantilla . "";
+        $PlantillasDet = DB::select($Sql);
+
+        $ColumnasConf = DB::select("select * from configuraciones_columnas_documentos_det 
+                                    LEFT JOIN configuraciones_columnas_documentos on configuraciones_columnas_documentos.IdConfiguracion = configuraciones_columnas_documentos_det.IdConfiguracion
+                                    where IdDocumento =".$IdDoc);
+
+        $Cols=[];
+        $a = json_decode(json_encode($PlantillasDet[0]));
+        foreach($a as $key => $dat){
+            if(count($ColumnasConf)>0){
+                foreach($ColumnasConf as $conf){
+                    if($conf->IdCampo == $key){
+                        $Cols[] = ['columna'=>$key ,'alias'=>$conf->AliasCampo,'pinned'=>$conf->pinned,'ancho'=>$conf->Ancho,'edit'=>$conf->editable];
+                        break;
+                    }
+                }
+            }
+            /*else{
+                $Cols[] =  ['columna'=>$key ,'alias'=>null];
+            }*/
+        }
+        $Cols[] = ['columna'=>'Opciones' ,'alias'=>'HM','pinned'=>'right','edit'=>'false'];
+        $Cols[] = ['columna'=>'Eliminar' ,'alias'=>'Elim','pinned'=>'right','edit'=>'false'];
+        $Cols[] = ['columna'=>'Editar' ,'alias'=>'Edit','pinned'=>'right','edit'=>'false'];
+
+        return [
+            'columnas'=> $Cols,
+            'plantillas_det'=>$PlantillasDet,
+        ];
+    }
+
+    public static function DatosHomologarPlantilla($IdTercero,$Criterios,$Filtros){
+        $sql = "SELECT lista_costos_prov_det.*, lista_costos_prov.NmListaCostos,
+                      lista_costos_prov.CostosCliente, item.UMM, lista_costos_prov.IdTercero as IdProveedor,
+                      (SELECT SUM(Disponible) as Disponible 
+                       FROM lotes LEFT JOIN bodegas ON bodegas.IdBodega = lotes.Bodega 
+                       WHERE bodegas.SumaDisponible=1 
+                       AND lotes.Id_Item=item.Id_Item) as Disponible,
+                      item.Descripcion, marcas.NmMarca, 
+                      item.EnNovedad,
+                      CONCAT(lista_costos_prov_det.FhDesde,' - ',lista_costos_prov_det.FhHasta) as Vigencia, 
+                      lista_costos_prov_det.FhHasta
+              FROM lista_costos_prov_det 
+              left join lista_costos_prov on lista_costos_prov_det.IdListaCostosProv=lista_costos_prov.IdListaCostosProv 
+              left join item on lista_costos_prov_det.IdListaCostosProvDet=item.IdListaCostosDetItem
+              left join marcas on lista_costos_prov_det.IdMarca=marcas.IdMarca 
+              WHERE lista_costos_prov.Inactivo=0 AND lista_costos_prov_det.Id_Item >0 ";
+       
+
+        if ($IdTercero) {
+            $sql = $sql . " and (lista_costos_prov.CostosCliente = 0 OR lista_costos_prov.IdTercero=" . $IdTercero . ") ";
+        }
+        if($Criterios && $Filtros){
+            $Filtros = explode(',',$Filtros);
+            $cont =0;
+            $inactivo = false;
+            foreach($Criterios as $criterio){
+                $Filtro = str_replace(' ','%',$Filtros[$cont]);
+                if($criterio == 'lista_costos_prov_det.Inactivo'){
+                    $sql.= " and ".$criterio.' = '.$Filtro;
+                    $inactivo = true;
+                }
+                else if(!$inactivo){
+                    $sql.= " and lista_costos_prov_det.Inactivo = 0 ";
+                    $inactivo = true;
+                }
+                $sql = $sql ." and  ( ".$criterio. " LIKE '%". $Filtro ."%')" ;
+                $cont++;
+            }
+        }
+        $sql.=" limit 100";
+
+        
+
+    
+
+        /*if ($this->ctl0_Main_TxtIdItem->Text != '') {
+            $sql = $sql . " and lista_costos_prov_det.Id_Item=" . $this->ctl0_Main_TxtIdItem->Text;
+        }
+
+        if ($this->TxtRefProveedor->Text != '') {
+            $sql = $sql . " and RefFabricante like '%" . $this->TxtRefProveedor->Text . "%'";
+        }
+
+        if ($this->TxtCodProveedor->Text != '') {
+            $sql = $sql . " and CodProveedor like '%" . $this->TxtCodProveedor->Text . "%'";
+        }
+
+        if ($this->TxtDescripcionProv->Text != '') {
+            $sql = $sql . " and DescripcionProv like '%" . $this->TxtDescripcionProv->Text . "%'";
+        }
+
+        if ($this->TxtDescripcion->Text != '') {
+            $sql = $sql . " and Descripcion like '%" . $this->TxtDescripcion->Text . "%'";
+        }
+
+        if ($this->TxtIdTercero->Text != '') {
+            $sql = $sql . " and lista_costos_prov.IdTercero = " . $this->TxtIdTercero->Text;
+        }
+        
+        if ($this->ChkDisponible->Checked)
+            $sql = $sql . " and (SELECT SUM(Disponible) as Disponible 
+                        FROM lotes LEFT JOIN bodegas ON bodegas.IdBodega = lotes.Bodega 
+                        WHERE bodegas.SumaDisponible=1 
+                        AND lotes.Id_Item=item.Id_Item) > 0";
+
+
+        $sql = $sql . " order by IdListaCostosProvDet limit 1000";*/
+
+        return $sql;
+    }
+
+    public static function ActualizarDatosPlantillaClientes($IdPlantilla){
+        $PlantillaDet = new PlantillasDetRecord();
+        $PlantillaDet = PlantillasDetRecord::finder()->FindAllBy_AND_IdPlantilla($IdPlantilla);
+        $Plantilla = new PlantillasRecord();
+        $Plantilla = PlantillasRecord::finder()->FindByPk($IdPlantilla);
+        $DatosActualizados = 0;
+        if(count($PlantillaDet)>0){
+            foreach ($PlantillaDet as $PlantillaDet){
+                if($PlantillaDet->IdListaCostosDetPlantDet !=''){
+                    $LCdet = ListaCostosProvDetRecord::finder()->FindByPk($PlantillaDet->IdListaCostosDetPlantDet);
+                    $Costo =0;
+                    if($PlantillaDet->CProximo >0 && $PlantillaDet->CostoUMMProximo >0){
+                        $Costo = $PlantillaDet->CostoUMMProximo;
+                    }
+                    else{
+                        $Costo = $LCdet->CostoUMM;
+                    }
+                    if($PlantillaDet->CantidadConsumo>1 && $PlantillaDet->MesesConsumo>0){
+                        $PlantillaDet->CantConsumoMesDet = $PlantillaDet->CantidadConsumo / $PlantillaDet->MesesConsumo;
+                    }
+                    
+                    if($PlantillaDet->FactorCliente >0){
+                       $PlantillaDet->CantUMMAbaMes = $PlantillaDet->CantConsumoMesDet / $PlantillaDet->FactorCliente;
+                    }
+                    else{
+                        $PlantillaDet->CantUMMAbaMes =0;
+                    }
+                    $PlantillaDet->SubTotal = $PlantillaDet->CantUMMAbaMes * $Costo;
+                    if($PlantillaDet->FactorCliente >0){
+                        $PlantillaDet->SubTotalConsumo = $PlantillaDet->CantidadConsumo / $PlantillaDet->FactorCliente * $Costo;
+                    }
+                    else{
+                        $PlantillaDet->SubTotalConsumo = 0;
+                    }
+                    //Calcular el precio techo umm en la plantilla no se divida el preciotecho / factor si no que lo multiplique preciotecho * factor 
+                    //SOL: Beatriz 17/02/2017
+                    if($PlantillaDet->FactorCliente > 0){
+                        $PlantillaDet->PrecioTechoUMM = $PlantillaDet->PrecioTecho * $PlantillaDet->FactorCliente;
+                    }
+                    else{
+                        $PlantillaDet->PrecioTechoUMM =0;
+                    }
+                    $PlantillaDet->save();
+                    $DatosActualizados = $DatosActualizados+1;
+                    
+                }
+            }
+            if($DatosActualizados > 0){
+                $SqlTotal = "select SUM(SubTotal)as SubTotal,SUM(SubTotalConsumo)as SubTotalConsumo from plantillas_det where IdPlantilla =".$IdPlantilla;
+                $TotalDet = PlantillasDetRecord::finder()->FindBySql($SqlTotal);
+                $sqlSubtotal = "UPDATE plantillas  SET Total=".$TotalDet->SubTotal.",TotalConsumo = ".$TotalDet->SubTotalConsumo." WHERE IdPlantilla =". $IdPlantilla;
+                $command = PlantillasRecord::finder()->getDbConnection()->createCommand($sqlSubtotal);
+                $command->execute();
+            }
+        }
+        else{
+            if($Plantilla->Total >0){
+               $Plantilla->Total =0;
+            }
+            if($Plantilla->TotalConsumo >0){
+               $Plantilla->TotalConsumo =0;
+            }
+            $Plantilla->save();
+        }
+    }
+
+    public static function CrearLogPlantillas($IdAccion,$IdPlantilla,$IdPlantillaDet,$Comentario =''){
+        $Log = new LogPlantillas();
+        $Log->Fecha = date('Y-m-d H:i:s');
+        $Log->IdAccion = $IdAccion;
+        $Log->Usuario = \Auth::user()->Usuario;
+        $Log->IdPlantilla = $IdPlantilla;
+        $Log->IdPlantillaDet = $IdPlantillaDet;
+        $Log->Comentarios = $Comentario;
+        $Log->save();
+        return true;
+    }
+
 }

@@ -214,7 +214,6 @@ export default {
     mounted() {
         this.rutas = this.ruta
         this.getTiposDocumentos();
-        console.log(this.tiposDocs);
     },
 }
 </script>

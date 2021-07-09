@@ -60,6 +60,14 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/movimiento/setGenerarDocumento','Movimientos\MovimientosController@setGenerarDocumento');
     Route::put('/movimiento/anularMovimiento','Movimientos\MovimientosController@anularMovimiento');
 
+    //Lista rutas plantillas clientes
+    Route::get('/plantillas/clientes/lista','Plantillas\PlantillasClientesController@ListaPlantillas');
+    Route::get('/plantillas/clientes/ObtenerPlantilla/{Id}','Plantillas\PlantillasClientesController@ObtenerPlantilla');
+    Route::post('/plantillas/clientes/nueva','Plantillas\PlantillasClientesController@CrearPlantilla');
+    Route::get('/plantillas/ObtenerDatosHomolgar','Plantillas\PlantillasClientesController@CargarDatosHomologacion');
+    Route::put('/plantillas/clientes/AsignarLista','Plantillas\PlantillasClientesController@AsignarLista');
+    Route::put('/plantillas/clientes/GuardarCambiosGrilla','Plantillas\PlantillasClientesController@GuardarDatosEdit');
+
     //Lista rutas documentos
     Route::get('/documentos/lista','Administracion\DocumentosController@index');
 
