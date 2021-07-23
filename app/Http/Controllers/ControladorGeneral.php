@@ -94,9 +94,17 @@ class ControladorGeneral extends Controller
     public function LogMovimientos(Request $request){
         if(!$request->ajax())  return  redirect('/'); 
         $IdMovimiento = $request->nIdMovimiento;
-        $sql = "select log.*, acciones.NmAccion
+        $IdDocumento = $request->nIdDocumento;
+        if($IdDocumento && $IdDocumento != 93 || !isset($IdDocumento)){
+            $sql = "select log.*, acciones.NmAccion
                 FROM log LEFT JOIN acciones ON log.IdAccion = acciones.IdAccion
                 WHERE IdMovimiento=" . $IdMovimiento;
+        }
+        else if($IdDocumento && $IdDocumento == 93){
+            $sql="select log_plantillas.*,NmAccion from log_plantillas
+                     LEFT JOIN acciones on acciones.IdAccion = log_plantillas.IdAccion
+                     where IdPlantilla =".$IdMovimiento;
+        }
         $Datos = DB::select($sql);
         return [
             'logs'=>$Datos

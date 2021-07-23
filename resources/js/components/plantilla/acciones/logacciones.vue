@@ -1,12 +1,12 @@
 <template>
     <div>
-        <button class="btn btn-secondary" @click="verLog()">
+        <button class="btn btn-secondary btn-sm" @click="verLog()">
             <li type="button" class="fas fa-eye"></li> Log 
         </button>
         <!--Modal Error-->
         <div class="modal fade" :class="{ show: modalShow }" :style=" modalShow ? mostrarModal : ocultarModal">
             <div class="modal-dialog" role="document">
-                <div class="modal-content">
+                <div class="modal-content" style="font-size:12px">
                     <div class="modal-header">
                         <h5 class="modal-title">Registro de acciones</h5>
                         <button class="close" @click="AbrirModal"></button>
@@ -20,6 +20,7 @@
                                             <th>Fecha</th>
                                             <th>Usuario</th>
                                             <th>Cod Aba</th>
+                                            <th v-if="IdDocumento == 93">Id Plant. Det</th>
                                             <th>Comentarios</th>
                                         </tr>
                                     </thead>
@@ -31,6 +32,7 @@
                                             <td v-text="log.Fecha"></td>
                                             <td v-text="log.Usuario"></td>
                                             <td v-text="log.Id_Item"></td>
+                                            <td v-if="IdDocumento == 93" v-text="log.IdPlantillaDet"></td>
                                             <td v-text="log.Comentarios"></td>
                                         </tr>
                                     </tbody>
@@ -62,10 +64,11 @@
 </template>
 <script>
 export default {
-    props:['IdMovimiento'],
+    props:['IdMovimiento','IdDocumento'],
     data() {
         return {
             nIdMovimiento:this.IdMovimiento,
+            nIdDocumento:this.IdDocumento,
             arrLogs:[],
             modalShow: false,
             mostrarModal: {
@@ -76,7 +79,7 @@ export default {
                 display: 'none',
             },
             pageNumber: 0,
-            perPage: 9,
+            perPage: 5,
         }
     },
 
@@ -119,7 +122,8 @@ export default {
         verLog(){
            let me = this;
             axios.get('/log/lista',{params:{
-                'nIdMovimiento':this.IdMovimiento
+                'nIdMovimiento':this.IdMovimiento,
+                'nIdDocumento':this.IdDocumento
             }}).then(function (response) {
                 var respuesta = response.data;
                 me.arrLogs = respuesta.logs;

@@ -329,7 +329,7 @@ export default {
                     showConfirmButton: false,
                     timer: 1300
                 });
-                //me.$router.push('/pedidos/ver/'+me.IdDocPed+'/'+respuesta.movimiento)
+                me.$router.push('/plantillas/clientes/ver/'+respuesta.plantilla);
             })
             .catch(function (error) {
                 console.log(error);

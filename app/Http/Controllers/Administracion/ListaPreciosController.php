@@ -34,7 +34,7 @@ class ListaPreciosController extends Controller
                 $Sql.= " and ( lista_precios_det.CodTercero like '%".$filtro."%' or item.Descripcion like '%".$filtro."%' or item.Id_Item like '%".$filtro."%' or marcas.NmMarca like '%".$filtro."%' or lista.RefFabricante like '%".$filtro."%')";
             }
             if(is_countable($MarcasTercero) && count($MarcasTercero)>0){
-                $Sql.= " and  marcas.IdMarca in (select marcas_terceros.IdMarca from marcas_terceros where IdTercero = '".$Direccion->IdTercero."')";
+                $Sql.= " and  marcas.IdMarca in (select marcas_terceros.IdMarca from marcas_terceros where IdTercero = '".$Direccion->IdTercero."' and marcas_terceros.Inactiva =0 )";
             }
             if($limit != ''){
                 $Sql.= " and lista_precios.IdListaPrecios = ".$Direccion->IdListaPreciosDireccion." and  lista_precios_det.FhHasta >= DATE_SUB(CURDATE(),INTERVAL 24 MONTH) and item.Inactivo=0 and IdKit =0 order by Venta DESC limit 1";
