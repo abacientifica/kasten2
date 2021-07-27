@@ -1667,7 +1667,7 @@ export default {
             //console.log(file);
         },
         validarArchivo(file){
-            let cvs = file.type === 'text/csv'
+            let cvs = file.type === 'text/csv' || file.type === 'text/comma-separated-values' || file.type === 'application/csv' || file.type === 'application/vnd.ms-excel' || file.type === 'text/anytext'
             console.log(file.type)
             if(!cvs){
                 this.AlertMensaje("el archivo no es tipo cvs delimitado por coma",3);
