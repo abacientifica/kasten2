@@ -135,7 +135,7 @@
                                     <th class="texto-centrado">Estado</th>
                                     <th class="texto-centrado">Usuario</th>
                                     <th class="texto-centrado">Comentarios</th>
-                                    <th class="texto-centrado">Opcion</th>
+                                    <th class="texto-centrado">Opción</th>
                                     </tr>
                                 </thead>
                                 <tbody v-if="ListarPlantillasPaginate.length >0">

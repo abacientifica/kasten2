@@ -26,23 +26,23 @@
                             <table class="table table-bordered table-striped table-sm">
                                 <thead class="bg-info">
                                     <tr>
-                                        <th>Opciones</th>
                                         <th>ID</th>
                                         <th>Documento</th>
                                         <th>Consecutivo</th>
+                                        <th>Opciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr v-for="documento in arrDocumentos" :key="documento.IdDocumento">
                                         <template v-if="listPermisos.includes(documento.Indexk2) || listPermisos.includes('administrador.sistema')">
+                                            <td v-text="documento.IdDocumento"></td>
+                                            <td v-text="documento.Nombre"></td>
+                                            <td v-text="documento.Consecutivo"></td>
                                             <td>
                                                 <router-link  :to="{name: documento.Indexk2}" class="btn btn-info btn-sm">
                                                     <i class="fas fa-eye"></i>
                                                 </router-link>
                                             </td>
-                                            <td v-text="documento.IdDocumento"></td>
-                                            <td v-text="documento.Nombre"></td>
-                                            <td v-text="documento.Consecutivo"></td>
                                         </template>
                                     </tr>
                                 </tbody>

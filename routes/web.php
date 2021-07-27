@@ -62,11 +62,23 @@ Route::group(['middleware' => ['auth']], function () {
 
     //Lista rutas plantillas clientes
     Route::get('/plantillas/clientes/lista','Plantillas\PlantillasClientesController@ListaPlantillas');
-    Route::get('/plantillas/clientes/ObtenerPlantilla/{Id}','Plantillas\PlantillasClientesController@ObtenerPlantilla');
+    Route::get('/plantillas/clientes/ObtenerPlantilla/{Id}/{filtros?}','Plantillas\PlantillasClientesController@ObtenerPlantilla');
     Route::post('/plantillas/clientes/nueva','Plantillas\PlantillasClientesController@CrearPlantilla');
     Route::get('/plantillas/ObtenerDatosHomolgar','Plantillas\PlantillasClientesController@CargarDatosHomologacion');
     Route::put('/plantillas/clientes/AsignarLista','Plantillas\PlantillasClientesController@AsignarLista');
     Route::put('/plantillas/clientes/GuardarCambiosGrilla','Plantillas\PlantillasClientesController@GuardarDatosEdit');
+    Route::put('/plantillas/clientes/Editar','Plantillas\PlantillasClientesController@ActualizarPlantilla');
+    Route::put('/plantillas/clientes/Autorizar','Plantillas\PlantillasClientesController@Autorizar');
+    Route::put('/plantillas/clientes/DesAutorizar','Plantillas\PlantillasClientesController@DesAutorizar');
+    Route::put('/plantillas/clientes/Anular','Plantillas\PlantillasClientesController@Anular');
+    Route::put('/plantillas/clientes/EliminarDetalles','Plantillas\PlantillasClientesController@EliminarDetalles');
+    Route::put('/plantillas/clientes/AutorizarDetalles','Plantillas\PlantillasClientesController@AutorizarDetalles');
+    Route::put('/plantillas/clientes/DesAutorizarDetalles','Plantillas\PlantillasClientesController@DesAutorizarDetalles');
+    Route::get('/plantillas/clientes/MarcarItemsVendidos','Plantillas\PlantillasClientesController@MarcarItemsVendidos');
+    Route::post('/plantillas/clientes/ImportarArchivo/{Id}','Plantillas\PlantillasClientesController@ImportarArchivo');
+    Route::put('/plantillas/clientes/AplicarCalculoFactor','Plantillas\PlantillasClientesController@AplicarCalculoFactor');
+    Route::put('/plantillas/clientes/ProcesarHomologacion','Plantillas\PlantillasClientesController@ProcesarHomologacion');
+    Route::put('/plantillas/clientes/AsignarCostoActual','Plantillas\PlantillasClientesController@AsignarCostoActual');
 
     //Lista rutas documentos
     Route::get('/documentos/lista','Administracion\DocumentosController@index');

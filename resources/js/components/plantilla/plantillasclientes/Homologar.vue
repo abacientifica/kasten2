@@ -13,7 +13,7 @@
                         <i class="fas fa-arrow-alt-circle-left"></i>
                     </button>
 
-                    <button type="button" class="btn btn-info" v-if="indexItem < indexFin" @click="seleccionarItem('sig')" >
+                    <button type="button" class="btn btn-info" v-if="indexItem < indexFin && indexFin > 1" @click="seleccionarItem('sig')" >
                         <i class="fas fa-arrow-alt-circle-right"></i>
                     </button>
                     <button type="button" class="close" @click="cerrarModal()" aria-label="Close">
@@ -59,7 +59,7 @@
                                     <th class="texto-centrado">CP</th>
                                     <th class="texto-centrado">Hab. Cotizar</th>
                                     <th class="texto-centrado">Costo UMM</th>
-                                    <th class="texto-centrado">Opción</th>
+                                    <th class="texto-centrado" v-if="ItemSel != null && ItemSel.Autorizado != 1" >Opción</th>
                                 </tr>
                             </thead>
 
@@ -80,8 +80,8 @@
                                     <td class="texto-derecha" v-text="FormatoMoneda(articulo.CostoUMM,2)"></td>
                                     <!--<td class="texto-derecha" :class="{'prod-vencido' : articulo.FhHasta < moment().format('YYYY-MM-DD')}" v-text="FormatoMoneda(articulo.Precio,2)">
                                     </td>-->
-                                    <td>
-                                        <button type="button"  @click="enlazarLista(index)" class="btn btn-success btn-sm" flat >
+                                    <td v-if="ItemSel != null && ItemSel.Autorizado != 1">
+                                        <button type="button"  @click="enlazarLista(index)"  class="btn btn-success btn-sm" flat >
                                             <i class="fas fa-check"></i>
                                         </button>
                                         <!--<vs-tooltip warn>
