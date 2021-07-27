@@ -1635,7 +1635,7 @@ export default {
             let url = '/plantillas/clientes/MarcarItemsVendidos';
             let me = this;
             let load = me.loaderk();
-            axios.get(url,{params:{
+            axios.post(url,{params:{
                 'arrPlantilla':me.fillPlantilla,
                 'oRangoFecha':me.oRangoFechasItemsV
             }}).then(function (response) {
