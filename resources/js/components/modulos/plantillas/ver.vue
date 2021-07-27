@@ -70,7 +70,7 @@
                                     <td><el-button type="primary" round :disabled="(ValidarPermiso('crearcot') && fillPlantilla.Estado=='DIGITADA') ? false : true"><i class="fas fa-align-justify"></i> Crear Cotización</el-button></td>
                                     <tr>
                                     <th scope="row">4</th>
-                                    <td><el-button type="primary" round :disabled="(ValidarPermiso('autorizaritems')) ? false : true" @click.prevent="AutorizarDetalles()"><i class="fas fa-edit"></i> Autorizar Items</el-button></td>
+                                    <td><el-button type="primary" round :disabled="(ValidarPermiso('autorizaritems') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AutorizarDetalles()"><i class="fas fa-edit"></i> Autorizar Items</el-button></td>
                                     <td><el-button type="primary" round :disabled="(ValidarPermiso('desautorizaritems') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="DesAutorizarDetalles()"><i class="fas fa-minus-circle"></i>Desautorizar Items</el-button></td>
                                     <td><el-button type="primary" round :disabled="(ValidarPermiso('crearcot') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click="AbriModalItemsVendidos = true"><i class="fas fa-chart-line"></i>Marcar Items Vendidos</el-button></td>
                                     </tr>
@@ -1668,6 +1668,7 @@ export default {
         },
         validarArchivo(file){
             let cvs = file.type === 'text/csv'
+            console.log(file.type)
             if(!cvs){
                 this.AlertMensaje("el archivo no es tipo cvs delimitado por coma",3);
                 return false
