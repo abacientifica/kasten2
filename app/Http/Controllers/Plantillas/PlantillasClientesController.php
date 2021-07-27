@@ -224,7 +224,7 @@ class PlantillasClientesController extends Controller
             $Plantilla->Tipo =0;
             $Plantilla->save();
             DB::commit();
-            \Funciones::CrearLog(8, $Plantilla->IdPlantilla, \Auth::user()->Usuario);
+            \Funciones::CrearLogPlantillas(8, $Plantilla->IdPlantilla);
             return [
                 'plantilla'=>$Plantilla->IdPlantilla,
                 'msg'=>"La plantilla ha sido creada con exito ".$Plantilla->IdPlantilla,
@@ -260,7 +260,7 @@ class PlantillasClientesController extends Controller
             $Plantilla->Tipo =0;
             $Plantilla->save();
             DB::commit();
-            \Funciones::CrearLogPlantillas(16, $Plantilla->IdPlantilla,'');
+            \Funciones::CrearLogPlantillas(16, $Plantilla->IdPlantilla);
             return [
                 'plantilla'=>$Plantilla->IdPlantilla,
                 'msg'=>"La plantilla ha sido editada con exito ".$Plantilla->IdPlantilla,
@@ -332,7 +332,7 @@ class PlantillasClientesController extends Controller
 
         if ($PlantDet->save()) {
 
-            //\Funciones::ActualizarDatosPlantillaClientes($PlantDet->IdPlantilla);
+            \Funciones::ActualizarDatosPlantillaClientes($PlantDet->IdPlantilla);
             return[
                 'status'=>201,
                 'msg'=>"El detalle ha sido homologado"
@@ -381,32 +381,31 @@ class PlantillasClientesController extends Controller
     public function MarcarItemsVendidos(Request $request) {
         if(!$request->ajax()) return  redirect('/');
         try{
-            $Plantilla =  json_decode($request['arrPlantilla']);
+            $Plantilla =  $request->params['arrPlantilla'];
             if($Plantilla){
-                $RangoFechas = $request->oRangoFecha;
+                $RangoFechas = $request->params['oRangoFecha'];
                 $sql = "SELECT movimientos_det.Id_Item
                     FROM movimientos_det
-                    WHERE movimientos_det.TpDocumento=5 and (movimientos_det.estado='AUTORIZADO' OR movimientos_det.estado='CERRADO') and IdTercero=" . $Plantilla->IdTerceroPlant;
+                    WHERE movimientos_det.TpDocumento=5 and (movimientos_det.estado='AUTORIZADO' OR movimientos_det.estado='CERRADO') and IdTercero=" . $Plantilla['IdTerceroPlant'];
 
                 if ($RangoFechas){
                     $sql = $sql . " AND FechaDet >= '" . $RangoFechas[0]. " 00:00:00' AND FechaDet <= '" . $RangoFechas[1] . " 23:59:59'";
                 }
-                $sql.=" and movimientos_det.Id_Item in (select if(lista_costos_prov_det.Id_Item>0,lista_costos_prov_det.Id_Item,0)  from plantillas_det LEFT JOIN lista_costos_prov_det on lista_costos_prov_det.IdListaCostosProvDet = plantillas_det.IdListaCostosDetPlantDet where plantillas_det.IdPlantilla = ".$Plantilla->IdPlantilla." )" ;
+                $sql.=" and movimientos_det.Id_Item in (select if(lista_costos_prov_det.Id_Item>0,lista_costos_prov_det.Id_Item,0)  from plantillas_det LEFT JOIN lista_costos_prov_det on lista_costos_prov_det.IdListaCostosProvDet = plantillas_det.IdListaCostosDetPlantDet where plantillas_det.IdPlantilla = ".$Plantilla['IdPlantilla']." )" ;
                 $sql.= " group by movimientos_det.Id_Item";
                 $var = $sql;
                 $arMovDet = DB::select($sql);
-                $sql = "UPDATE plantillas_det Set VendidoAnterioridad=0 Where IdPlantilla=" . $Plantilla->IdPlantilla;
+                $sql = "UPDATE plantillas_det Set VendidoAnterioridad=0 Where IdPlantilla=" . $Plantilla['IdPlantilla'];
                 $command = DB::select($sql);
 
                 foreach ($arMovDet as $MovDet) {
-                    $sql = "UPDATE plantillas_det left join lista_costos_prov_det on lista_costos_prov_det.IdListaCostosProvDet = plantillas_det.IdListaCostosDetPlantDet Set VendidoAnterioridad=1 Where IdPlantilla=" . $Plantilla->IdPlantilla . " and Id_Item=" . $MovDet->Id_Item;
+                    $sql = "UPDATE plantillas_det left join lista_costos_prov_det on lista_costos_prov_det.IdListaCostosProvDet = plantillas_det.IdListaCostosDetPlantDet Set VendidoAnterioridad=1 Where IdPlantilla=" . $Plantilla['IdPlantilla'] . " and Id_Item=" . $MovDet->Id_Item;
                     $command = DB::select($sql);
                 }
             }
             return [
                 'msg'=>"El proceso ha terminado, se actualizaron ".count($arMovDet)." registros !!" ,
                 'status'=>201,
-                'sql'=>$var
             ];
         }
         catch(ErrorException $e){

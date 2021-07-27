@@ -74,7 +74,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::put('/plantillas/clientes/EliminarDetalles','Plantillas\PlantillasClientesController@EliminarDetalles');
     Route::put('/plantillas/clientes/AutorizarDetalles','Plantillas\PlantillasClientesController@AutorizarDetalles');
     Route::put('/plantillas/clientes/DesAutorizarDetalles','Plantillas\PlantillasClientesController@DesAutorizarDetalles');
-    Route::get('/plantillas/clientes/MarcarItemsVendidos','Plantillas\PlantillasClientesController@MarcarItemsVendidos');
+    Route::post('/plantillas/clientes/MarcarItemsVendidos','Plantillas\PlantillasClientesController@MarcarItemsVendidos');
     Route::post('/plantillas/clientes/ImportarArchivo/{Id}','Plantillas\PlantillasClientesController@ImportarArchivo');
     Route::put('/plantillas/clientes/AplicarCalculoFactor','Plantillas\PlantillasClientesController@AplicarCalculoFactor');
     Route::put('/plantillas/clientes/ProcesarHomologacion','Plantillas\PlantillasClientesController@ProcesarHomologacion');
