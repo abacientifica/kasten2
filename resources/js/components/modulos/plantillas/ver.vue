@@ -40,51 +40,125 @@
                     <div class="col-md-12 btn-group-justified"  style="display:flex" >
                         <logacciones class="btn-margin-left" :IdMovimiento ="fillPlantilla.IdPlantilla" :IdDocumento="93"></logacciones>
                         <button class="btn btn-success btn-sm btn-margin-left" v-if="fillPlantilla.Estado!='ANULADA'" @click.prevent="dialogAcciones = !dialogAcciones"><i class="fas fa-grip-horizontal"></i> Menu Acciones</button>
-                        <button class="btn btn-secondary btn-sm btn-margin-left" v-if="OcultarPanel" @click.prevent="OcultarMostrarPanel()"><i class="fas fa-eye"></i> Mostrar Info</button>
-                        <button class="btn btn-secondary btn-sm btn-margin-left" v-if="!OcultarPanel" @click.prevent="OcultarMostrarPanel()"><i class="fas fa-eye-slash"></i> Ocultar Info</button>
-                        
-                        <el-dialog
-                            title="Acciones Plantillas"
-                            :visible.sync="dialogAcciones"
-                            center>
-                            <span>Recuerda que cada acción que se realice es responsabilidad del usuario logueado y esta queda registrada.</span>
-                            <table class="table">
-                                
-                                <tbody>
-                                    <tr>
-                                    <th scope="row">1</th>
-                                    <td><el-button type="primary" round :disabled="(ValidarPermiso('editar') && fillPlantilla.Estado=='DIGITADA') ? false : true"  @click.prevent="abrirModalEditar"><i class="fas fa-edit"></i> Editar</el-button></td>
-                                    <td><el-button type="primary" round :disabled="(ValidarPermiso('autorizar') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="Autorizar"><i class="fas fa-check-circle"></i> Autorizar</el-button></td>
-                                    <td><el-button type="primary" round :disabled="(ValidarPermiso('desautorizar') && fillPlantilla.Estado=='AUTORIZADA') ? false : true" @click.prevent="DesAutorizar"> <i class="fas fa-minus-circle"></i> Des Autorizar</el-button></td>
-                                    </tr>
-                                    <tr>
-                                    <th scope="row">2</th>
-                                    <td><el-button type="primary" round :disabled="(ValidarPermiso('anular') && fillPlantilla.Estado=='AUTORIZADA')? false : true" @click.prevent="Anular"> <i class="fas fa-ban"></i> Anular</el-button></td>
-                                    <td><el-button type="primary" round :disabled="(ValidarPermiso('homologar') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AbrirModalHomologar = true"> <i class="fas fa-link"></i> Homologar</el-button></td>
-                                    <td><el-button type="primary" round :disabled="(ValidarPermiso('restablecercostos') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="RestablecerCostos"> <i class="fas fa-retweet"></i>Restablecer Costos</el-button></td>
-                                    </tr>
-                                    <tr>
-                                    <th scope="row">3</th>
-                                    <td><el-button type="primary" round :disabled="(ValidarPermiso('duplicar')) ? false : true"><i class="fas fa-clone"></i> Duplicar Plantilla</el-button></td>
-                                    <td><el-button type="primary" round :disabled="(ValidarPermiso('eliminar') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="EliminarDetallesSel" ><i class="fas fa-trash-alt"></i>Eliminar Items</el-button></td>
-                                    <td><el-button type="primary" round :disabled="(ValidarPermiso('crearcot') && fillPlantilla.Estado=='DIGITADA') ? false : true"><i class="fas fa-align-justify"></i> Crear Cotización</el-button></td>
-                                    <tr>
-                                    <th scope="row">4</th>
-                                    <td><el-button type="primary" round :disabled="(ValidarPermiso('autorizaritems') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AutorizarDetalles()"><i class="fas fa-edit"></i> Autorizar Items</el-button></td>
-                                    <td><el-button type="primary" round :disabled="(ValidarPermiso('desautorizaritems') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="DesAutorizarDetalles()"><i class="fas fa-minus-circle"></i>Desautorizar Items</el-button></td>
-                                    <td><el-button type="primary" round :disabled="(ValidarPermiso('crearcot') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click="AbriModalItemsVendidos = true"><i class="fas fa-chart-line"></i>Marcar Items Vendidos</el-button></td>
-                                    </tr>
-                                    <tr>
-                                    <th scope="row">4</th>
-                                    <td><el-button type="primary" round :disabled="(ValidarPermiso('importar') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AbriModalImportarItems = true"><i class="fas fa-align-justify"></i> Importar Listado</el-button></td>
-                                    <td><el-button type="primary" round :disabled="(ValidarPermiso('calcularfactor') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AbriModalCalcFactor = true"><i class="fas fa-calculator"></i> Calcular Factor</el-button></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <span slot="footer" class="dialog-footer">
-                                <el-button type="warning" @click="dialogAcciones = false">Cerrar</el-button>
-                            </span>
-                        </el-dialog>
+                        <button class="btn btn-secondary btn-sm btn-margin-left" v-if="OcultarPanel" @click.prevent="OcultarMostrarPanel()"><i class="fas fa-eye"></i> Mostrar Encabezado</button>
+                        <button class="btn btn-secondary btn-sm btn-margin-left" v-if="!OcultarPanel" @click.prevent="OcultarMostrarPanel()"><i class="fas fa-eye-slash"></i> Ocultar Encabezado</button>
+                    <!--Botones de acciones--> 
+                    <el-dialog
+                        title="Acciones Plantillas"
+                        :visible.sync="dialogAcciones"
+                        center>
+                        <span>Recuerda que cada acción que se realice es responsabilidad del usuario logueado y esta queda registrada.</span>
+                        <table class="acciones table-responsive bg-3">
+                            
+                            <tbody>
+                                <tr>
+                                <th scope="row">1</th>
+                                <td>
+                                    <el-tooltip placement="right">
+                                        <div slot="content">Sirve para editar los datos principales de la plantilla.</div>
+                                        <el-button type="primary" round :disabled="(ValidarPermiso('editar') && fillPlantilla.Estado=='DIGITADA') ? false : true"  @click.prevent="abrirModalEditar">
+                                        <i class="fas fa-edit"></i> Editar
+                                        </el-button>
+                                    </el-tooltip>
+                                </td>
+                                <td>
+                                    <el-tooltip placement="right">
+                                        <div slot="content">Autoriza  plantilla pero no los detalles.</div>
+                                        <el-button type="primary" round :disabled="(ValidarPermiso('autorizar') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="Autorizar"><i class="fas fa-check-circle"></i> Autorizar</el-button>
+                                    </el-tooltip>
+                                </td>
+                                <td>
+                                    <el-tooltip placement="right">
+                                        <div slot="content">Desautoriza  plantilla pero no los detalles.</div>
+                                        <el-button type="primary" round :disabled="(ValidarPermiso('desautorizar') && fillPlantilla.Estado=='AUTORIZADA') ? false : true" @click.prevent="DesAutorizar"> <i class="fas fa-minus-circle"></i> Des Autorizar</el-button>
+                                    </el-tooltip>
+                                </td>
+                                </tr>
+                                <tr>
+                                <th scope="row">2</th>
+                                <td>
+                                    <el-tooltip placement="right">
+                                        <div slot="content">Anula la plantilla actual.</div>
+                                        <el-button type="primary" round :disabled="(ValidarPermiso('anular') && fillPlantilla.Estado=='AUTORIZADA')? false : true" @click.prevent="Anular"> <i class="fas fa-ban"></i> Anular</el-button>
+                                    </el-tooltip>
+                                </td>
+                                <td>
+                                    <el-tooltip placement="right">
+                                        <div slot="content">Sirve para homologar datos de una cotización o plantilla anterior.</div>
+                                        <el-button type="primary" round :disabled="(ValidarPermiso('homologar') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AbrirModalHomologar = true"> <i class="fas fa-link"></i> Homologar</el-button>
+                                    </el-tooltip>
+                                </td>
+                                <td>
+                                    <el-tooltip placement="right">
+                                        <div slot="content">Sirve para enlazar los detalles a la lista principal del proveedor</div>
+                                        <el-button type="primary" round :disabled="(ValidarPermiso('restablecercostos') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="RestablecerCostos"> <i class="fas fa-retweet"></i>Restablecer Costos</el-button>
+                                    </el-tooltip>
+                                </td>
+                                </tr>
+                                <tr>
+                                <th scope="row">3</th>
+                                <td>
+                                    <el-tooltip placement="right">
+                                        <div slot="content">Sirve para crear una plantilla con los mismos datos.</div>
+                                        <el-button type="primary" round :disabled="(ValidarPermiso('duplicar')) ? false : true"><i class="fas fa-clone"></i> Duplicar Plantilla</el-button>
+                                    </el-tooltip>
+                                </td>
+                                <td>
+                                    <el-tooltip placement="right">
+                                        <div slot="content">Sirve para eliminar items de la plantilla.</div>
+                                        <el-button type="primary" round :disabled="(ValidarPermiso('eliminar') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="EliminarDetallesSel" ><i class="fas fa-trash-alt"></i>Eliminar Items</el-button>
+                                    </el-tooltip>
+                                </td>
+                                <td>
+                                    <el-tooltip placement="right">
+                                        <div slot="content">Sirve para crear o enviar items a una cotización</div>
+                                        <el-button type="primary" round :disabled="(ValidarPermiso('crearcot') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AbrirModalCotizacion = true"><i class="fas fa-align-justify"></i> Crear Cotización</el-button>
+                                    </el-tooltip>
+                                </td>
+                                <tr>
+                                <th scope="row">4</th>
+                                <td>
+                                    <el-tooltip placement="right">
+                                        <div slot="content">Sirve para autorizar masivamente items de la plantilla.</div>
+                                        <el-button type="primary" round :disabled="(ValidarPermiso('autorizaritems') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AutorizarDetalles()"><i class="fas fa-edit"></i> Autorizar Items</el-button>
+                                    </el-tooltip>
+                                </td>
+                                <td>
+                                    <el-tooltip placement="right">
+                                        <div slot="content">Sirve para editar los datos principales de la plantilla.</div>
+                                        <el-button type="primary" round :disabled="(ValidarPermiso('desautorizaritems') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="DesAutorizarDetalles()"><i class="fas fa-minus-circle"></i>Desautorizar Items</el-button>
+                                    </el-tooltip>
+                                </td>
+                                <td>
+                                    <el-tooltip placement="right">
+                                        <div slot="content">Sirve para marcar los items que se han vendido en un rango de fecha.</div>
+                                        <el-button type="primary" round :disabled="(ValidarPermiso('crearcot') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click="AbriModalItemsVendidos = true"><i class="fas fa-chart-line"></i>Marcar Items Vendidos</el-button>
+                                    </el-tooltip>
+                                </td>
+                                </tr>
+                                <tr>
+                                <th scope="row">4</th>
+                                <td>
+                                    <el-tooltip placement="right">
+                                        <div slot="content">Sirve para importar una lista en formato cvs</div>
+                                        <el-button type="primary" round :disabled="(ValidarPermiso('importar') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AbriModalImportarItems = true"><i class="fas fa-align-justify"></i> Importar Listado</el-button>
+                                    </el-tooltip>
+                                </td>
+                                <td>
+                                    <el-tooltip placement="right">
+                                        <div slot="content">Calcula el factor</div>
+                                        <el-button type="primary" round :disabled="(ValidarPermiso('calcularfactor') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AbriModalCalcFactor = true"><i class="fas fa-calculator"></i> Calcular Factor</el-button>
+                                    </el-tooltip>
+                                </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <span slot="footer" class="dialog-footer">
+                            <el-button type="warning" @click="dialogAcciones = false">Cerrar</el-button>
+                        </span>
+                    </el-dialog>
+                    <!--Fin Botones Acciones-->
+
                     <!--Acciones-->
                     <el-dialog title="Editar Plantilla" :visible.sync="editarPlantilla">
                         <div class="form-group row border" >
@@ -325,6 +399,38 @@
                         </span>
                     </el-dialog>
 
+                    <el-dialog title="Crear Cotización" :visible.sync="AbrirModalCotizacion">
+                        <div class="form-group row border" >
+                            
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Cotización Existente</label>
+                                    <input type="number" v-model="FillCrearCot.CotExist" class="form-control" placeholder="# Cot"> 
+                                    <label>Opción Detalles</label><br>
+                                    <el-radio v-model="FillCrearCot.OpcionItems" label="1">Todos</el-radio>
+                                    <el-radio v-model="FillCrearCot.OpcionItems" label="2">Seleccionados</el-radio><br>
+                                    <label>Opcion Cotización</label>
+                                    <el-select v-model="FillCrearCot.valuecot" :disabled="FillCrearCot.CotExist>0" placeholder="Seleccione">
+                                        <el-option
+                                            v-for="item in FillCrearCot.optionsCot"
+                                            :key="item.valuecot"
+                                            :label="item.label"
+                                            :value="item.valuecot">
+                                        </el-option>
+                                    </el-select>
+                                    <label>Pertenece a contrato</label><br>
+                                    <el-radio v-model="FillCrearCot.perteneceCCto" :disabled="FillCrearCot.CotExist>0" label="1">Si</el-radio>
+                                    <el-radio v-model="FillCrearCot.perteneceCCto" :disabled="FillCrearCot.CotExist>0" label="0">No</el-radio>
+
+                                </div>
+                            </div>
+                        </div>
+                        <span slot="footer" class="dialog-footer">
+                            <el-button @click="AbrirModalCotizacion = false">Cancelar</el-button>
+                            <el-button type="primary" @click="ValidarDatosCot()">Crear</el-button>
+                        </span>
+                    </el-dialog>
+
                     <!--Fin Acciones-->
                     </div><hr>
                     <div class="form-group row border" v-if="!OcultarPanel">
@@ -458,6 +564,8 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine.css";
 import 'ag-grid-enterprise';
 import vSelect from "vue-select";
+import serviceApp from "../../../ServicesApp";
+const servicesApp = new serviceApp();
 import "vue-select/dist/vue-select.css";
 import { AgGridVue } from "ag-grid-vue";
 export default {
@@ -581,6 +689,7 @@ export default {
                 display: 'none',
             },
             //Variables Editar
+            EditarDet : true,
             fillEditarPlantilla:{
                 nIdPlantilla:this.$attrs.id,
                 nIdTercero:0,
@@ -610,97 +719,7 @@ export default {
             active:false,
             msgAnulacion:'',
             AptoAnular:true,
-            localeText :{
-                // for filter panel
-                page: 'Pagina',
-                more: 'Mas',
-                to: 'a',
-                of: 'de',
-                next: 'Siguente',
-                last: 'Último',
-                first: 'Primero',
-                previous: 'Anteror',
-                loadingOoo: 'Cargando...',
-                
-                // for set filter
-                selectAll: 'Seleccionar Todo',
-                searchOoo: 'Buscar...',
-                blanks: 'En blanco',
-
-                // for number filter and text filter
-                filterOoo: 'Filtrar',
-                applyFilter: 'Aplicar Filtro...',
-                equals: 'Igual',
-                notEqual: 'No Igual',
-
-                // for number filter
-                lessThan: 'Menos que',
-                greaterThan: 'Mayor que',
-                lessThanOrEqual: 'Menos o igual que',
-                greaterThanOrEqual: 'Mayor o igual que',
-                inRange: 'En rango de',
-
-                // for text filter
-                contains: 'Contiene',
-                notContains: 'No contiene',
-                startsWith: 'Empieza con',
-                endsWith: 'Termina con',
-
-                // filter conditions
-                andCondition: 'Y',
-                orCondition: 'O',
-
-                // the header of the default group column
-                group: 'Grupo',
-
-                // tool panel
-                columns: 'Columnas',
-                filters: 'Filtros',
-                valueColumns: 'Valos de las Columnas',
-                pivotMode: 'Modo Pivote',
-                groups: 'Grupos',
-                values: 'Valores',
-                pivots: 'Pivotes',
-                toolPanelButton: 'BotonDelPanelDeHerramientas',
-
-                // other
-                noRowsToShow: 'No hay filas para mostrar',
-
-                // enterprise menu
-                pinColumn: 'Columna Pin',
-                valueAggregation: 'Agregar valor',
-                autosizeThiscolumn: 'Autoajustar esta columna',
-                autosizeAllColumns: 'Ajustar todas las columnas',
-                groupBy: 'agrupar',
-                ungroupBy: 'desagrupar',
-                resetColumns: 'Reiniciar Columnas',
-                expandAll: 'Expandir todo',
-                collapseAll: 'Colapsar todo',
-                toolPanel: 'Panel de Herramientas',
-                export: 'Exportar',
-                csvExport: 'Exportar a CSV',
-                excelExport: 'Exportar a Excel (.xlsx)',
-                excelXmlExport: 'Exportar a Excel (.xml)',
-
-
-                // enterprise menu pinning
-                pinLeft: 'Pin Izquierdo',
-                pinRight: 'Pin Derecho',
-
-
-                // enterprise menu aggregation and status bar
-                sum: 'Suman',
-                min: 'Minimo',
-                max: 'Maximo',
-                none: 'nada',
-                count: 'contar',
-                average: 'promedio',
-
-                // standard menu
-                copy: 'Copiar',
-                copyWithHeaders: 'Copiar con cabeceras',
-                paste: 'Pegar' 
-            },
+            localeText : servicesApp.traducirTextosAggrid(),
 
             showHomologar:false,
             DatosHomologar:[],
@@ -745,7 +764,37 @@ export default {
                 NroCot:'',
                 IdPlantilla:'',
                 Grupo:''
+            },
+            //Cotizacion
+            AbrirModalCotizacion: false,
+            
+            FillCrearCot : {
+                CotExist:'',
+                optionsCot: [{
+                    valuecot: 'cot-oferta',
+                    label: 'Cotización-Oferta'
+                }, {
+                    valuecot: 'cot-preo',
+                    label: 'Cotización-PreOferta'
+                }, {
+                    valuecot: 'lic-oferta',
+                    label: 'Licitación-Oferta'
+                },
+                {
+                    valuecot: 'lic-preo',
+                    label: 'Licitación-PreOferta'
+                }
+                ],
+                valuecot: '',
+                OpcionItems:null,
+                perteneceCCto:null,
+                ItemsPlantilla :[],
             }
+        }
+    },
+    watch:{
+        EditarDet(){
+
         }
     },
     computed: {
@@ -831,7 +880,6 @@ export default {
             }
             return Anios;
         },
-
         PeriodoMes(){
             let Meses = [];
             let i = 1;
@@ -868,80 +916,81 @@ export default {
                 'filtros':Filtros
             }}).then(response=>{    
                 this.fillPlantilla = response.data.plantilla;
-                    this.fillDetallesPlantilla = response.data.plantillas_det;
-                    if(this.MantenerFiltros){
-                        var itemsToUpdate = [];
-                        var itemsToDelete = [];
-                        var itemsToInsert = []; 
-                        let TotalItems=0;
-                        this.gridApi.forEachNodeAfterFilterAndSort(function (rowNode, index) { 
-                            TotalItems++;
-                        });
-                        console.log(TotalItems)
-                        if(TotalItems >0 ){ 
-                        //Obtenemos los items que esten filtrados
-                        this.gridApi.forEachNodeAfterFilterAndSort(function (rowNode, index) {
-                            //Llenamos los datos actuales
-                            var data = rowNode.data;
-                            //Obtenemos los objetos del dato actual osea las columnas.
-                            let Objetos = Object.keys(data);
+                this.fillDetallesPlantilla = response.data.plantillas_det;
+                if(this.MantenerFiltros){
+                    var itemsToUpdate = [];
+                    var itemsToDelete = [];
+                    var itemsToInsert = []; 
+                    let TotalItems=0;
+                    this.gridApi.forEachNodeAfterFilterAndSort(function (rowNode, index) { 
+                        TotalItems++;
+                    });
+                    console.log(TotalItems)
+                    if(TotalItems >0 ){ 
+                    //Obtenemos los items que esten filtrados
+                    this.gridApi.forEachNodeAfterFilterAndSort(function (rowNode, index) {
+                        //Llenamos los datos actuales
+                        var data = rowNode.data;
+                        //Obtenemos los objetos del dato actual osea las columnas.
+                        let Objetos = Object.keys(data);
 
-                            //Recorremos cada dato que retorno la consulta
-                            me.fillDetallesPlantilla.map(function(x){
-                                //Validamos si el dato que retorno actual es igual  al dato que se esta actualizando
-                                if(me.OpcionAccionDets !='elim' && me.OpcionAccionDets !='add'){
-                                    if(x.IdPlantillaDet == data.IdPlantillaDet){
-                                        //Si es el mismo dato validamos el objeto entrante vs el anterior si cambio obtiene los cambios
-                                        Objetos.map(function(e){
-                                            if(data[e] != x[e]){
-                                                data[e] = x[e];
-                                            }
-                                        });
-                                    }
-                                }
-                                
-                            });
-
-                            if(me.OpcionAccionDets =='elim'){
-                                if(!me.validarExist(me.fillDetallesPlantilla,data.IdPlantillaDet,'IdPlantillaDet')){
-                                    itemsToDelete.push(data);
+                        //Recorremos cada dato que retorno la consulta
+                        me.fillDetallesPlantilla.map(function(x){
+                            //Validamos si el dato que retorno actual es igual  al dato que se esta actualizando
+                            if(me.OpcionAccionDets !='elim' && me.OpcionAccionDets !='add'){
+                                if(x.IdPlantillaDet == data.IdPlantillaDet){
+                                    //Si es el mismo dato validamos el objeto entrante vs el anterior si cambio obtiene los cambios
+                                    Objetos.map(function(e){
+                                        if(data[e] != x[e]){
+                                            data[e] = x[e];
+                                        }
+                                    });
                                 }
                             }
-
-                            else if(me.OpcionAccionDets =='add'){
-                                if(!me.validarExist(me.fillDetallesPlantilla,data.IdPlantillaDet,'IdPlantillaDet')){
-                                    itemsToInsert.push(data);
-                                }
-                            }
-                            itemsToUpdate.push(data);
+                            
                         });
-                    }
-                    else{
-                        this.CargarColumnas(response);
-                        if(me.OpcionAccionDets =='add'){
-                            itemsToInsert = me.fillDetallesPlantilla;
+
+                        if(me.OpcionAccionDets =='elim'){
+                            if(!me.validarExist(me.fillDetallesPlantilla,data.IdPlantillaDet,'IdPlantillaDet')){
+                                itemsToDelete.push(data);
+                            }
                         }
-                    }
-                    //Aplicamos los cambios a la grilla
-                    if(me.OpcionAccionDets !='elim' && me.OpcionAccionDets !='add'){
-                        console.log("Entro a actualizar")
-                        this.gridApi.applyTransaction({ update: itemsToUpdate });
-                    }
-                    else if(me.OpcionAccionDets =='elim'){
-                        console.log("Entro a eliminar")
-                        this.gridApi.applyTransaction({ remove: itemsToDelete });
-                    }
-                    else if(me.OpcionAccionDets =='add'){
-                        console.log("Entro a insertar")
-                        this.gridApi.applyTransaction({ add: itemsToInsert });
-                    }
-                }   
-                else{
-                    this.rowData = this.fillDetallesPlantilla;
+
+                        else if(me.OpcionAccionDets =='add'){
+                            if(!me.validarExist(me.fillDetallesPlantilla,data.IdPlantillaDet,'IdPlantillaDet')){
+                                itemsToInsert.push(data);
+                            }
+                        }
+                        itemsToUpdate.push(data);
+                    });
                 }
-                //Refrescamos los botones renderizados en la grilla
-                this.gridApi.refreshCells({ force: true })
-                this.OpcionAccionDets = null;
+                else{
+                    this.CargarColumnas(response);
+                    if(me.OpcionAccionDets =='add'){
+                        itemsToInsert = me.fillDetallesPlantilla;
+                    }
+                }
+                //Aplicamos los cambios a la grilla
+                if(me.OpcionAccionDets !='elim' && me.OpcionAccionDets !='add'){
+                    console.log("Entro a actualizar")
+                    this.gridApi.applyTransaction({ update: itemsToUpdate });
+                }
+                else if(me.OpcionAccionDets =='elim'){
+                    console.log("Entro a eliminar")
+                    this.gridApi.applyTransaction({ remove: itemsToDelete });
+                }
+                else if(me.OpcionAccionDets =='add'){
+                    console.log("Entro a insertar")
+                    this.gridApi.applyTransaction({ add: itemsToInsert });
+                }
+            }   
+            else{
+                this.rowData = this.fillDetallesPlantilla;
+                this.FillCrearCot.ItemsPlantilla = this.rowData;
+            }
+            //Refrescamos los botones renderizados en la grilla
+            this.gridApi.refreshCells({ force: true })
+            this.OpcionAccionDets = null;
             }).catch(error =>{
                 console.log(error)
                 if(error.response.status ==401){
@@ -954,23 +1003,6 @@ export default {
         },
         
         limpiarDatos(){
-            this.fillPlantilla.nIdMovimiento = 0;
-            this.fillPlantilla.nNroDocumento = 0;
-            this.fillPlantilla.dFecha = '';
-            this.fillPlantilla.dFecha1 = '';
-            this.fillPlantilla.dFecha2 = '';
-            this.fillPlantilla.cEstado = '';
-            this.fillPlantilla.cSoporte = '';
-            this.fillPlantilla.cNmDireccion = '';
-            this.fillPlantilla.cNmCondEntrega = '';
-            this.fillPlantilla.cNmFormaPago = '';
-            this.fillPlantilla.cNmAsesor = '';
-            this.fillPlantilla.cComentarios = '';
-            this.fillPlantilla.nVrIva = '';
-            this.fillPlantilla.nSubTotal = '';
-            this.fillPlantilla.nTotal = '';
-            this.fillPlantilla.cNmCliente = '';
-            this.fillDetallesPlantilla = [];
         },
 
         Autorizar(){
@@ -986,6 +1018,8 @@ export default {
                 loader.close();
                 this.AlertMensaje(respuesta.msg,1);
                 me.fillPlantilla = respuesta.plantilla;
+                this.EditarDet = false;
+                
             }).catch(error =>{
                 loader.close();
                 this.AlertMensaje(error.data.msg,3);
@@ -1023,6 +1057,7 @@ export default {
                 loader.close();
                 this.AlertMensaje(respuesta.msg,1);
                 me.fillPlantilla = respuesta.plantilla;
+                this.EditarDet = true;
             }).catch(error =>{
                 loader.close();
                 this.AlertMensaje(error.data.msg,3);
@@ -1063,7 +1098,6 @@ export default {
                     let respuesta = response.data;
                     loader.close();
                     me.AlertMensaje(respuesta.msg,1);
-                    this.ItemsSeleccionados = [];
                     this.listarPlantilla(true);
                 }).catch(error =>{
                     loader.close();
@@ -1109,7 +1143,6 @@ export default {
                     let respuesta = response.data;
                     loader.close();
                     me.AlertMensaje(respuesta.msg,1);
-                    this.ItemsSeleccionados = [];
                     this.listarPlantilla(true);
                 }).catch(error =>{
                     loader.close();
@@ -1196,7 +1229,6 @@ export default {
                 }).then(response=>{    
                     let respuesta = response.data;
                     loader.close();
-                    
                     this.ItemsSeleccionados = [];
                     this.MantenerFiltros = true;
                     this.OpcionAccionDets ='elim';
@@ -1366,7 +1398,6 @@ export default {
         },
 
         FormatoMoneda(amount=0, decimals=2) {
-            console.log(amount);
             amount = (amount == null) ? 0 : amount;
             var sign = (amount.toString().substring(0, 1) == "-");
 
@@ -1432,14 +1463,15 @@ export default {
         },
 
         EditarDetalle(params){
-            console.log(params.node.childIndex)
-            let index = params.node.childIndex;
-            let idColumna = params.column.colId;
-            this.gridApi.setFocusedCell(index,idColumna);
-            this.gridApi.startEditingCell({
-                rowIndex: index,
-                colKey: idColumna,
-            });
+            if(this.fillPlantilla.Estado == 'DIGITADA'){
+                let index = params.node.childIndex;
+                let idColumna = params.column.colId;
+                this.gridApi.setFocusedCell(index,idColumna);
+                this.gridApi.startEditingCell({
+                    rowIndex: index,
+                    colKey: idColumna,
+                });
+            }
         },
 
         onCellValueChanged(event) {
@@ -1822,7 +1854,7 @@ export default {
                 this.fillColumnas = response.data.columnas;
                 this.fillColumnas.map(function(x,y){
                     if(x.columna != null){
-                        let Edit = (x.edit == 'true' && me.fillPlantilla.Estado =='DIGITADA') ? true: false;
+                        let Edit = (x.edit == 'true' && me.fillPlantilla.Estado =='DIGITADA' && me.ValidarPermiso('editardetallles')) ? true: false;
                         if(x.columna =='AceptaAlternativa'){
                             me.columnDefs.push({
                                 headerClass:'bg-info',
@@ -1898,7 +1930,7 @@ export default {
                                 field : x.columna,
                                 sortable: true,
                                 filter:true, 
-                                editable: params => (me.fillPlantilla.Estado =='DIGITADA') ? true :  false, 
+                                editable: params => (me.fillPlantilla.Estado =='DIGITADA') ? Edit :  false, 
                                 width : 147 ,
                                 cellEditor:'select',
                                 cellEditorParams:{
@@ -1918,11 +1950,10 @@ export default {
                                 resizable: true,
                                 field : x.columna, 
                                 width : 50,
-                                
                                 cellRenderer: function(params){
                                     let Homologado = params.data.NmListaCostos;
                                     var tempDiv = document.createElement('div');
-                                    if(params.data.Autorizado != 1){
+                                    if(params.data.Autorizado != 1 && (params.data.EnlaceCot <=0 || !params.data.EnlaceCot )){
                                         if(Homologado){
                                             tempDiv.innerHTML = '<span  class="btn btn-success btn-sm"><i class="fas fa-search"></span>';
                                         }else{
@@ -2006,7 +2037,7 @@ export default {
                                 filter:'agTextColumnFilter', 
                                 editable: Edit, 
                                 tooltipField: x.columna,
-                                width : 147 
+                                width : 147,
                             });
                         }
                         else if (x.columna !='Editar' && x.columna !='Eliminar' && x.columna !='Opciones'){ 
@@ -2028,7 +2059,15 @@ export default {
                                     }
                                 },
                                 tooltipField: x.columna,
-                                width : 147
+                                width : 147,
+                                cellClass: params => { 
+                                    if(params.data.CategoriaPortafolio === 'DC'){
+                                        return ['item-descontinuado'];
+                                    }
+                                    else if(params.data.EnlaceCot >0 ){
+                                        return ['item-enviado-cot'];
+                                    }
+                                },
                             });
                         }
                     }
@@ -2039,6 +2078,63 @@ export default {
         validarExist(arreglo,find,campo){
             const Valid = arreglo.filter((busqueda)=>busqueda[campo] == find);
             return Valid.length > 0;
+        },
+
+        ValidarDatosCot(){
+            let MensajeErr =[];
+            let me = this;
+            if(!this.FillCrearCot.OpcionItems){
+                MensajeErr.push("Debes seleccionar si todos o seleccionados !");
+            }
+            if(!this.FillCrearCot.CotExist  && !this.FillCrearCot.valuecot){
+                MensajeErr.push("Debes seleccionar un tipo de cotización !");
+            }
+            if(!this.FillCrearCot.CotExist  && !this.FillCrearCot.perteneceCCto){
+                MensajeErr.push("Debes seleccionar si pertenece a contrato o no !");
+            }
+            if(this.FillCrearCot.OpcionItems == 2 && !this.ItemsSeleccionados){
+                MensajeErr.push("Seleccionastes la opcion items seleccionados y no hay  ningún item seleccionado");
+            }
+            if(MensajeErr.length >0){
+                MensajeErr.map(function(e){
+                    me.AlertMensaje(e,3);
+                })
+            }
+            else{
+                this.CrearCotizacion();
+            }
+        },
+
+        CrearCotizacion(){
+            this.MantenerFiltros = true;
+            let me = this;
+            let url ="/plantillas/clientes/CrearCotizacion";
+            const loader = this.loaderk();
+            axios.post(url,{
+                params:{
+                    'FillCrearCot':me.FillCrearCot,
+                    'ItemsSeleccionados':me.ItemsSeleccionados,
+                    'Plantilla' : me.fillPlantilla,
+                }
+            }).then(response=>{    
+                let respuesta = response.data;
+                loader.close();
+                let codmsg = respuesta.status == 500 ? 3 : 1;
+                me.AlertMensaje(respuesta.msg,codmsg);
+                this.ItemsSeleccionados = [];
+                this.MantenerFiltros = true;
+                this.listarPlantilla(true);
+            }).catch(error =>{
+                loader.close();
+                this.AlertMensaje(error,3);
+                console.log(error)
+                if(error.response.status ==401){
+                    me.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                    loader.close();
+                }
+            })
         }
     },
 
@@ -2050,223 +2146,6 @@ export default {
         axios.get(url).then(response=>{    
             this.fillPlantilla = response.data.plantilla;
             this.CargarColumnas(response);
-            /*if(response.data.columnas){
-                this.fillDetallesPlantilla = response.data.plantillas_det;
-                this.fillColumnas = response.data.columnas;
-                this.fillColumnas.map(function(x,y){
-                    if(x.columna != null){
-                        let Edit = (x.edit == 'true' && me.fillPlantilla.Estado =='DIGITADA') ? true: false;
-                        if(x.columna =='AceptaAlternativa'){
-                            me.columnDefs.push({
-                                headerClass:'bg-info',
-                                headerName: x.alias,
-                                pinned: x.pinned,
-                                resizable: true,
-                                field : x.columna,
-                                sortable: true,
-                                filter:true, 
-                                editable: params => params.data.Autorizado != 1 ? Edit :  false, 
-                                width : 147 ,
-                                cellEditor:'select',
-                                cellEditorParams:{
-                                    values:[
-                                        '0',
-                                        '1'
-                                    ]
-                                },
-                                refData:me.ValAceptaAlt
-                            });
-                        }
-                        else if(x.columna =='ReqMuestras'){
-                            me.columnDefs.push({
-                                headerClass:'bg-info',
-                                headerName: x.alias,
-                                pinned: x.pinned,
-                                resizable: true,
-                                field : x.columna,
-                                sortable: true,
-                                filter:true, 
-                                editable: params => params.data.Autorizado != 1 ? Edit :  false, 
-                                width : 147 ,
-                                cellEditor:'select',
-                                cellEditorParams:{
-                                    values:[
-                                        0,
-                                        1
-                                    ]
-                                },
-                                refData:me.ValReqMuestras
-                            });
-                        }
-                        else if(x.columna =='Revisado'){
-                            me.columnDefs.push({
-                                headerClass:'bg-info',
-                                headerName: x.alias,
-                                pinned: x.pinned,
-                                resizable: true,
-                                field : x.columna,
-                                sortable: true,
-                                filter:true, 
-                                editable: params => params.data.Autorizado != 1 ? Edit :  false, 
-                                width : 147 ,
-                                cellEditor:'select',
-                                cellEditorParams:{
-                                    values:[
-                                        0,
-                                        1
-                                    ]
-                                },
-                                refData:me.ValSolCot,
-                                cellClassRules:validarClaseCelda
-                            });
-                        }
-                        else if(x.columna =='Autorizado'){
-                            me.columnDefs.push({
-                                headerClass:'bg-info',
-                                headerName: x.alias,
-                                pinned: x.pinned,
-                                resizable: true,
-                                field : x.columna,
-                                sortable: true,
-                                filter:true, 
-                                editable: params => (me.fillPlantilla.Estado =='DIGITADA') ? true :  false, 
-                                width : 147 ,
-                                cellEditor:'select',
-                                cellEditorParams:{
-                                    values:[
-                                        '0',
-                                        '1'
-                                    ]
-                                },
-                                refData:me.ValAut,
-                                cellClassRules:validarClaseCelda
-                            });
-                        }
-                        else if(x.columna =='Opciones' && me.fillPlantilla.Estado == 'DIGITADA'){
-                            me.columnDefs.push({
-                                headerName: x.alias,
-                                pinned: x.pinned,
-                                resizable: true,
-                                field : x.columna, 
-                                width : 50,
-                                
-                                cellRenderer: function(params){
-                                    let Homologado = params.data.NmListaCostos;
-                                    var tempDiv = document.createElement('div');
-                                    if(params.data.Autorizado != 1){
-                                        if(Homologado){
-                                            tempDiv.innerHTML = '<span  class="btn btn-success btn-sm"><i class="fas fa-search"></span>';
-                                        }else{
-                                            tempDiv.innerHTML = '<span  class="btn btn-primary btn-sm"><i class="fas fa-search"></span>';
-                                        }
-                                    }
-                                    return tempDiv;
-                                },
-                                onCellClicked : function(params){
-                                    if(params.data.Autorizado != 1){
-                                        me.AbrirHomologacion(params);
-                                    }
-                                },
-                            });
-                        }
-                        else if(x.columna =='Eliminar'  && me.fillPlantilla.Estado == 'DIGITADA'){
-                            me.columnDefs.push({
-                                headerName: x.alias,
-                                pinned: x.pinned,
-                                resizable: true,
-                                field : x.columna,
-                                width : 50,
-                                cellRenderer: function(params){
-                                    
-                                    var tempDiv = document.createElement('div');
-                                    if(params.data.Autorizado != 1){
-                                        tempDiv.innerHTML =
-                                        '<span class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></span>';
-                                    }
-                                    return tempDiv;
-                                },
-                                onCellClicked : function(params){
-                                    if(params.data.Autorizado != 1){
-                                        me.EliminarDetalle(params);
-                                    }
-                                },
-
-                            });
-                        }
-                        else if(x.columna =='Editar'  && me.fillPlantilla.Estado == 'DIGITADA'){
-                            me.columnDefs.push({
-                                headerName: x.alias,
-                                pinned: x.pinned,
-                                resizable: true,
-                                field : x.columna,
-                                width : 50,
-                                cellRenderer: function(params){
-                                    var tempDiv = document.createElement('div');
-                                    if(params.data.Autorizado != 1){
-                                        tempDiv.innerHTML = '<span class="btn btn-info btn-sm"><i class="fas fa-edit"></span>';
-                                    }
-                                    return tempDiv;
-                                },
-                                onCellClicked : function(params){
-                                    if(params.data.Autorizado != 1){
-                                        me.EditarDetalle(params);
-                                    }
-                                },
-
-                            });
-                        }
-                        else if(x.columna =='IdListaCostosDetPlantDet'){
-                            me.columnDefs.push({
-                                headerName: x.alias,
-                                field : x.columna,
-                                width : 50,
-                                hide:true,
-                            });
-                        }
-                        else if(x.columna =='IdPlantillaDet'){
-                            me.columnDefs.push({
-                                headerClass:'bg-info',
-                                headerName: x.alias,
-                                pinned: 'left',
-                                resizable: true, 
-                                field : x.columna, 
-                                headerCheckboxSelection:true,
-                                checkboxSelection:true,
-                                valueFormatter: (x.FormatoCelda == 'FormatoMoneda') ? FormatoMoneda: '',
-                                sortable: true,
-                                filter:'agTextColumnFilter', 
-                                editable: Edit, 
-                                tooltipField: x.columna,
-                                width : 147,
-                                cellClassRules:validarClaseCelda
-                            });
-                        }
-                        else if (x.columna !='Editar' && x.columna !='Eliminar' && x.columna !='Opciones'){ 
-                            me.columnDefs.push({
-                                headerClass:'bg-info',
-                                headerName: x.alias,
-                                pinned: x.pinned,
-                                resizable: true, 
-                                field : x.columna, 
-                                valueFormatter: (x.FormatoCelda == 'FormatoMoneda') ? FormatoMoneda: '',
-                                sortable: true,
-                                filter:'agTextColumnFilter', 
-                                editable: params => params.data.Autorizado != 1 ? Edit :  false, 
-                                cellStyle:params =>{
-                                    if(x.columna == 'ItemAba' && params.data.Autorizado && params.data.VendidoAnterioridad ){
-                                        return {
-                                            backgroundColor: '#7fd47f'
-                                        }
-                                    }
-                                },
-                                tooltipField: x.columna,
-                                width : 147,
-                                cellClassRules:validarClaseCelda
-                            });
-                        }
-                    }
-                });
-            }*/
         });
 
         //Fin carga de datos
@@ -2286,19 +2165,13 @@ export default {
 }
 
 var validarClaseCelda = {
-    'item-descontinuado':function(params){
-        return params.data.CategoriaPortafolio === 'DC';
-    },
+    
+    
 
     'rag-green': function (params) {
-        return params.value === '1' || params.value === 1 ;
+        return params.value == 1 ;
     },
-    'rag-amber-outer': function (params) {
-        return params.value === 2004;
-    },
-    'rag-red-outer': function (params) {
-        return params.value === 2000;
-    },
+
 }
 
 window.FormatoMoneda = function FormatoMoneda(params){
@@ -2330,9 +2203,18 @@ window.FormatoMoneda = function FormatoMoneda(params){
 </script>
 <style>
 .rag-green {
-  background-color: lightgreen;
+    background-color: lightgreen;
 }
 .item-descontinuado{
-  background-color:#efedbb;
+    background-color:#efedbb;
+}
+.item-enviado-cot{
+    background-color:#86cfe9;
+}
+.acciones td  button{
+    margin-bottom: 4%;
+}
+.ag-theme-alpine .ag-ltr .ag-cell {
+    border-right: 1px solid #e0e0e0;
 }
 </style>

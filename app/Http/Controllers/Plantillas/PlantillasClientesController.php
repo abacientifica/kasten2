@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use App\Model\Plantillas;
 use App\Model\PlantillasDet;
+use App\Model\Cotizaciones;
 use App\Model\ListaCostosProvDet;
 
 class PlantillasClientesController extends Controller
@@ -780,6 +781,105 @@ class PlantillasClientesController extends Controller
             return [
                 'msg'=>"Upsss ocurrio un error al restablecer los costos " ,
                 'status'=>500,
+            ];
+        }
+    }
+
+    public function CrearCotizacion(Request $request){
+        if(!$request->ajax()) return  redirect('/');
+        try {
+            DB::beginTransaction();
+            $Parametros = $request->params['FillCrearCot'];
+            $ItemsSeleccionados = $request->params['ItemsSeleccionados'];
+            $Plantilla = $request->params['Plantilla'];
+           
+            $Tipo = '';
+            $SubTipo='';
+            $ValidTipo = $Parametros['valuecot'];
+            if($ValidTipo == 'cot-oferta'){
+                $Tipo = 4;
+                $SubTipo=2;
+            }
+            else if($ValidTipo == 'cot-preo'){
+                $Tipo = 4;
+                $SubTipo=1;
+            }
+            else if($ValidTipo == 'lic-oferta'){
+                $Tipo = 2;
+                $SubTipo=2;
+            }
+            else{
+                $Tipo = 2;
+                $SubTipo=1;
+            }
+            $CotExist = (int) $Parametros['CotExist'];
+            if($CotExist && is_numeric($CotExist)){
+                $CotizacionNueva = Cotizaciones::find($CotExist);
+                if($CotizacionNueva){
+                    $MensajeError = [];
+                    if($CotizacionNueva->IdTerceroCotizacion != $Plantilla['IdTerceroPlant']){
+                        $MensajeError[] = "!no se pueden enviar los datos a la cotizacion por que el tercero ".$CotizacionNueva->IdTerceroCotizacion." es diferente al de la plantilla.";
+                    }
+                    else if($CotizacionNueva->Estado !='DIGITADA'){
+                        $MensajeError[] = "!no se pueden enviar los datos a la cotizacion por que esta ya se encuentra autorizada o cerrada.";
+                    }
+                }
+                else{
+                    $MensajeError[] = "!No se econtro una cotizacion con el ID ".$CotExist;
+                }
+
+                if(count($MensajeError) >0 ){
+                    return[
+                        'msg'=>implode('<br>',$MensajeError),
+                        'status'=>'500'
+                    ];
+                }
+            }
+            else{
+                $NmCot = 'Nueva Cotizacion Desde Plantilla : ' . $Plantilla['NmPlantilla'];
+                $CotizacionNueva =  \Funciones::CrearCotizacion($Plantilla['IdTerceroPlant'],$Plantilla['IdDireccionPlant'],$Tipo,$SubTipo,$Parametros['perteneceCCto'],$NmCot);
+            }
+            $ItemsPlantilla = $Parametros['ItemsPlantilla'];
+            if($Parametros['OpcionItems'] == 1){
+                $ItemsPlantilla = $Parametros['ItemsPlantilla'];
+            }
+            else{
+                $ItemsPlantilla = $ItemsSeleccionados;
+            }
+            $ValidItemsInsert = false;
+            $ConItemsInser =0;
+            foreach($ItemsPlantilla as $det){
+                $ValidItemsInsert = true;
+               
+                $CotDetNew = \Funciones::GuardarDetallesCotizacion($CotizacionNueva, $det);
+                
+                if($CotDetNew){
+                    $Det = PlantillasDet::find($det['IdPlantillaDet']);
+                    $Det->EnlaceCot = $CotDetNew->IdCotizacionDet;
+                    $Det->save();
+                    $ConItemsInser++;
+                }
+            }
+            if($ValidItemsInsert && $ConItemsInser >0){
+                DB::commit();
+                return[
+                    'msg'=> is_numeric($CotExist) ? 'Los detalles de enviaron correctamente a la cotización, total items'. $ConItemsInser : '!La cotizacion con ID '.$CotizacionNueva->IdCotizacion.' se ha creado correctamente total items'.$ConItemsInser ,
+                    'status'=>'200'
+                ];
+            }
+            else{
+                DB::rollBack();
+                return[
+                    'msg'=>is_numeric($CotExist)? 'No se inserto ningun dato a la cotizacion, valida nuevamente' :'No se pudo crear la cotizacion por que no se insertaron detalles',
+                    'status'=>'501'
+                ];
+            }
+           
+        } catch (Exception $e) {
+            DB::rollBack();
+            return[
+                'msg'=>'Ocurrio un error al crear la cotización.'.$e->getMessage(),
+                'status'=>'501'
             ];
         }
     }

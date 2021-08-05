@@ -209,8 +209,6 @@ const app = new Vue({
         }, this);
         this.usuario = JSON.parse(sessionStorage.getItem('authUser')) ? JSON.parse(sessionStorage.getItem('authUser')) : JSON.parse(localStorage.getItem('authUser'));
         if (this.usuario) {
-            //this.permisos = JSON.parse(sessionStorage.getItem('listPermisosFilterByRolUser'));
-            //console.log(this.usuario.Usuario)
             this.SET_PERMISOS(this.usuario.Usuario);
         } else {
             this.SET_PERMISOS(null);
