@@ -79,6 +79,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::put('/plantillas/clientes/AplicarCalculoFactor','Plantillas\PlantillasClientesController@AplicarCalculoFactor');
     Route::put('/plantillas/clientes/ProcesarHomologacion','Plantillas\PlantillasClientesController@ProcesarHomologacion');
     Route::put('/plantillas/clientes/AsignarCostoActual','Plantillas\PlantillasClientesController@AsignarCostoActual');
+    Route::post('/plantillas/clientes/CrearCotizacion','Plantillas\PlantillasClientesController@CrearCotizacion');
 
     //Lista rutas documentos
     Route::get('/documentos/lista','Administracion\DocumentosController@index');

@@ -13,6 +13,10 @@ use App\Model\ListaPreciosDet;
 use App\Model\ListaCostosProvDet;
 use App\Model\Plantillas;
 use App\Model\PlantillasDet;
+use App\Model\Cotizaciones;
+use App\Model\CotizacionesDet;
+use App\Model\Terceros;
+use App\Model\LogCotizaciones;
 use App\Exception\Handler;
 
 class Funciones{
@@ -532,6 +536,7 @@ class Funciones{
                 lista_costos_prov_det.Presentacion,lista_costos_prov_det.UMC,lista_costos_prov_det.UMV,plantillas_det.FactorCliente as FactorCliente,plantillas_det.CantUMMAbaMes,lista_costos_prov_det.CostoUMM,plantillas_det.PrecioTechoUMM,plantillas_det.SubTotal,
                 if(plantillas_det.PrecioTecho >0 , plantillas_det.CantConsumoMesDet * plantillas_det.PrecioTecho, plantillas_det.CantidadConsumo * lista_costos_prov_det.CostoUMM) as SubTotalVenta,format((plantillas_det.PrecioTecho - lista_costos_prov_det.CostoUMM ) /lista_costos_prov_det.CostoUMM , 2) as UtilVsTecho,'' as FhUltimaFact,'' as ItemContrato,IF(Revisado = 1, 1,0)  as Revisado,
                 IF(lista_costos_prov_det.HabCotizar =1 ,'SI','NO') as HabCotizar,if(Autorizado is null,'',if(Autorizado =1,1,if(Autorizado is null,null,0))) as Autorizado,plantillas_det.ComentariosHM,EnlaceCot,IdListaCostosDetPlantDet,VendidoAnterioridad
+                ,SubTotalConsumo
                 from plantillas_det
                 LEFT JOIN lista_costos_prov_det  on lista_costos_prov_det.IdListaCostosProvDet = plantillas_det.IdListaCostosDetPlantDet  
                 LEFT JOIN lista_costos_prov_det as ListaDet on ListaDet.IdListaCostosProvDet = lista_costos_prov_det.IdListaDetReferencia
@@ -903,4 +908,155 @@ class Funciones{
         }
     }
 
+    public static function DevDctosFinancierosTercero($intIdTercero, $Op = false) {
+        try {
+            if ($Op) {
+                $strSql = "SELECT DiasPago, PorDcto FROM terceros_dctosfinancieros WHERE IdTercero =  $intIdTercero ORDER BY PorDcto DESC ";
+            } else {
+                $strSql = "SELECT DiasPago, PorDcto FROM terceros_dctosfinancieros WHERE IdTercero =  $intIdTercero ORDER BY DiasPago ASC LIMIT 1";
+            }
+            
+            if ($Op == true) {
+                $arDctoFinanciero = DB::select($strSql);
+            } else {
+                $arDctoFinanciero = DB::select($strSql);
+            }
+            if (Count($arDctoFinanciero) != 0)
+                return $arDctoFinanciero;
+            else
+                return false;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public static function CrearCotizacion($IdTercero,$IdDireccion,$Tipo,$Subtipo,$PerteneceContrato,$NmCot){
+        $Tercero = Terceros::find($IdTercero);
+        $DesctoFinanciero = \Funciones::DevDctosFinancierosTercero($IdTercero);
+        $Cotizacion = new Cotizaciones();
+        $Cotizacion->FechaCreacion = date('Y-m-d H:i:s');
+        $Cotizacion->FechaCotizacion = date('Y-m-d H:i:s');
+        $Cotizacion->FechaDesde = date('Y-m-d');
+        $Cotizacion->FechaHasta = date('Y-m-d', strtotime(date('Y-m-d') . " +1 month"));
+        $Cotizacion->IdTerceroCotizacion = $IdTercero;
+        $Cotizacion->IdDireccionCotizacion = $IdDireccion;
+        $Cotizacion->IdCotizacionTipo = $Tipo;
+        $Cotizacion->IdCotizacionSubTipo = $Subtipo;
+        $Cotizacion->PerteneceContrato = $PerteneceContrato;
+        
+        $Cotizacion->NmCotizacion = $NmCot;
+        $Cotizacion->Estado = 'DIGITADA';
+        $Cotizacion->Usuario = \Auth::user()->Usuario;
+
+        //Llenamos los datos financieros.
+        $Tercero->PlazoPago != 0 ? $Cotizacion->Plazo = $Tercero->PlazoPago : $Cotizacion->Plazo = 0;
+        
+        if ($DesctoFinanciero) {
+            $Cotizacion->DctoFin = $DesctoFinanciero[0]->PorDcto;
+            $Cotizacion->DiasDctoFin = $DesctoFinanciero[0]->DiasPago;
+        } else {
+            $Cotizacion->DctoFin = 0;
+            $Cotizacion->DiasDctoFin = 0;
+        }
+        $Cotizacion->CondDevolucion = 'No se aceptan devoluciones por baja rotacion.';
+        $Cotizacion->Comentarios = 'La cantidad cotizada esta ajustada a la unidad minima de venta.';
+        $Cotizacion->IdDocumento = 2;
+        $Cotizacion->Digitalizado = 0;
+        $Cotizacion->save();
+        \Funciones::CrearLogCotizaciones(8,$Cotizacion->IdCotizacion);
+        return $Cotizacion;
+    }
+
+    public static function GuardarDetallesCotizacion($Cotizacion, $PlantillaDet) {
+        $LisCosDet = new ListaCostosProvDet();
+        $LisCosDet = ListaCostosProvDet::find($PlantillaDet['IdListaCostosDetPlantDet']);
+        $Cotizacion = Cotizaciones::find($Cotizacion['IdCotizacion']);
+        if ($Cotizacion && $PlantillaDet['IdListaCostosDetPlantDet'] && $PlantillaDet['Autorizado'] == 1) {
+            $CotDet = new CotizacionesDet();
+            $CotDet->IdCotizacion = $Cotizacion->IdCotizacion;
+            $CotDet->IdItemCotizacion = $LisCosDet->Id_Item;
+            $CotDet->DescripcionCliente = $PlantillaDet['DescripcionCliente'];
+            $CotDet->DescripcionCotizacion = $LisCosDet->DescripcionProv;
+            $CotDet->FactorVCot = $LisCosDet->CantMinimaVenta;
+
+            if ($LisCosDet->UMV == "") {
+                if ($LisCosDet->Id_Item != "") {
+                    $Item = Item::find($LisCosDet->Id_Item);
+                    $CotDet->UMVCot = $Item->UMM;
+                } else {
+                    $CotDet->UMVCot = $LisCosDet->UMC;
+                }
+            } else {
+                $CotDet->UMVCot = $LisCosDet->UMV;
+            }
+
+            $CostoUMM = $LisCosDet->CostoUMM;
+            $CotDet->FhDesdeLista = $LisCosDet->FhDesde;
+            $CotDet->FhHastaLista = $LisCosDet->FhHasta;
+            $CotDet->CodCliente = $PlantillaDet['CodCliente'];
+            $CotDet->ItemCliente = $PlantillaDet['IdItemCliente'];
+            $CotDet->MarcaSugerida = $PlantillaDet['MarcaSugerida'];
+            $CotDet->UMCliente = $PlantillaDet['UMCliente'];
+            $CotDet->FactorCliente = $PlantillaDet['FactorCliente'];
+            $CotDet->FhDesdePrecioCot = $Cotizacion['FechaDesde'];
+            $CotDet->FhHastaPrecioCot = $Cotizacion['FechaHasta'];
+            $CotDet->IdListaCostosDetCot = $LisCosDet->IdListaCostosProvDet;
+            $Margen = \Funciones::MargenCot(1, $LisCosDet);
+            $CotDet->Margen = $Margen;
+            $CotDet->MargenOriginal = $Margen;
+            $CotDet->PrecioCotizacion = $CostoUMM / (1 - ($Margen / 100));
+            $CotDet->CostoCotizacion = $CostoUMM;
+            $CotDet->PrecioTecho = $PlantillaDet['PrecioTecho'];
+            $CotDet->Redondeo = 1;
+            $CotDet->Alternativa = $PlantillaDet['AceptaAlternativa'];
+            $CotDet->Consumo = $PlantillaDet['CantidadConsumo'];
+            $CotDet->AceptadoCliente = null;
+            $CotDet->PorIvaCotizacion = $LisCosDet->IvaLC;
+            $CotDet->CantidadCotizacion = $PlantillaDet['CantidadConsumo'];
+            $CotDet->DescuentoFcieroCot = $LisCosDet->DescuentoFciero;
+            $CotDet->GrupoPlantilla = $PlantillaDet['Grupo'];
+            $CotDet->ComentarioInterno = $PlantillaDet['ComentariosHM'];
+
+            if (isset($PlantillaDet['Opcion'])) {
+                $CotDet->Opcion = $PlantillaDet->Opcion;
+            }
+            $CotDet->save();
+            return $CotDet;
+        } 
+        return [];
+    }
+
+    public static function MargenCot($Tipo, $ListaCostoDet) {
+        $Margen = 0;
+        switch ($Tipo) {
+            case 1:
+                $Margen = $ListaCostoDet->PorPrecioGeneral;
+                break;
+
+            case 2:
+                $Margen = $ListaCostoDet->PorPrecioEspecial;
+                break;
+
+            case 3:
+                $Margen = $ListaCostoDet->PorPrecioLicitacion;
+                break;
+        }
+        return $Margen;
+    }
+
+    public static function CrearLogCotizaciones($IdAccion, $IdCotizacion) {
+        try{
+            $LogNew = new LogCotizaciones;
+            $LogNew->IdAccion = $IdAccion;
+            $LogNew->IdCotizacion = $IdCotizacion;
+            $LogNew->Usuario = \Auth::user()->Usuario;
+            $LogNew->Fecha = date('y-m-d H:i:s');
+            $LogNew->save();
+            return true;
+        }
+        catch(Exception $e){
+            return false;
+        }
+        
+    }
 }
