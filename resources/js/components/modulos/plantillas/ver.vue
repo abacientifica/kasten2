@@ -136,7 +136,7 @@
                                 <td>
                                     <vs-tooltip>
                                         <template #tooltip>Sirve para marcar los items que se han vendido en un rango de fecha. </template>
-                                        <el-button type="primary" round :disabled="(ValidarPermiso('crearcot') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click="AbriModalItemsVendidos = true"><i class="fas fa-chart-line"></i>Marcar Items Vendidos</el-button>
+                                        <el-button type="primary" round :disabled="(ValidarPermiso('vendidos') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click="AbriModalItemsVendidos = true"><i class="fas fa-chart-line"></i>Marcar Items Vendidos</el-button>
                                     </vs-tooltip>
                                 </td>
                                 </tr>
@@ -2023,7 +2023,7 @@ export default {
                         }
                         else if(x.columna =='IdListaCostosDetPlantDet'){
                             me.columnDefs.push({
-                                headerName: x.alias,
+                                headerName: 'Id Lista C.',
                                 field : x.columna,
                                 width : 50,
                                 hide:true,
@@ -2060,8 +2060,11 @@ export default {
                                 cellStyle:params =>{
                                     if(x.columna == 'ItemAba' && params.data.Autorizado && params.data.VendidoAnterioridad ){
                                         return {
-                                            backgroundColor: '#7fd47f'
+                                            'background-color': '#7fd47f'
                                         }
+                                    }
+                                    if(typeof params.value === 'number' || me.Is_Float(params.value) || !isNaN(params.value)){
+                                        return { 'text-align': 'right' }
                                     }
                                 },
                                 tooltipField: x.columna,
@@ -2254,5 +2257,8 @@ window.FormatoMoneda = function FormatoMoneda(params){
 }
 .ag-theme-alpine .ag-ltr .ag-cell {
     border-right: 1px solid #e0e0e0;
+}
+.aling-number{
+    text-align: right;
 }
 </style>
