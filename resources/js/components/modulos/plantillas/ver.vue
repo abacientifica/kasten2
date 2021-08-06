@@ -1522,6 +1522,7 @@ export default {
                 localStorage.removeItem('filtros');
                 let DatosFiltro = JSON.stringify(params.api.getFilterModel());
                 localStorage.setItem('filtros',DatosFiltro);
+                this.GuardarFiltros();
             }
         },
 
@@ -1529,12 +1530,14 @@ export default {
             localStorage.removeItem('columnas');
             let DatosFiltro = JSON.stringify(this.gridColumnApi.getColumnState());
             localStorage.setItem('columnas',DatosFiltro);
+            this.GuardarFiltros();
         },
 
         ColumnasVisibles(params){
             localStorage.removeItem('columnas');
             let DatosFiltro = JSON.stringify(this.gridColumnApi.getColumnState());
             localStorage.setItem('columnas',DatosFiltro);
+            this.GuardarFiltros();
         },
 
         OcultarMostrarPanel(){
@@ -2140,6 +2143,37 @@ export default {
                     loader.close();
                 }
             })
+        },
+
+        GuardarFiltros(){
+            let me = this;
+            let url ="/plantillas/clientes/GuardarFiltro";
+            axios.post(url,{
+                params:{
+                    'filtros':localStorage.getItem('filtros'),
+                    'columnas':localStorage.getItem('columnas'),
+                }
+            }).then(response=>{    
+                let respuesta = response.data;
+            }).catch(error =>{
+                console.log(error)
+            })
+        },
+
+        ObtenerFiltros(){
+            let me = this;
+            let url ="/plantillas/clientes/ObtenerFiltro";
+            axios.get(url).then(response=>{    
+                let respuesta = response.data;
+                if(respuesta.filtros !=''){
+                    localStorage.setItem('filtros',(respuesta.filtros));
+                }
+                if(respuesta.columnas !=''){
+                    localStorage.setItem('columnas',(respuesta.columnas));
+                }
+            }).catch(error =>{
+                console.log(error)
+            })
         }
     },
 
@@ -2165,6 +2199,7 @@ export default {
         if(PanelOculto){
             this.OcultarPanel = PanelOculto
         }
+        this.ObtenerFiltros();
     },
     
 }

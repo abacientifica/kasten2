@@ -883,4 +883,41 @@ class PlantillasClientesController extends Controller
             ];
         }
     }
+
+    public function  GuardarFiltro(Request $request){
+        if(!$request->ajax()) return  redirect('/');
+        try {
+            $FiltrosK = $request->params['filtros'];
+            $ColumnasK = $request->params['columnas'];
+            $FiltrosAct = DB::select("select * from datos_trabajo_plantillas where IdUsuario = '".\Auth::user()->Usuario."'");
+            if($FiltrosAct){
+                DB::select("update  datos_trabajo_plantillas set FiltrosK2 = '".$FiltrosK."', ColumnasK2 = '".$ColumnasK."'  where IdUsuario = '".\Auth::user()->Usuario."'");
+            }
+            else{
+                DB::select("insert  datos_trabajo_plantillas  (IdUsuario,FiltrosK2,ColumnasK2) values  ('".\Auth::user()->Usuario."','".$request->filtros."','".$request->columnas."'");
+            }
+
+            return [
+                'filtros'=> $FiltrosK,
+                'columnas'=> $ColumnasK
+            ];
+        }
+        catch(Exception $e){
+
+        }
+    }
+
+    public function ObtenerFiltro(Request $request){
+        if(!$request->ajax()) return  redirect('/');
+        try {
+            $Filtros = DB::select("select FiltrosK2,ColumnasK2 from datos_trabajo_plantillas where IdUsuario = '".\Auth::user()->Usuario."'");
+            return [
+                'filtros'=>$Filtros[0]->FiltrosK2,
+                'columnas'=> $Filtros[0]->ColumnasK2
+            ];
+        }
+        catch(Exception $e){
+
+        }
+    }
 }
