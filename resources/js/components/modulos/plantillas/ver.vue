@@ -54,101 +54,105 @@
                                 <tr>
                                 <th scope="row">1</th>
                                 <td>
-                                    <el-tooltip placement="right">
-                                        <div slot="content">Sirve para editar los datos principales de la plantilla.</div>
+                                    <vs-tooltip>
+                                        <template #tooltip>
+                                            Edita los datos del encabezado.
+                                        </template>
                                         <el-button type="primary" round :disabled="(ValidarPermiso('editar') && fillPlantilla.Estado=='DIGITADA') ? false : true"  @click.prevent="abrirModalEditar">
                                         <i class="fas fa-edit"></i> Editar
                                         </el-button>
-                                    </el-tooltip>
+                                    </vs-tooltip>
                                 </td>
                                 <td>
-                                    <el-tooltip placement="right">
-                                        <div slot="content">Autoriza  plantilla pero no los detalles.</div>
+                                    <vs-tooltip>
+                                        <template #tooltip>
+                                            Autoriza  plantilla pero no los detalles.
+                                        </template>
                                         <el-button type="primary" round :disabled="(ValidarPermiso('autorizar') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="Autorizar"><i class="fas fa-check-circle"></i> Autorizar</el-button>
-                                    </el-tooltip>
+                                    </vs-tooltip>
                                 </td>
                                 <td>
-                                    <el-tooltip placement="right">
-                                        <div slot="content">Desautoriza  plantilla pero no los detalles.</div>
+                                    <vs-tooltip>
+                                        <template #tooltip>Desautoriza  plantilla pero no los detalles. </template>
                                         <el-button type="primary" round :disabled="(ValidarPermiso('desautorizar') && fillPlantilla.Estado=='AUTORIZADA') ? false : true" @click.prevent="DesAutorizar"> <i class="fas fa-minus-circle"></i> Des Autorizar</el-button>
-                                    </el-tooltip>
+                                    </vs-tooltip>
                                 </td>
                                 </tr>
                                 <tr>
                                 <th scope="row">2</th>
                                 <td>
-                                    <el-tooltip placement="right">
-                                        <div slot="content">Anula la plantilla actual.</div>
+                                    <vs-tooltip>
+                                        <template #tooltip>Anula la plantilla actual. </template>
                                         <el-button type="primary" round :disabled="(ValidarPermiso('anular') && fillPlantilla.Estado=='AUTORIZADA')? false : true" @click.prevent="Anular"> <i class="fas fa-ban"></i> Anular</el-button>
-                                    </el-tooltip>
+                                    </vs-tooltip>
                                 </td>
                                 <td>
-                                    <el-tooltip placement="right">
-                                        <div slot="content">Sirve para homologar datos de una cotización o plantilla anterior.</div>
+                                    <vs-tooltip>
+                                        <template #tooltip>Sirve para homologar datos de una cotización o plantilla anterior. </template>
                                         <el-button type="primary" round :disabled="(ValidarPermiso('homologar') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AbrirModalHomologar = true"> <i class="fas fa-link"></i> Homologar</el-button>
-                                    </el-tooltip>
+                                    </vs-tooltip>
                                 </td>
                                 <td>
-                                    <el-tooltip placement="right">
-                                        <div slot="content">Sirve para enlazar los detalles a la lista principal del proveedor</div>
+                                    <vs-tooltip>
+                                        <template #tooltip>Sirve para enlazar los detalles a la lista principal del proveedor </template>
                                         <el-button type="primary" round :disabled="(ValidarPermiso('restablecercostos') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="RestablecerCostos"> <i class="fas fa-retweet"></i>Restablecer Costos</el-button>
-                                    </el-tooltip>
+                                    </vs-tooltip>
                                 </td>
                                 </tr>
                                 <tr>
                                 <th scope="row">3</th>
                                 <td>
-                                    <el-tooltip placement="right">
-                                        <div slot="content">Sirve para crear una plantilla con los mismos datos.</div>
+                                    <vs-tooltip>
+                                        <template #tooltip>Sirve para crear una plantilla con los mismos datos. </template>
                                         <el-button type="primary" round :disabled="(ValidarPermiso('duplicar')) ? false : true"><i class="fas fa-clone"></i> Duplicar Plantilla</el-button>
-                                    </el-tooltip>
+                                    </vs-tooltip>
                                 </td>
                                 <td>
-                                    <el-tooltip placement="right">
-                                        <div slot="content">Sirve para eliminar items de la plantilla.</div>
+                                    <vs-tooltip>
+                                        <template #tooltip>Sirve para eliminar items de la plantilla. </template>
                                         <el-button type="primary" round :disabled="(ValidarPermiso('eliminar') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="EliminarDetallesSel" ><i class="fas fa-trash-alt"></i>Eliminar Items</el-button>
-                                    </el-tooltip>
+                                    </vs-tooltip>
                                 </td>
                                 <td>
-                                    <el-tooltip placement="right">
-                                        <div slot="content">Sirve para crear o enviar items a una cotización</div>
+                                    <vs-tooltip>
+                                        <template #tooltip>Sirve para crear o enviar items a una cotización </template>
                                         <el-button type="primary" round :disabled="(ValidarPermiso('crearcot') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AbrirModalCotizacion = true"><i class="fas fa-align-justify"></i> Crear Cotización</el-button>
-                                    </el-tooltip>
+                                    </vs-tooltip>
                                 </td>
                                 <tr>
                                 <th scope="row">4</th>
                                 <td>
-                                    <el-tooltip placement="right">
-                                        <div slot="content">Sirve para autorizar masivamente items de la plantilla.</div>
+                                    <vs-tooltip>
+                                        <template #tooltip>Sirve para autorizar masivamente items de la plantilla. </template>
                                         <el-button type="primary" round :disabled="(ValidarPermiso('autorizaritems') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AutorizarDetalles()"><i class="fas fa-edit"></i> Autorizar Items</el-button>
-                                    </el-tooltip>
+                                    </vs-tooltip>
                                 </td>
                                 <td>
-                                    <el-tooltip placement="right">
-                                        <div slot="content">Sirve para editar los datos principales de la plantilla.</div>
+                                    <vs-tooltip>
+                                        <template #tooltip>Sirve para editar los datos principales de la plantilla. </template>
                                         <el-button type="primary" round :disabled="(ValidarPermiso('desautorizaritems') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="DesAutorizarDetalles()"><i class="fas fa-minus-circle"></i>Desautorizar Items</el-button>
-                                    </el-tooltip>
+                                    </vs-tooltip>
                                 </td>
                                 <td>
-                                    <el-tooltip placement="right">
-                                        <div slot="content">Sirve para marcar los items que se han vendido en un rango de fecha.</div>
+                                    <vs-tooltip>
+                                        <template #tooltip>Sirve para marcar los items que se han vendido en un rango de fecha. </template>
                                         <el-button type="primary" round :disabled="(ValidarPermiso('crearcot') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click="AbriModalItemsVendidos = true"><i class="fas fa-chart-line"></i>Marcar Items Vendidos</el-button>
-                                    </el-tooltip>
+                                    </vs-tooltip>
                                 </td>
                                 </tr>
                                 <tr>
                                 <th scope="row">4</th>
                                 <td>
-                                    <el-tooltip placement="right">
-                                        <div slot="content">Sirve para importar una lista en formato cvs</div>
+                                    <vs-tooltip>
+                                        <template #tooltip>Sirve para importar una lista en formato cvs </template>
                                         <el-button type="primary" round :disabled="(ValidarPermiso('importar') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AbriModalImportarItems = true"><i class="fas fa-align-justify"></i> Importar Listado</el-button>
-                                    </el-tooltip>
+                                    </vs-tooltip>
                                 </td>
                                 <td>
-                                    <el-tooltip placement="right">
-                                        <div slot="content">Calcula el factor</div>
+                                    <vs-tooltip>
+                                        <template #tooltip>Calcula el factor </template>
                                         <el-button type="primary" round :disabled="(ValidarPermiso('calcularfactor') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AbriModalCalcFactor = true"><i class="fas fa-calculator"></i> Calcular Factor</el-button>
-                                    </el-tooltip>
+                                    </vs-tooltip>
                                 </td>
                                 </tr>
                             </tbody>
@@ -568,10 +572,12 @@ import serviceApp from "../../../ServicesApp";
 const servicesApp = new serviceApp();
 import "vue-select/dist/vue-select.css";
 import { AgGridVue } from "ag-grid-vue";
+import Button from '../../../../../../project-pruebajet/vendor/laravel/jetstream/stubs/inertia/resources/js/Jetstream/Button.vue';
 export default {
     components: {
         AgGridVue,
-        "v-select": vSelect
+        "v-select": vSelect,
+        Button
     },
     data() {
         return {
@@ -1826,7 +1832,6 @@ export default {
                     let respuesta = response.data;
                     loader.close();
                     me.AlertMensaje(respuesta.msg,1);
-                    this.ItemsSeleccionados = [];
                     this.MantenerFiltros = true;
                     this.listarPlantilla(true);
                 }).catch(error =>{
