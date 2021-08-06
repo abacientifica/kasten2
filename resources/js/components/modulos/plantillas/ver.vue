@@ -572,12 +572,10 @@ import serviceApp from "../../../ServicesApp";
 const servicesApp = new serviceApp();
 import "vue-select/dist/vue-select.css";
 import { AgGridVue } from "ag-grid-vue";
-import Button from '../../../../../../project-pruebajet/vendor/laravel/jetstream/stubs/inertia/resources/js/Jetstream/Button.vue';
 export default {
     components: {
         AgGridVue,
-        "v-select": vSelect,
-        Button
+        "v-select": vSelect
     },
     data() {
         return {
