@@ -589,7 +589,8 @@ export default {
                 onFilterChanged:this.CambioFiltros,
                 onColumnMoved:this.GuardarOrdenColumnas,
                 onColumnVisible:this.ColumnasVisibles,
-                onSortChanged:this.GuardarOrdenColumnas
+                onSortChanged:this.GuardarOrdenColumnas,
+                onColumnPinned:this.GuardarOrdenColumnas,
             },
             gridApi: null,
             columnApi: null,
@@ -1656,7 +1657,7 @@ export default {
         },
 
         ValidarPermiso(permiso){
-            if(this.PermisosUser.includes('plantillas.'+permiso) || this.PermisosUser.includes('administrador.sistema')){
+            if(this.PermisosUser.includes('plantillas_clientes.'+permiso) || this.PermisosUser.includes('administrador.sistema')){
                 return true;
             }
             else{
@@ -1861,6 +1862,7 @@ export default {
                 this.fillColumnas.map(function(x,y){
                     if(x.columna != null){
                         let Edit = (x.edit == 'true' && me.fillPlantilla.Estado =='DIGITADA' && me.ValidarPermiso('editardetallles')) ? true: false;
+                        console.log(Edit)
                         if(x.columna =='AceptaAlternativa'){
                             me.columnDefs.push({
                                 headerClass:'bg-info',

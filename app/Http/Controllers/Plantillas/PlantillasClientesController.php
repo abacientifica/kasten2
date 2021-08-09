@@ -912,10 +912,18 @@ class PlantillasClientesController extends Controller
         if(!$request->ajax()) return  redirect('/');
         try {
             $Filtros = DB::select("select FiltrosK2,ColumnasK2 from datos_trabajo_plantillas where IdUsuario = '".\Auth::user()->Usuario."'");
-            return [
-                'filtros'=>$Filtros[0]->FiltrosK2,
-                'columnas'=> $Filtros[0]->ColumnasK2
-            ];
+            if($Filtros){
+                return [
+                    'filtros'=>$Filtros[0]->FiltrosK2,
+                    'columnas'=> $Filtros[0]->ColumnasK2
+                ];
+            }
+            else{
+                return [
+                    'filtros'=>null,
+                    'columnas'=> null
+                ];
+            }
         }
         catch(Exception $e){
 
