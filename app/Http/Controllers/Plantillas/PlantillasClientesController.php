@@ -559,7 +559,7 @@ class PlantillasClientesController extends Controller
                 $PlantillaDet = PlantillasDet::where('IdPlantilla',$IdPlantilla)->get();
                 foreach ($PlantillaDet as $Detalle) {
                     if ($Detalle->IdListaCostosDetPlantDet == null) {
-                        if ($NroCot > 0 ) {
+                        if ($NroCot) {
                             $strSql = "SELECT
                                 cotizaciones.IdCotizacion,
                                 cotizaciones_det.IdCotizacionDet,
@@ -646,7 +646,7 @@ class PlantillasClientesController extends Controller
                 foreach ($DetallesSel as $Detalle) {
                     if ($Detalle->IdListaCostosDetPlantDet == null) {
 
-                        if ($NroCot > 0 ) {
+                        if ($NroCot) {
                             $strSql = "SELECT
                                 cotizaciones.IdCotizacion,
                                 cotizaciones_det.IdCotizacionDet,
@@ -679,7 +679,7 @@ class PlantillasClientesController extends Controller
                             }
                             $strSql = $strSql . " ORDER BY cotizaciones.NroCotizacion DESC LIMIT 1";
                             $arBuscarDet = DB::select($strSql);
-                        } else if ($IdPlant > 0 || $Grupo !='') {
+                        } else if ($IdPlant) {
                             $strSql = "SELECT
                                 plantillas.IdPlantilla,
                                 plantillas_det.IdPlantillaDet,
