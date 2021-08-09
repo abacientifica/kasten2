@@ -895,7 +895,7 @@ class PlantillasClientesController extends Controller
                 DB::select("update  datos_trabajo_plantillas set FiltrosK2 = '".$FiltrosK."', ColumnasK2 = '".$ColumnasK."'  where IdUsuario = '".\Auth::user()->Usuario."'");
             }
             else{
-                DB::select("insert  datos_trabajo_plantillas  (IdUsuario,FiltrosK2,ColumnasK2) values  ('".\Auth::user()->Usuario."','".$request->filtros."','".$request->columnas."'");
+                DB::select("insert  datos_trabajo_plantillas  (IdUsuario,FiltrosK2,ColumnasK2) values  ('".\Auth::user()->Usuario."','".$FiltrosK."','".$ColumnasK."'");
             }
 
             return [
