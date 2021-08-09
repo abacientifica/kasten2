@@ -629,10 +629,11 @@ class PlantillasClientesController extends Controller
                         }
 
                         if (is_countable($arBuscarDet) && count($arBuscarDet) > 0) {
+                            $arBuscarDet = $arBuscarDet[0];
                             $DetPlantillaActual = PlantillasDet::find($Detalle->IdPlantillaDet);
                             $ListaCostoDet = ListaCostosProvDet::find($arBuscarDet->IdListaCostosDetCot);
                             $DetPlantillaActual->IdListaCostosDetPlantDet = $arBuscarDet->IdListaCostosDetCot;
-                            if (count($ListaCostoDet) > 0) {
+                            if ($ListaCostoDet) {
                                 $DetPlantillaActual->CantUMMAbaMes = $DetPlantillaActual->CantConsumoMesDet / $ListaCostoDet->FactorCompra;
                                 $DetPlantillaActual->SubTotal = $DetPlantillaActual->CantUMMAbaMes * $ListaCostoDet->Costo;
                             }
