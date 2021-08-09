@@ -1862,7 +1862,6 @@ export default {
                 this.fillColumnas.map(function(x,y){
                     if(x.columna != null){
                         let Edit = (x.edit == 'true' && me.fillPlantilla.Estado =='DIGITADA' && me.ValidarPermiso('editardetallles')) ? true: false;
-                        console.log(Edit)
                         if(x.columna =='AceptaAlternativa'){
                             me.columnDefs.push({
                                 headerClass:'bg-info',
