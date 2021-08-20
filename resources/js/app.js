@@ -9,6 +9,7 @@ require('./bootstrap');
 window.Vue = require('vue');
 export const EventBus = new Vue();
 window.EventBus = EventBus;
+//Vue.component('paginador', require('./components/plantilla/paginador.vue'));
 Vue.component('App', require('./components/App.vue').default);
 Vue.component('sidebar', require('./components/plantilla/Sidebar.vue').default);
 Vue.component('navbar', require('./components/plantilla/Navbar.vue').default);
@@ -22,6 +23,8 @@ Vue.component('visualizar-archivo', require('./components/modulos/archivos/verdo
 Vue.component('ayudas', require('./components/modulos/ayudas/listaAyudas.vue').default);
 Vue.component('modal', require('./components/plantilla/modal/modal.vue').default);
 Vue.component('homologar-plantillas', require('./components/plantilla/plantillasclientes/Homologar.vue').default);
+
+
 import locale from 'element-ui/lib/locale/lang/es';
 import router from './routes';
 

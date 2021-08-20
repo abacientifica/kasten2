@@ -502,12 +502,12 @@
                             </div>
                         </div>
 
-                        <div class="col-md-3">
+                        <!--<div class="col-md-3">
                             <div class="form-group margen-form-item">
                                 <label class='label-strong margen-label-encabezado'>Año</label>
                                 <p class="p-encabezado" >{{fillPlantilla.Periodo}}</p>
                             </div>
-                        </div>
+                        </div>-->
                         
                         <div class="col-md-3">
                             <div class="form-group margen-form-item">
@@ -1641,6 +1641,8 @@ export default {
             let position = 'top-center'
             let color = tipom
             const noti = this.$vs.notification({
+                duration:12000,
+                progress: 'auto',
                 flat: true,
                 color,
                 position,
@@ -1950,6 +1952,20 @@ export default {
                                 cellClassRules:validarClaseCelda
                             });
                         }
+                        else if(x.columna =='VendidoAnterioridad'){
+                            me.columnDefs.push({
+                                headerClass:'bg-info',
+                                headerName: x.alias,
+                                pinned: x.pinned,
+                                resizable: true,
+                                field : x.columna,
+                                sortable: true,
+                                filter:true, 
+                                editable: me.Edit,
+                                refData:me.ValAceptaAlt,
+                                cellClassRules:validarClaseCelda
+                            });
+                        }
                         else if(x.columna =='Opciones' && me.fillPlantilla.Estado == 'DIGITADA'){
                             me.columnDefs.push({
                                 headerName: x.alias,
@@ -2208,8 +2224,6 @@ export default {
 
 var validarClaseCelda = {
     
-    
-
     'rag-green': function (params) {
         return params.value == 1 ;
     },
