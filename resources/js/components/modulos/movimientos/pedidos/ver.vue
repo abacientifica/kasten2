@@ -177,7 +177,7 @@
                                         <td v-text="detalle.item.listacostosdet.RegInvima"></td>
                                         <td class="texto-derecha" v-text="FormatoMoneda(detalle.Precio,2)"></td>
                                         <td class="texto-derecha" v-text="detalle.Cantidad" v-if="accionMovimiento==0"></td>
-                                        <td v-else><input type="number" v-model="detalle.Cantidad" class="form-control" :style="detalle.Cantidad <= 0 || detalle.Cantidad < 1 ? 'border: 2px solid red;':''"></td>
+                                        <td v-else><input type="number" v-model="detalle.Cantidad" class="form-control" :style="detalle.Cantidad <= 0 || detalle.Cantidad < 1  ||  Is_Float(detalle.Cantidad / detalle.item.listacostosdet.CantMinimaVenta) ? 'border: 2px solid red;':''"></td>
                                         <td class="texto-derecha" v-text="detalle.PorIva"></td>
                                         <td class="texto-derecha" v-text="FormatoMoneda((detalle.Precio * detalle.Cantidad),2)"> </td>
                                     </tr>
@@ -526,7 +526,7 @@ export default {
         ActualizarDatos(){
             let me = this;
             const loader = this.loaderk();
-            this.ValidarDatos();
+            !this.ValidarDatos() ? loader.close() : '';
             if(this.arrMensajeError.length <=0){
                 axios.put('/movimiento/editar',{
                     params:{
@@ -577,9 +577,15 @@ export default {
                 if(articulo.Cantidad <=0){
                     this.arrMensajeError.push("La cantidad del cod "+articulo.Id_Item+" debe ser mayor a 0");
                 }
+
                 if(articulo.CantMinimaVenta > articulo.Cantidad && this.direccion[0].tipo.NoValidaCantMinVenta  == 0){
                     this.arrMensajeError.push("La cantidad minima de venta del cod "+articulo.Id_Item+" es "+articulo.CantMinimaVenta);
                 }
+
+                if(articulo.Cantidad >0  && this.Is_Float((articulo.Cantidad / articulo.item.listacostosdet.CantMinimaVenta))){
+                    this.arrMensajeError.push("La cantidad minima de venta es "+articulo.item.listacostosdet.CantMinimaVenta+", debe ser igual o multiplos de esta");
+                }
+
                 if(this.Is_Float(articulo.Cantidad)){
                     this.arrMensajeError.push("La cantidad minima de venta del cod "+articulo.Id_Item+" es "+articulo.item.listacostosdet.CantMinimaVenta+", debe ser igual o multiplos de esta");
                 }

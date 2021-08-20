@@ -97,7 +97,7 @@
                         </div>
 
                         
-                        <div class="col-md-3">
+                        <!--<div class="col-md-3">
                             <div class="form-group">
                                 <label>Periodo Año</label><span style="color:red" v-show="fillNuevaPlantilla.dPeriodoAnio ==null">(Seleccione *)</span>
                                 <select class="form-control" v-model="fillNuevaPlantilla.dPeriodoAnio">
@@ -115,7 +115,7 @@
                                     <option v-for="(mes,index) in PeriodoMes" :key="index" :value="mes" v-text="mes"></option>
                                 </select>             
                             </div>
-                        </div>
+                        </div>-->
 
                         <div class="col-md-6" >
                             <div class="form-group">
@@ -296,12 +296,12 @@ export default {
             if(Datos.oVigenciaOferta.length <=0){
                 this.arrayMensajeError.push("Debes seleccionar la vigencia de la oferta");
             }
-            if(Datos.dPeriodoAnio==null){
+            /*if(Datos.dPeriodoAnio==null){
                 this.arrayMensajeError.push("Debes seleccionar un año de periodo ");
             }
             if(Datos.dPeriodoMes==null){
                 this.arrayMensajeError.push("Debes seleccionar un mes de periodo ");
-            }
+            }*/
             if(Datos.cComentarios==null){
                 this.arrayMensajeError.push("Debes ingresar un comentario/Observación ");
             }

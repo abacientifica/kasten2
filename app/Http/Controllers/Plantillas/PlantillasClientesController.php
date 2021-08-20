@@ -214,7 +214,7 @@ class PlantillasClientesController extends Controller
             $Plantilla->IdDireccionPlant = $Datos['nIdDireccion'];
             $Plantilla->NmPlantilla = $Datos['cNmPlantilla'];
             $Plantilla->FhEntregaPropuesta = $Datos['FechaEntregaPropuesta'];
-            $Plantilla->Periodo =  $Datos['dPeriodoAnio']."-".$Datos['dPeriodoMes'];
+            //$Plantilla->Periodo =  $Datos['dPeriodoAnio']."-".$Datos['dPeriodoMes'];
             $Plantilla->Estado = 'DIGITADA';
             $Plantilla->Usuario = \Auth::user()->Usuario;
             $Plantilla->Comentarios = $Datos['cComentarios'];

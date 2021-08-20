@@ -12,6 +12,14 @@
                         <button class="close" @click="AbrirModal"></button>
                     </div>
                     <div class="modal-body">
+                        <div class="form-group row">
+                        <div class="col-md-12">
+                            <div class="input-group">
+                                <input type="text" v-model="filtros" @keyup.enter="filtrarRegistros(true)"  class="form-control sm" placeholder="Ingrese valor del criterio">
+                                <button type="submit" @click="filtrarRegistros(true)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                            </div>
+                        </div>
+                    </div>
                         <div class="table-responsive">
                                 <table class="table table-bordered table-striped table-sm">
                                     <thead>
@@ -37,20 +45,8 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                                <div class="card-footer clearfix">
-                                    <ul class="pagination pagination-sm m-0 float-rigth">
-                                        <li class="page-item" v-if="this.pageNumber > 0">
-                                        <a href="#" class="page-link" @click.prevent="pagePrev()" >Ant</a>
-                                        </li>
-
-                                        <li class="page-item" v-for="(page, index) in pagesList" :key="index" :class="page == pageNumber ? 'active' : ''">
-                                        <a href="#" class="page-link" @click.prevent="selectPage(page)">{{ page + 1 }}</a>
-                                        </li>
-
-                                        <li class="page-item" v-if="pageNumber < pageCount - 1">
-                                        <a href="#" class="page-link" @click.prevent="nextPage()">Sig</a>
-                                        </li>
-                                    </ul>
+                                <div>
+                                    <paginador  v-if="listarLogpaginate.length > 0 &&  arrLogs.length > perPage " :totalItems="arrLogs.length" :itemPorPagina="perPage" v-on:paginaSelect="selectPage"></paginador>
                                 </div>
                             </div>
                     </div>
@@ -63,7 +59,11 @@
     </div>
 </template>
 <script>
+import Paginador  from  '../paginador.vue';
 export default {
+    components:{
+        Paginador
+    },
     props:['IdMovimiento','IdDocumento'],
     data() {
         return {
@@ -79,27 +79,16 @@ export default {
                 display: 'none',
             },
             pageNumber: 0,
-            perPage: 5,
+            perPage: 10,
+            filtros:'',
+            arrLogsBack:[]
         }
     },
 
     computed:{
-        //Obtener el numero de las paginas
-        pageCount() {
-            let a = this.arrLogs.length;
-            let b = this.perPage;
-            return Math.ceil(a / b);
-        },
+        
         //Obtener Registros paginados el valor de 5 se puede cambiar por el deseado
         listarLogpaginate() {
-            //0 * 5 =0 inicio
-            //1 + 5 = 5 fin
-            //0 - (5-1) slice desde hasta
-
-            //1 * 5 = 5 inicio
-            //5 + 5 = 10 fin
-            //5 - (10-1) slice desde hasta
-
             let inicio = this.pageNumber * this.perPage;
             let fin = inicio + this.perPage;
             return this.arrLogs.slice(inicio, fin);
@@ -118,6 +107,12 @@ export default {
         },
     },
 
+    watch:{
+        filtros(){
+            this.filtrarRegistros();
+        }
+    },
+
     methods: {
         verLog(){
            let me = this;
@@ -127,6 +122,7 @@ export default {
             }}).then(function (response) {
                 var respuesta = response.data;
                 me.arrLogs = respuesta.logs;
+                me.arrLogsBack = respuesta.logs;
                 me.inicializarPagination();
                 me.modalShow = true;
             })
@@ -140,18 +136,12 @@ export default {
                 }
             });
         },
-
         /*Inicio Metodos Paguinacion*/
         inicializarPagination() {
             this.pageNumber = 0;
         },
-        nextPage() {
-            this.pageNumber++;
-        },
-        pagePrev() {
-            this.pageNumber--;
-        },
         selectPage(page) {
+            console.log(page)
             this.pageNumber = page;
         },    
         /*Fin Metodos Paginacion*/
@@ -159,6 +149,22 @@ export default {
         AbrirModal(){
             this.modalShow = !this.modalShow;
             this.arrLogs =[];
+        },
+
+        filtrarRegistros(){
+            if(this.filtros){
+                let me = this;
+                let DataFilter = this.arrLogs.filter(function(e){
+                    let filter  = e.NmAccion.concat(' ', e.Comentarios,' ', e.Usuario,' ',e.IdPlantillaDet,' ',e.IdItem);
+                    if(filter.toLowerCase().includes(me.filtros.toLowerCase())){
+                        return true;
+                    }
+                });
+                this.arrLogs = DataFilter;
+            }
+            else{
+                this.arrLogs = this.arrLogsBack;
+            }
         }
     },
     mounted() {
