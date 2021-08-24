@@ -536,7 +536,7 @@ class Funciones{
                 lista_costos_prov_det.Presentacion,lista_costos_prov_det.UMC,lista_costos_prov_det.UMV,plantillas_det.FactorCliente as FactorCliente,plantillas_det.CantUMMAbaMes,lista_costos_prov_det.CostoUMM,plantillas_det.PrecioTechoUMM,plantillas_det.SubTotal,
                 if(plantillas_det.PrecioTecho >0 , plantillas_det.CantConsumoMesDet * plantillas_det.PrecioTecho, plantillas_det.CantidadConsumo * lista_costos_prov_det.CostoUMM) as SubTotalVenta,format((plantillas_det.PrecioTecho - lista_costos_prov_det.CostoUMM ) /lista_costos_prov_det.CostoUMM , 2) as UtilVsTecho,'' as FhUltimaFact,'' as ItemContrato,IF(Revisado = 1, 1,0)  as Revisado,
                 IF(lista_costos_prov_det.HabCotizar =1 ,'SI','NO') as HabCotizar,if(Autorizado is null,'',if(Autorizado =1,1,if(Autorizado is null,null,0))) as Autorizado,plantillas_det.ComentariosHM,EnlaceCot,IdListaCostosDetPlantDet,VendidoAnterioridad
-                ,SubTotalConsumo
+                ,SubTotalConsumo,item.EnNovedad
                 from plantillas_det
                 LEFT JOIN lista_costos_prov_det  on lista_costos_prov_det.IdListaCostosProvDet = plantillas_det.IdListaCostosDetPlantDet  
                 LEFT JOIN lista_costos_prov_det as ListaDet on ListaDet.IdListaCostosProvDet = lista_costos_prov_det.IdListaDetReferencia
