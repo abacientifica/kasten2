@@ -61,6 +61,8 @@ export default {
     },
     methods: {
         login(){
+            sessionStorage.clear();
+            localStorage.clear();
             const loader = this.loaderk();
             if(this.validarLogin()){
                 return;

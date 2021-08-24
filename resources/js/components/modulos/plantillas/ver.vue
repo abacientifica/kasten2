@@ -336,6 +336,7 @@
                                         :on-change="AgregarArchivo"
                                         :on-success="ArchivoImportadoExito"
                                         :on-error="ArchivoImportadoError"
+                                        :on-progress="ProgresoSubidaArchivo"
                                         :file-list="fileList"
                                         :auto-upload="false"
                                         :before-upload="validarArchivo"
@@ -579,6 +580,7 @@ export default {
     },
     data() {
         return {
+            stateLoader:null,
             //Parametros de configuracion de la grilla
             columnDefs: [],
             rowData: [],
@@ -763,7 +765,7 @@ export default {
 
             //Variables Homologar
             AbrirModalHomologar:false,
-            opDetallesHm:1,
+            opDetallesHm:null,
             oFechasCot:[],
             fillHm:{
                 NroCot:'',
@@ -1358,12 +1360,12 @@ export default {
             if(!plantilla.oVigenciaOferta){
                 this.arrMensajeError.push("Ingresa la vigencia de la oferta");
             }
-            if(plantilla.dPeriodoAnio == null || plantilla.dPeriodoAnio == 0){
+            /*if(plantilla.dPeriodoAnio == null || plantilla.dPeriodoAnio == 0){
                 this.arrMensajeError.push("Ingresa un periodo Año");
             }
             if(plantilla.dPeriodoMes == null || plantilla.dPeriodoMes == 0){
                 this.arrMensajeError.push("Ingresa un periodo mes");
-            }
+            }*/
             
             if(this.arrMensajeError.length==0){
                 return true;
@@ -1729,6 +1731,7 @@ export default {
         ArchivoImportadoExito(res){
             this.MantenerFiltros = true;
             this.OpcionAccionDets ='add';
+            this.stateLoader.close();
             this.listarPlantilla();
             this.AlertMensaje(res.msg,1);
             if(this.rowData.length <=0){
@@ -1738,6 +1741,7 @@ export default {
 
         ArchivoImportadoError(res){
             console.log(res)
+            this.stateLoader.close();
             this.AlertMensaje('Ocurrio un error al importar, valida el archivo.',3)
         },
         //Fin metodos importacion de datos
@@ -2192,6 +2196,12 @@ export default {
             }).catch(error =>{
                 console.log(error)
             })
+        },
+
+        ProgresoSubidaArchivo(event, file, fileList){
+            console.log(event)
+            const loader = this.loaderk();
+            this.stateLoader = loader;
         }
     },
 
