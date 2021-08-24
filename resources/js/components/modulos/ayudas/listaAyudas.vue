@@ -5,7 +5,7 @@
                 <template  slot="title">
                     <strong>{{item.TituloAyuda}}</strong>
                 </template>
-                <div>{{item.Descripcion}}</div>
+                <div v-html="item.Descripcion"></div>
                 <div>Ver manual: <visualizar-archivo  v-if="item.Imagen !=null" :archivo="item.Imagen"  :titulo="item.TituloAyuda" :descripcion="item.Descripcion" :ver="true" ></visualizar-archivo></div>
             </el-collapse-item>
         </el-collapse>
