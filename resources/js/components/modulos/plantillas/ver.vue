@@ -2102,6 +2102,7 @@ export default {
                                 filter:'agTextColumnFilter', 
                                 editable: Edit, 
                                 tooltipField: x.columna,
+                                cellClassRules:validarClaseCeldaItemNovedad,//params => params.data.EnNovedad == 1  ? 'background-color: lightgreen;' :  '',
                                 width : 147,
                             });
                         }
@@ -2303,11 +2304,14 @@ export default {
 }
 
 var validarClaseCelda = {
-    
     'rag-green': function (params) {
         return params.value == 1 ;
     },
-
+}
+var validarClaseCeldaItemNovedad = {
+    'item-novedad': function (params) {
+        return params.data.EnNovedad;
+    },
 }
 
 window.FormatoMoneda = function FormatoMoneda(params){
@@ -2340,6 +2344,9 @@ window.FormatoMoneda = function FormatoMoneda(params){
 <style>
 .rag-green {
     background-color: lightgreen;
+}
+.item-novedad {
+    background-color: #fbc9c9;
 }
 .item-descontinuado{
     background-color:#efedbb;
