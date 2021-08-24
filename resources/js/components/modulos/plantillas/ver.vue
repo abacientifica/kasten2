@@ -154,6 +154,12 @@
                                         <el-button type="primary" round :disabled="(ValidarPermiso('calcularfactor') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AbriModalCalcFactor = true"><i class="fas fa-calculator"></i> Calcular Factor</el-button>
                                     </vs-tooltip>
                                 </td>
+                                <td>
+                                    <vs-tooltip>
+                                        <template #tooltip>Corre factores de otras plantillas donde coincida la unidad. </template>
+                                        <el-button type="primary" round :disabled="(ValidarPermiso('correrfactores') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AbriModalCorrerFactores = true"><i class="fas fa-running"></i> Correr Factores</el-button>
+                                    </vs-tooltip>
+                                </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -433,6 +439,30 @@
                         <span slot="footer" class="dialog-footer">
                             <el-button @click="AbrirModalCotizacion = false">Cancelar</el-button>
                             <el-button type="primary" @click="ValidarDatosCot()">Crear</el-button>
+                        </span>
+                    </el-dialog>
+
+                    <el-dialog title="Correr Factores" :visible.sync="AbriModalCorrerFactores">
+                        <div class="form-group row border" >
+                            
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Opciones</label><br>
+                                    <el-radio v-model="fillCorrerFactores.OpFactores" :label="1">Ultima Plantilla</el-radio>
+                                    <el-radio v-model="fillCorrerFactores.OpFactores" :label="null">N/A</el-radio><br>
+
+                                    <label>Id Plantilla</label>
+                                    <input type="number" :disabled="fillCorrerFactores.OpFactores  ? true:false" v-model="fillCorrerFactores.nIdPlantilla" class="form-control" placeholder="# Plantilla"><br>
+
+                                    <label>Opciones Items</label><br>
+                                    <el-radio v-model="fillCorrerFactores.OpItems" :label="1">Todos</el-radio>
+                                    <el-radio v-model="fillCorrerFactores.OpItems" :label="2">Seleccionados</el-radio><br>
+                                </div>
+                            </div>
+                        </div>
+                        <span slot="footer" class="dialog-footer">
+                            <el-button @click="AbriModalCorrerFactores = false">Cancelar</el-button>
+                            <el-button type="primary" :disabled="(fillCorrerFactores.nIdPlantilla !='' ||  fillCorrerFactores.OpFactores) &&  ((fillCorrerFactores.OpItems == 2 && ItemsSeleccionados.length >0) || fillCorrerFactores.OpItems == 1) ? false:true" v-model="fillCorrerFactores.nIdPlantilla" @click="AplicarCorrerFactores()">Aplicar</el-button>
                         </span>
                     </el-dialog>
 
@@ -796,6 +826,14 @@ export default {
                 OpcionItems:null,
                 perteneceCCto:null,
                 ItemsPlantilla :[],
+            },
+
+            //Variables Correr Factores
+            AbriModalCorrerFactores:false,
+            fillCorrerFactores:{
+                OpItems:1,
+                nIdPlantilla:'',
+                OpFactores: null,
             }
         }
     },
@@ -2202,7 +2240,39 @@ export default {
             console.log(event)
             const loader = this.loaderk();
             this.stateLoader = loader;
+        },
+
+        AplicarCorrerFactores(){
+            console.log([this.fillCorrerFactores])
+            let me = this;
+            let url ="/plantillas/clientes/CorrerFactores";
+            const loader = this.loaderk();
+            axios.put(url,{
+                'IdPlantilla':me.fillPlantilla.IdPlantilla,
+                'nIdPlantilla':me.fillCorrerFactores.nIdPlantilla,
+                'OpPlantilla':me.fillCorrerFactores.OpFactores,
+                'OpItems':me.fillCorrerFactores.OpItems,
+                'ItemsSeleccionados':me.ItemsSeleccionados
+            }).then(response=>{    
+                let respuesta = response.data;
+                loader.close();
+                let codmsg = respuesta.status == 500 ? 3 : 1;
+                me.AlertMensaje(respuesta.msg,codmsg);
+                this.MantenerFiltros = true;
+                this.listarPlantilla(true);
+            }).catch(error =>{
+                loader.close();
+                this.AlertMensaje(error,3);
+                console.log(error)
+                if(error.response.status ==401){
+                    me.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                    loader.close();
+                }
+            })
         }
+
     },
 
     
