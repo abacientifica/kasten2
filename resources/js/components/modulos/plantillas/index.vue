@@ -126,6 +126,7 @@
                                 <table class="table table-hover table-bordered table-striped table-sm" v-else>
                                 <thead class="bg-info">
                                     <tr>
+                                    <th class="texto-centrado">Id</th>
                                     <th class="texto-centrado">Fecha</th>
                                     <th class="texto-centrado">Tercero</th>
                                     <th class="texto-centrado">Dirección</th>
@@ -140,6 +141,7 @@
                                 </thead>
                                 <tbody v-if="ListarPlantillasPaginate.length >0">
                                     <tr v-for="det in ListarPlantillasPaginate" :key="det.IdPlantilla">
+                                        <td>{{det.IdPlantilla}}</td>
                                         <td>{{moment(det.FhPlantilla).format('MMMM DD YYYY, h:mm:ss a')}}</td>
                                         <td>{{det.tercero.NombreCorto}}</td>
                                         <td v-text="det.direccion.Direccion"></td>
