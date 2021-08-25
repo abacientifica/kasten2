@@ -40,8 +40,10 @@
                     <div class="col-md-12 btn-group-justified"  style="display:flex" >
                         <logacciones class="btn-margin-left" :IdMovimiento ="fillPlantilla.IdPlantilla" :IdDocumento="93"></logacciones>
                         <button class="btn btn-success btn-sm btn-margin-left" v-if="fillPlantilla.Estado!='ANULADA'" @click.prevent="dialogAcciones = !dialogAcciones"><i class="fas fa-grip-horizontal"></i> Menu Acciones</button>
+                        <button class="btn btn-dark btn-sm btn-margin-left" @click.prevent="AbriModalListaChequeo = true"><i class="fas fa-check-square"></i> Chequeo Procesos</button>
                         <button class="btn btn-secondary btn-sm btn-margin-left" v-if="OcultarPanel" @click.prevent="OcultarMostrarPanel()"><i class="fas fa-eye"></i> Mostrar Encabezado</button>
                         <button class="btn btn-secondary btn-sm btn-margin-left" v-if="!OcultarPanel" @click.prevent="OcultarMostrarPanel()"><i class="fas fa-eye-slash"></i> Ocultar Encabezado</button>
+                        
                     <!--Botones de acciones--> 
                     <el-dialog
                         title="Acciones Plantillas"
@@ -466,6 +468,55 @@
                         </span>
                     </el-dialog>
 
+                    <el-dialog title="Lista de Chequeo " :visible.sync="AbriModalListaChequeo" width="65%">
+                       <el-table
+                            :data="ListaCheck"
+                            border
+                            :row-class-name="tableClassListaCheck"
+                            style="width: 100%">
+                            <el-table-column
+                                prop="NmCheck"
+                                label="Nombre "
+                                width="180">
+                            </el-table-column>
+
+                            <el-table-column
+                                prop="Descripcion"
+                                label="Descripción"
+                                width="180">
+                            </el-table-column>
+
+                            <el-table-column
+                                prop="Usuario"
+                                label="Usuario"
+                                width="70">
+                            </el-table-column>
+
+                            <el-table-column
+                                prop="FhCheck"
+                                label="Fecha Check">
+                            </el-table-column>
+
+                            <el-table-column
+                                prop="Comentarios"
+                                label="Comentario">
+                            </el-table-column>
+
+                            <el-table-column
+                                width="120"
+                                label="Opciones">
+                                <template slot-scope="scope">
+                                    <el-button
+                                        v-if=" !scope.row.Usuario && ValidarPermiso(scope.row.Permiso) && ValidarCheck(scope.$index, scope.row)"
+                                        size="mini"
+                                        type="success"
+                                        @click="AplicarCheckPlantilla(scope.$index, scope.row)"><i class="fas fa-check"></i> Chequear</el-button>
+                                    </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-dialog>
+
+
                     <!--Fin Acciones-->
                     </div><hr>
                     <div class="form-group row border" v-if="!OcultarPanel">
@@ -834,12 +885,19 @@ export default {
                 OpItems:1,
                 nIdPlantilla:'',
                 OpFactores: null,
-            }
+            },
+
+            //Variables lista chequeo
+            AbriModalListaChequeo:false,
+            ListaCheck:[]
         }
     },
     watch:{
         EditarDet(){
 
+        },
+        AbriModalListaChequeo(){
+            this.AbriModalListaChequeo ? this.ObtenerListaChequeo() : '';
         }
     },
     computed: {
@@ -2272,6 +2330,70 @@ export default {
                     loader.close();
                 }
             })
+        },
+
+        ObtenerListaChequeo(){
+            let me = this;
+            let url ="/plantillas/listachequeo/"+ me.fillPlantilla.IdPlantilla;
+            axios.get(url).then(response=>{    
+                let respuesta = response.data;
+                me.ListaCheck = respuesta.lista_chequeo;
+                console.log(respuesta)
+            }).catch(error =>{
+                console.log(error)
+            })
+        },
+
+        tableClassListaCheck({row, rowIndex}) {
+            if(row.Usuario){
+                return 'success-row';
+            }
+            return '';
+        },
+
+        AplicarCheckPlantilla(index,row){
+            let me = this;
+            this.$prompt('Ingrese un comentario ', 'Estas seguro(a) de aplicar check '+row.NmCheck+' !!', {
+                confirmButtonText: 'OK',
+                cancelButtonText: 'Cancelar',
+                inputPattern:/^[^]+$/,
+                inputErrorMessage: 'El comentario es obligatorio.',
+                type: 'warning'
+            }).then(({value}) => {
+                let url ="/plantillas/listachequeo/chequear";
+                axios.put(url,{
+                    'IdPlantilla':me.fillPlantilla.IdPlantilla,
+                    'IdCheck':row.Id_Check,
+                    'Comentarios':value
+                }).then(response=>{    
+                    let respuesta = response.data;
+                    me.ListaCheck = respuesta.lista_chequeo;
+                    me.$message({
+                        type: 'success',
+                        message: row.NmCheck + ' Chequeada correctamente'
+                    });
+                }).catch(error =>{
+                    me.AlertMensaje(error,3);
+                    console.log(error);
+                })
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: 'Operacion Cancelada'
+                });          
+            });
+            //console.log({index,row})
+        },
+
+        ValidarCheck(index,row){
+            let me = this;
+            let CheckAnt = this.ListaCheck[index -1];
+            if(CheckAnt){
+                if(!CheckAnt.Usuario && CheckAnt.Obligatorio){
+                    return false
+                }
+            }
+            return true;
         }
 
     },
@@ -2362,5 +2484,12 @@ window.FormatoMoneda = function FormatoMoneda(params){
 }
 .aling-number{
     text-align: right;
+}
+.el-table .warning-row {
+    background: oldlace;
+}
+
+.el-table .success-row {
+    background: #f0f9eb;
 }
 </style>

@@ -929,4 +929,126 @@ class PlantillasClientesController extends Controller
 
         }
     }
+
+    public function CorrerFactoresPlantilla(Request $request){
+        if(!$request->ajax()) return  redirect('/');
+        try {
+            DB::beginTransaction();
+            $IdPlantilla = $request['IdPlantilla'];
+            $IdPlantillaHm = $request['nIdPlantilla'];
+            $OpPlantilla = $request->OpPlantilla;
+            $OpItems = $request['OpItems'];
+            $ItemsSeleccionados = $request['ItemsSeleccionados'];
+            //Validamos si digito un id plantilla
+            if($IdPlantillaHm){
+                $PlantillaAct = Plantillas::with('tercero','plantillasdet')->where('IdPlantilla',$IdPlantilla)->first();
+                $Plantilla = Plantillas::with('tercero','plantillasdet')->where('IdPlantilla',$IdPlantillaHm)->first();
+                if($Plantilla && $Plantilla->IdTerceroPlant && $Plantilla->IdTerceroPlant == $PlantillaAct->IdTerceroPlant){
+                    if($OpItems == 1){
+                        $Cont =0;
+                        foreach($PlantillaAct->plantillasdet as $Det){
+                            if($Det->IdListaCostosDetPlantDet && $Det->UMCliente && $Det->Autorizado != 1){
+                                $DatoFilt = array_filter($Plantilla->plantillasdet->toArray(),function($e) use ($Det){
+                                    return $e['IdListaCostosDetPlantDet'] == $Det->IdListaCostosDetPlantDet && $e['FactorCliente']>0  && $e['UMCliente'] == $Det->UMCliente;
+                                });
+                                if($DatoFilt){
+                                    $DatoFilt = reset($DatoFilt);
+                                    $Det->FactorCliente = $DatoFilt['FactorCliente'];
+                                    $Det->save();
+                                    $Cont++;
+                                }
+                            }
+                        }
+                        return[
+                            'status'=>201,
+                            'msg'=>'Se corrieron los factores de '.$Cont.' registros.',
+                        ];
+                    }
+                    else if($ItemsSeleccionados){
+                        $Cont =0;
+                        foreach($ItemsSeleccionados as $Det){
+                            if($Det['IdListaCostosDetPlantDet'] && $Det['UMCliente'] && $Det['Autorizado'] != 1){
+                                $DatoFilt = array_filter($Plantilla->plantillasdet->toArray(),function($e) use ($Det){
+                                    return $e['IdListaCostosDetPlantDet'] == $Det['IdListaCostosDetPlantDet'] && $e['FactorCliente']>0  && $e['UMCliente'] == $Det['UMCliente'];
+                                });
+                                if($DatoFilt){
+                                    $DatoFilt = reset($DatoFilt);
+                                    $Det = PlantillasDet::where('IdPlantillaDet',$Det['IdPlantillaDet'])->first();
+                                    $Det->FactorCliente = $DatoFilt['FactorCliente'];
+                                    $Det->save();
+                                    $Cont++;
+                                }
+                            }
+                        }
+                        return[
+                            'status'=>201,
+                            'msg'=>'Se corrieron los factores de '.$Cont.' registros.',
+                        ];
+                    }
+                }
+                else{
+                    return[
+                        'status'=>201,
+                        'msg'=>'No se pueden correr los factores, valida el tercero de la plantilla digitada',
+                    ];
+                }
+            }
+            //Validamos si se selecciono desde ultima plantilla
+            else if($OpPlantilla == 1){
+                $PlantillaAct = Plantillas::with('tercero','plantillasdet')->where('IdPlantilla',$IdPlantilla)->first();
+                $Plantilla = Plantillas::with('tercero','plantillasdet')->where('IdTerceroPlant',$PlantillaAct->IdTerceroPlant)->where('Estado','<>','ANULADA')->where('Estado','<>','DIGITADA')->OrderBy('FhPlantilla','DESC')->first();
+                if($Plantilla){
+                    if($OpItems == 1){
+                        $Cont =0;
+                        foreach($PlantillaAct->plantillasdet as $Det){
+                            if($Det->IdListaCostosDetPlantDet && $Det->UMCliente && $Det->Autorizado != 1){
+                                $DatoFilt = array_filter($Plantilla->plantillasdet->toArray(),function($e) use ($Det){
+                                    return $e['IdListaCostosDetPlantDet'] == $Det->IdListaCostosDetPlantDet && $e['FactorCliente']>0  && $e['UMCliente'] == $Det->UMCliente;
+                                });
+                                if($DatoFilt){
+                                    $DatoFilt = reset($DatoFilt);
+                                    $Det->FactorCliente = $DatoFilt['FactorCliente'];
+                                    $Det->save();
+                                    $Cont++;
+                                }
+                            }
+                        }
+                        return[
+                            'status'=>201,
+                            'msg'=>'Se corrieron los factores de '.$Cont.' registros.',
+                        ];
+                    }
+                    else if($ItemsSeleccionados){
+                        $Cont =0;
+                        foreach($ItemsSeleccionados as $Det){
+                            if($Det['IdListaCostosDetPlantDet'] && $Det['UMCliente']  && $Det['Autorizado'] != 1){
+                                $DatoFilt = array_filter($Plantilla->plantillasdet->toArray(),function($e) use ($Det){
+                                    return $e['IdListaCostosDetPlantDet'] == $Det['IdListaCostosDetPlantDet'] && $e['FactorCliente']>0  && $e['UMCliente'] == $Det['UMCliente'];
+                                });
+                                if($DatoFilt){
+                                    $DatoFilt = reset($DatoFilt);
+                                    $Det = PlantillasDet::where('IdPlantillaDet',$Det['IdPlantillaDet'])->first();
+                                    $Det->FactorCliente = $DatoFilt['FactorCliente'];
+                                    $Det->save();
+                                    $Cont++;
+                                }
+                            }
+                        }
+                        return[
+                            'status'=>201,
+                            'msg'=>'Se corrieron los factores de '.$Cont.' registros.',
+                        ];
+                    }
+                }
+            }
+            DB::commit();
+        }
+        catch(Exception $e){
+            DB::rollBack();
+            return[
+                'status'=>500,
+                'msg'=>'Ocurrio un error al correr los factores, valida los datos ingresados e intenta nuevamente.',
+            ];
+        }
+    }
 }
