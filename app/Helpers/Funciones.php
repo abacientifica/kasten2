@@ -1059,4 +1059,11 @@ class Funciones{
         }
         
     }
+
+    public static function ObtenerListaChequeo($IdPlantilla){
+        $Lista = DB::select("select lista_check_documentos.*,check_plantillas.Usuario,check_plantillas.FhCheck,check_plantillas.Comentarios from lista_check_documentos
+                            LEFT JOIN check_plantillas on check_plantillas.Id_Check = lista_check_documentos.Id_Check and check_plantillas.idPlantilla = ".$IdPlantilla." and check_plantillas.Anulado =0
+                            where IdDocumento = 93  order by Orden ASC");
+        return  $Lista;
+    }
 }
