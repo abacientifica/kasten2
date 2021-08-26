@@ -26,7 +26,8 @@ class Funciones{
             Mail::send('mail.enviarcorreo',['mensaje'=>$mensaje], function($msj) use($subject,$for)
             { 
                 $msj->from("kasten@aba.com.co","Kasten V2"); 
-                $msj->subject($subject); $msj->to($for); 
+                $msj->subject($subject); 
+                $msj->to($for); 
             });
             return true;
         }
@@ -1066,4 +1067,15 @@ class Funciones{
                             where IdDocumento = 93  order by Orden ASC");
         return  $Lista;
     }
+
+    public static function ObtenerUsuariosPermiso($Permiso){
+        $Sql = "select permisos.id,permisos.nombre,permisos.slug,permisos_usuario.usuario,usuarios.Email from usuarios
+                LEFT JOIN permisos_usuario on permisos_usuario.usuario = usuarios.Usuario
+                LEFT JOIN permisos on permisos.id = permisos_usuario.id_permiso
+                where (permisos.slug = '".$Permiso."' or permisos.slug like '%".$Permiso."%' or  permisos.id ='".$Permiso."')";
+        $Permisos = DB::select($Sql);
+        return $Permisos;
+    }
+
+
 }
