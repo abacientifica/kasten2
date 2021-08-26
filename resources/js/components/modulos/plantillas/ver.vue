@@ -474,15 +474,16 @@
                             border
                             :row-class-name="tableClassListaCheck"
                             style="width: 100%">
+
+                            <el-table-column type="expand">
+                                <template slot-scope="props">
+                                    <p>Descripción de las actividades</p>
+                                    <p v-html="props.row.Descripcion"></p>
+                                </template>
+                            </el-table-column>
                             <el-table-column
                                 prop="NmCheck"
-                                label="Nombre "
-                                width="180">
-                            </el-table-column>
-
-                            <el-table-column
-                                prop="Descripcion"
-                                label="Descripción"
+                                label="Actividad Check"
                                 width="180">
                             </el-table-column>
 
@@ -2360,6 +2361,7 @@ export default {
                 inputErrorMessage: 'El comentario es obligatorio.',
                 type: 'warning'
             }).then(({value}) => {
+                const loader = me.loaderk();
                 let url ="/plantillas/listachequeo/chequear";
                 axios.put(url,{
                     'IdPlantilla':me.fillPlantilla.IdPlantilla,
@@ -2368,11 +2370,13 @@ export default {
                 }).then(response=>{    
                     let respuesta = response.data;
                     me.ListaCheck = respuesta.lista_chequeo;
+                    loader.close();
                     me.$message({
                         type: 'success',
                         message: row.NmCheck + ' Chequeada correctamente'
                     });
                 }).catch(error =>{
+                    loader.close();
                     me.AlertMensaje(error,3);
                     console.log(error);
                 })

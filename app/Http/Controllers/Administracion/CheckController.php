@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use App\Model\CheckPlantillas;
 use App\Model\ListaCheckDocumentos;
+use App\Events\CheckRegister;
 class CheckController extends Controller
 {
     public function GetListaCheck(Request $request){
@@ -31,6 +32,7 @@ class CheckController extends Controller
     public function AplicarCheckPlantillas(Request $request){
         if(!$request->ajax()) return  redirect('/');
         try{
+            DB::beginTransaction();
             $IdPlantilla = $request->IdPlantilla;
             $IdCheck = $request->IdCheck;
             $Comentarios = $request->Comentarios;
@@ -42,13 +44,17 @@ class CheckController extends Controller
             $NewCheck->Anulado = 0 ;
             $NewCheck->Comentarios = $Comentarios;
             $NewCheck->save();
+            $ListaCheck = \Funciones::ObtenerListaChequeo($IdPlantilla);
+            event(new CheckRegister($NewCheck,$ListaCheck));
+            DB::commit();
             return [
                 'status'=> 200,
                 'msg'=>'Se genero la consulta con exito.',
-                'lista_chequeo'=>\Funciones::ObtenerListaChequeo($IdPlantilla)
+                'lista_chequeo'=>$ListaCheck
             ];
         }
         catch(Exception $e){
+            DB::rollBack();
             return [
                 'status'=> 501,
                 'msg'=>'Ocurrio un error .'.$e->getMessage(),
