@@ -79,7 +79,7 @@ export default {
                 display: 'none',
             },
             pageNumber: 0,
-            perPage: 10,
+            perPage: 6,
             filtros:'',
             arrLogsBack:[]
         }
@@ -154,7 +154,7 @@ export default {
         filtrarRegistros(){
             if(this.filtros){
                 let me = this;
-                let DataFilter = this.arrLogs.filter(function(e){
+                let DataFilter = this.arrLogsBack.filter(function(e){
                     let filter  = e.NmAccion.concat(' ', e.Comentarios,' ', e.Usuario,' ',e.IdPlantillaDet,' ',e.IdItem);
                     if(filter.toLowerCase().includes(me.filtros.toLowerCase())){
                         return true;

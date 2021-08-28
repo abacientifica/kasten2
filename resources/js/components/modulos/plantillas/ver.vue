@@ -1758,7 +1758,7 @@ export default {
         },
 
         ValidarPermiso(permiso){
-            if(this.PermisosUser.includes('plantillas_clientes.'+permiso) || this.PermisosUser.includes('administrador.sistema')){
+            if(this.PermisosUser.includes('plantillas_clientes.'+permiso) || this.PermisosUser.includes(permiso) || this.PermisosUser.includes('administrador.sistema')){
                 return true;
             }
             else{

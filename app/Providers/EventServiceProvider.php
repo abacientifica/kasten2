@@ -8,6 +8,7 @@ use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use App\Events\UserLogin;
 use App\Events\CheckRegister;
+use App\Events\RegistrarLog;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -25,6 +26,12 @@ class EventServiceProvider extends ServiceProvider
         ],
         CheckRegister::class=>[
             \App\Listeners\NotificarCheckPlantillas::class,
+        ],
+        CheckRegister::class=>[
+            \App\Listeners\NotificarCheckPlantillas::class,
+        ],
+        RegistrarLog::class=>[
+            \App\Listeners\CrearLog::class,
         ]
     ];
 

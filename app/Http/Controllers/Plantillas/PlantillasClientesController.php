@@ -6,10 +6,15 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Pipeline\Pipeline;
 use App\Model\Plantillas;
 use App\Model\PlantillasDet;
 use App\Model\Cotizaciones;
 use App\Model\ListaCostosProvDet;
+use App\Task\QuitarCaracteresString;
+use App\Task\FormatearPrecios;
+use App\Events\RegistrarLog;
+
 
 class PlantillasClientesController extends Controller
 {
@@ -329,10 +334,10 @@ class PlantillasClientesController extends Controller
         if(!$request->ajax()) return  redirect('/');
         $PlantDet = new PlantillasDet();
         $PlantDet = PlantillasDet::find($request->params['IdPlantillaDet']);
+        $IdItem = $request->params['Item'];
         $PlantDet->IdListaCostosDetPlantDet = $request->params['IdLista'];
-
         if ($PlantDet->save()) {
-
+            event(new RegistrarLog(['Tipo'=>1,'IdAccion'=>42,'Id'=>$PlantDet->IdPlantilla,'IdDet'=>$PlantDet->IdPlantillaDet,'IdItem'=>$IdItem,'Comentarios'=>'Homologar '.$IdItem]));
             \Funciones::ActualizarDatosPlantillaClientes($PlantDet->IdPlantilla);
             return[
                 'status'=>201,
@@ -427,8 +432,16 @@ class PlantillasClientesController extends Controller
         $TotalDatos=0;
         $DatosInsert = 0;
         $DatosNoInsert =0;
+        $MsgException = null;
         while (($data = fgetcsv($fp, 1000, ";")) !== FALSE) {
             try{
+                $pipe = app(Pipeline::class);
+                //Ejecutamos el pipeline que limpiara cada cadena del arreglo.
+                $data = $pipe->send($data)->through([
+                    QuitarCaracteresString::class,
+                    FormatearPrecios::class,
+                ])->thenReturn();
+
                 $CodigoG = new PlantillasDet();
                 $CodigoG->IdPlantilla = $IdPlantilla;
                 $CodigoG->MesesConsumo = $Plantilla->CantidadConsumoMes;
@@ -437,7 +450,7 @@ class PlantillasClientesController extends Controller
                 } else {
                     $CodigoG->CodCliente = '';
                 }
-                $CodigoG->Grupo = isset($data[1]) ? $this->CambiarCaracteres($data[1]):'';
+                $CodigoG->Grupo = isset($data[1]) ? $data[1] :'';
                 $CodigoG->IdItemCliente = isset($data[2]) ? $data[2]:'';
                 if (isset($data[3]) && $data[3] != '') {
                     $CodigoG->DescripcionCliente = $data[3];
@@ -476,31 +489,25 @@ class PlantillasClientesController extends Controller
             }
             catch(\Illuminate\Database\QueryException  $ex){
                 $DatosNoInsert++;
+                $MsgException[] = $ex;
             }
             catch(Exception $e){
                 $DatosNoInsert++;
+                $MsgException[] = $e;
             }
             catch(ErrorException $eex){
                 $DatosNoInsert++;
+                $MsgException[] = $eex;
             }
             $TotalDatos++;
         }
         
 
         return [
-            'msg'=>"Se leyeron el total de ".$TotalDatos." datos, se registraron ".$DatosInsert." y no se insertaron ".$DatosNoInsert." debido a que pueden tener caracteres especiales o datos incorrectos",
+            'msg'=>"Se leyeron el total de ".$TotalDatos." datos, se registraron ".$DatosInsert." y no se insertaron ".$DatosNoInsert." debido a que pueden tener caracteres especiales o datos incorrectos ",
+            'Exceptiones'=>$MsgException,
             'status'=>201
         ];
-    }
-
-    public function CambiarCaracteres($cadena) {
-        $texto = "";
-        if ($cadena != '') {
-            $no_permitidas = array("á", "é", "í", "ó", "ú", "Á", "É", "Í", "Ó", "Ú", "ñ", "À", "Ã", "Ì", "Ò", "Ù", "Ã™", "Ã ", "Ã¨", "Ã¬", "Ã²", "Ã¹", "ç", "Ç", "Ã¢", "ê", "Ã®", "Ã´", "Ã»", "Ã‚", "ÃŠ", "ÃŽ", "Ã”", "Ã›", "ü", "Ã¶", "Ã–", "Ã¯", "Ã¤", "«", "Ò", "Ã", "Ã„", "Ã‹", "Ñ","'",'"');
-            $permitidas = array("a", "e", "i", "o", "u", "A", "E", "I", "O", "U", "n", "N", "A", "E", "I", "O", "U", "a", "e", "i", "o", "u", "c", "C", "a", "e", "i", "o", "u", "A", "E", "I", "O", "U", "u", "o", "O", "i", "a", "e", "U", "I", "A", "E", "N","","");
-            $texto = str_replace($no_permitidas, $permitidas, $cadena);
-        }
-        return $texto;
     }
 
     public function AplicarCalculoFactor(Request $request){

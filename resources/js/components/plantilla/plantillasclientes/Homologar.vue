@@ -399,6 +399,7 @@ export default {
                 params:{
                     'IdPlantillaDet':me.ItemSel.IdPlantillaDet,
                     'IdLista':Item.IdListaCostosProvDet,
+                    'Item':Item.Id_Item,
                 }
             }).then((response)=>{
                 let respuesta = response.data;
