@@ -28,7 +28,6 @@ class CrearLog
      */
     public function handle(RegistrarLog $event)
     {
-        var_dump($event);
         if($event->Log['Tipo'] == 1){
             $Log = new LogPlantillas();
             $Log->Fecha = date('Y-m-d H:i:s');
