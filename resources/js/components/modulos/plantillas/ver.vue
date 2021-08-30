@@ -28,6 +28,7 @@
                                         <i class="fas fa-plus-square"></i> Nueva Plantilla
                                     </router-link>
                                 </template>
+                                <novedades></novedades>
                                 <router-link class="btn btn-info btn-sm" :to="{name:'plantillas_clientes.index'}">
                                     <i class="fas fa-arrow-left"></i> Regresar
                                 </router-link>
@@ -631,6 +632,13 @@
                             </ag-grid-vue>
                         </div>
                     </div>
+                    <el-dialog :title="TituloModalNovedad" :visible.sync="dialogNovedades">
+                        <el-table :data="Novedades">
+                            <el-table-column property="FhNovedad" label="Fecha" width="150"></el-table-column>
+                            <el-table-column property="Comentarios" label="Descripción" width="350"></el-table-column>
+                            <el-table-column property="FhPosibleSolucion" label="Fh. Posible Solucion" width="150"></el-table-column>
+                        </el-table>
+                    </el-dialog>
                     <homologar-plantillas :visible="showHomologar" :datosItem="DatosHomologar" :datos="datosfiltrados" :datosPl="fillPlantilla"  v-on:OcultarModal = "OcultarModalHM()"></homologar-plantillas>
                     <div class="form-group row">
                         <div class="col-md-12">
@@ -655,10 +663,12 @@ import serviceApp from "../../../ServicesApp";
 const servicesApp = new serviceApp();
 import "vue-select/dist/vue-select.css";
 import { AgGridVue } from "ag-grid-vue";
+import Novedades from '../../plantilla/plantillasclientes/Novedades.vue';
 export default {
     components: {
         AgGridVue,
-        "v-select": vSelect
+        "v-select": vSelect,
+        'novedades':Novedades
     },
     data() {
         return {
@@ -890,7 +900,12 @@ export default {
 
             //Variables lista chequeo
             AbriModalListaChequeo:false,
-            ListaCheck:[]
+            ListaCheck:[],
+
+            //Novedades
+            dialogNovedades:false,
+            Novedades:[],
+            TituloModalNovedad:'',
         }
     },
     watch:{
@@ -899,6 +914,9 @@ export default {
         },
         AbriModalListaChequeo(){
             this.AbriModalListaChequeo ? this.ObtenerListaChequeo() : '';
+        },
+        dialogNovedades(){
+            !this.dialogNovedades ? this.Novedades = [] : '';
         }
     },
     computed: {
@@ -2154,6 +2172,7 @@ export default {
                                 pinned: 'left',
                                 resizable: true, 
                                 field : x.columna, 
+                                cellRendererFramework: 'novedades',
                                 headerCheckboxSelection:true,
                                 checkboxSelection:true,
                                 valueFormatter: (x.FormatoCelda == 'FormatoMoneda') ? FormatoMoneda: '',
@@ -2161,7 +2180,7 @@ export default {
                                 filter:'agTextColumnFilter', 
                                 editable: Edit, 
                                 tooltipField: x.columna,
-                                cellClassRules:validarClaseCeldaItemNovedad,//params => params.data.EnNovedad == 1  ? 'background-color: lightgreen;' :  '',
+                                cellClassRules:validarClaseCeldaItemNovedad,
                                 width : 147,
                             });
                         }
@@ -2411,7 +2430,6 @@ export default {
             this.fillPlantilla = response.data.plantilla;
             this.CargarColumnas(response);
         });
-
         //Fin carga de datos
     },
     mounted() {
@@ -2425,6 +2443,12 @@ export default {
             this.OcultarPanel = PanelOculto
         }
         this.ObtenerFiltros();
+
+        EventBus.$on('arrNovedades',data =>{
+            this.dialogNovedades = !this.dialogNovedades
+            this.TituloModalNovedad = 'Novedades Item',
+            this.Novedades = data;
+        });
     },
     
 }

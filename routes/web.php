@@ -154,6 +154,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::put('/ayuda/EliminarAyudaDet', 'Administracion\AyudasKastenController@EliminarAyudaDet');
     Route::get('/ayuda/ObtenerAyudasKasten', 'Administracion\AyudasKastenController@ObtenerAyudasKasten');
 
+    //Novedades
+    Route::get('/novedades/lista/{IdItem?}', 'Administracion\NovedadesController@getNovedadesItem');
 });
 Route::get('/{optional?}', function () {
 return view('app');
