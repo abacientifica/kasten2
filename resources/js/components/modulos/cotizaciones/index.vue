@@ -385,7 +385,7 @@ export default {
         },
 
         FiltrosGuardados(return_filtros=false){
-            let url = "/cotizaciones/filtros/usuario/"
+            let url = "/cotizaciones/filtros/usuario"
             axios.get(url).then(response => {
                 let respuesta = response.data.filtros;
                 if(respuesta.FiltrosIndexK2 !=''){
@@ -499,7 +499,7 @@ export default {
         onGridReady(params) {
             let me = this;
             if(!localStorage.getItem('filtros_index_cot') && !localStorage.getItem('columnas_index_cot')){
-                let url = "/cotizaciones/filtros/usuario/"
+                let url = "/cotizaciones/filtros/usuario"
                 axios.get(url).then(response => {
                     let respuesta = response.data.filtros;
                     if(respuesta.FiltrosIndexK2 !=''){

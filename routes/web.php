@@ -159,7 +159,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     //Rutas Cotizaciones
     Route::group(['namespace' => 'Cotizaciones'], function() {
-        Route::get('cotizaciones/filtros/usuario/', 'CotizacionesController@FiltrosUsuarioLista');
+        Route::get('cotizaciones/filtros/usuario', 'CotizacionesController@FiltrosUsuarioLista');
         Route::post('cotizaciones/lista', 'CotizacionesController@ListaCotizaciones');
         Route::post('cotizaciones/index/filtros', 'CotizacionesController@GuardarFiltroIndex');
         Route::post('cotizaciones/lista', 'CotizacionesController@ListaCotizaciones');
