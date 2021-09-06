@@ -37,4 +37,8 @@ class Direcciones extends Model
     public function tipo(){
         return $this->hasOne('App\Model\TipoDirecciones','IdTipoDireccion','Tipo');
     }
+
+    public function listaprecios(){
+        return $this->hasOne('App\Model\ListaPrecios','IdListaPrecios','IdListaPreciosDireccion');
+    }
 }

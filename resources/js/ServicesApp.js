@@ -102,4 +102,13 @@ export default class ServicesApp {
         }
     }
 
+    ObtenerFiltrosListaCotizaciones() {
+        let url = "/cotizaciones/filtros/usuario/"
+        let Filtros = [];
+        axios.post(url).then(response => {
+            Filtros.push(response.data.filtros);
+        });
+        return Filtros;
+    }
+
 }

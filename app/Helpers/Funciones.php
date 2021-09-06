@@ -1077,5 +1077,9 @@ class Funciones{
         return $Permisos;
     }
 
+    public static function ArraryToObject($array){
+        return json_decode(json_encode($array, JSON_FORCE_OBJECT));
+    }
+
 
 }

@@ -156,7 +156,18 @@ Route::group(['middleware' => ['auth']], function () {
 
     //Novedades
     Route::get('/novedades/lista/{IdItem?}', 'Administracion\NovedadesController@getNovedadesItem');
+
+    //Rutas Cotizaciones
+    Route::group(['namespace' => 'Cotizaciones'], function() {
+        Route::post('cotizaciones/filtros/usuario/', 'CotizacionesController@FiltrosUsuarioLista');
+        Route::post('cotizaciones/lista', 'CotizacionesController@ListaCotizaciones');
+        Route::post('cotizaciones/index/filtros', 'CotizacionesController@GuardarFiltroIndex');
+        Route::post('cotizaciones/lista', 'CotizacionesController@ListaCotizaciones');
+        Route::get('cotizaciones/ObtenerCotizacion', 'CotizacionesController@ObtenerCotizacion');
+    });
+    
 });
+
 Route::get('/{optional?}', function () {
-return view('app');
+    return view('app');
 })->name('basepath')->where('optional','.*');
