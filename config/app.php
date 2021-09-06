@@ -177,6 +177,7 @@ return [
 
         //Provider funciones
         App\Providers\FuncionesServiceProvider::class,
+        App\Providers\FuncionesCotizacionesServiceProvider::class,
 
 
     ],
@@ -230,8 +231,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Funciones' => App\Helpers\Funciones::class,
-
-
+        'FuncionesCotizaciones'=> App\Helpers\FuncionesCotizaciones::class,
     ],
 
 ];
