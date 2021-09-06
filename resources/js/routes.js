@@ -27,6 +27,10 @@ import PlantillasClientes from './components/modulos/plantillas/index.vue';
 import PlantillasClientesCrear from './components/modulos/plantillas/create.vue';
 import PlantillasClientesVer from './components/modulos/plantillas/ver.vue';
 
+//Cotizaciones
+import Cotizaciones from './components/modulos/cotizaciones/index.vue';
+
+
 //rutas configuracion documentos
 import ConfigurarDocumentos from './components/modulos/configuraciones/configdocumentos.vue';
 
@@ -283,6 +287,20 @@ export default new Router({
                 verificarAcceso(to, from, next);
             }
         },
+
+        //RUTAS COTIZACIONES
+        {
+            path: '/cotizaciones/index',
+            component: Cotizaciones,
+            name: 'cotizaciones.index',
+            props: true,
+            beforeEnter: (to, from, next) => {
+                verificarAcceso(to, from, next);
+            }
+        },
+
+
+
 
         //CONFIGURACION DOCUMENTOS
         {
