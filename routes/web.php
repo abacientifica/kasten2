@@ -23,7 +23,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/usuarios/lista','Administracion\UsuariosController@index');
     Route::get('/usuarios/getUsuario/{id?}','Administracion\UsuariosController@getUsuario');
     Route::put('/usuarios/editar','Administracion\UsuariosController@ActualizarUsuario');
-    Route::post('/usuarios/registrarImagenPerfil','FilesController@GuardarImagenPerfil');
+    //Route::post('/usuarios/registrarImagenPerfil','FilesController@GuardarImagenPerfil');
     Route::put('/usuarios/inactivar/{id?}','Administracion\UsuariosController@InaActivarUsuario');
     Route::put('/usuarios/activar/{id?}','Administracion\UsuariosController@ActivarUsuario');
     Route::put('/usuarios/actualizarpass','Administracion\UsuariosController@ActualizarContrasenas');
@@ -159,7 +159,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     //Rutas Cotizaciones
     Route::group(['namespace' => 'Cotizaciones'], function() {
-        Route::post('cotizaciones/filtros/usuario/', 'CotizacionesController@FiltrosUsuarioLista');
+        Route::get('cotizaciones/filtros/usuario', 'CotizacionesController@FiltrosUsuarioLista');
         Route::post('cotizaciones/lista', 'CotizacionesController@ListaCotizaciones');
         Route::post('cotizaciones/index/filtros', 'CotizacionesController@GuardarFiltroIndex');
         Route::post('cotizaciones/lista', 'CotizacionesController@ListaCotizaciones');
