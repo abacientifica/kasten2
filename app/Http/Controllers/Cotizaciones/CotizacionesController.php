@@ -18,7 +18,7 @@ class CotizacionesController extends Controller
             $limiteDatos = isset($request->params['limite']) ? $request->params['limite'] : null;
             $filtrar = $request->params['set_filtro'];
             if(!$filtrar){
-                $FSaved = $this->FiltrosUsuarioLista($request);
+                $FSaved = \FuncionesCotizaciones::ObtenerFiltrosCotizaciones();
                 $FSaved = $FSaved['filtros'];
                 $filtros = [
                     'FiltroGeneral'=> $FSaved['FiltrosGeneralK2'],
@@ -60,9 +60,9 @@ class CotizacionesController extends Controller
     public function FiltrosUsuarioLista(Request $request){
         if(!$request->ajax()) return  redirect('/');
         try{
-            $FiltrosK = FiltrosCotizaciones::find(\Auth::user()->Usuario);
+            $FiltrosK = \FuncionesCotizaciones::ObtenerFiltrosCotizaciones();
             return[
-                'filtros'=>$FiltrosK
+                'filtros'=>$FiltrosK['filtros']
             ];
         }
         catch(Exception $e){

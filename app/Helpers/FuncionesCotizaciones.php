@@ -42,4 +42,11 @@ class FuncionesCotizaciones {
     public static function TiposSeguimientos(){
         return  DB::select("select * from tipos_seguimientos_cotizacion order by NmTipoSeguimiento");
     }
+
+    public static function ObtenerFiltrosCotizaciones(){
+        $FiltrosK = FiltrosCotizaciones::find(\Auth::user()->Usuario);
+        return [
+            'filtros'=>$FiltrosK
+        ];
+    }
 }
