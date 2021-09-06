@@ -18,7 +18,7 @@ class CotizacionesController extends Controller
             $limiteDatos = isset($request->params['limite']) ? $request->params['limite'] : null;
             $filtrar = $request->params['set_filtro'];
             if(!$filtrar){
-                $FSaved = $this->FiltrosUsuarioLista();
+                $FSaved = $this->FiltrosUsuarioLista($request);
                 $FSaved = $FSaved['filtros'];
                 $filtros = [
                     'FiltroGeneral'=> $FSaved['FiltrosGeneralK2'],
@@ -57,11 +57,21 @@ class CotizacionesController extends Controller
 
     }
 
-    public function FiltrosUsuarioLista(){
-        $FiltrosK = FiltrosCotizaciones::find(\Auth::user()->Usuario);
-        return[
-            'filtros'=>$FiltrosK
-        ];
+    public function FiltrosUsuarioLista(Request $request){
+        if(!$request->ajax()) return  redirect('/');
+        try{
+            $FiltrosK = FiltrosCotizaciones::find(\Auth::user()->Usuario);
+            return[
+                'filtros'=>$FiltrosK
+            ];
+        }
+        catch(Exception $e){
+            return [
+                'filtros'=>[],
+                'status'=>500,
+                'msg'=> 'Ocurrio un error al cargar los filtros '.$e->getMessage()
+            ];
+        }
     }
 
     public function GuardarFiltroIndex(Request $request){
