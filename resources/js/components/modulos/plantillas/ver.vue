@@ -1634,12 +1634,10 @@ export default {
         },
 
         CambioFiltros(params){
-            if(!this.MantenerFiltros){
-                localStorage.removeItem('filtros');
-                let DatosFiltro = JSON.stringify(params.api.getFilterModel());
-                localStorage.setItem('filtros',DatosFiltro);
-                this.GuardarFiltros();
-            }
+            localStorage.removeItem('filtros');
+            let DatosFiltro = JSON.stringify(params.api.getFilterModel());
+            localStorage.setItem('filtros',DatosFiltro);
+            this.GuardarFiltros();
         },
 
         GuardarOrdenColumnas(params){
