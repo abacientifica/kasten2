@@ -4,7 +4,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0 text-dark"></h1>
+                    <h1 class="m-0 text-dark"><div style="display:none" v-text="cambioDoc"></div></h1>
                 </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -74,12 +74,6 @@ export default {
         }
     },
 
-    watch:{
-        IdTipo(valorNuevo,ValrAnterior){
-            console.log(`El valor de tipo era ${ValrAnterior} y fue cambiado por  ${valorNuevo}`);
-        }
-    },
-
     methods: {
         ObtenerTpDocumento(Tp){
             let url = `/documentos/tipo/${Tp}`;
@@ -97,6 +91,7 @@ export default {
     mounted() {
         this.listPermisos = JSON.parse(localStorage.getItem('listPermisosFilterByRolUser'));
         this.ObtenerTpDocumento(this.$attrs.IdTp);
+        console.log(this.$attrs.IdTp)
     },
 }
 </script>
