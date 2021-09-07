@@ -148,10 +148,7 @@ class MovimientosController extends Controller
 
                 $MovimientoDet->save();
             }
-            $arMovimiento->Total = $TotalEnc;
-            $arMovimiento->VrIva = $TotalIvaEnc;
-            $arMovimiento->SubTotal = $SubTotalEnc;
-            $arMovimiento->save();
+            Movimientos::where('IdMovimiento',$arMovimiento->IdMovimiento)->update(['Total' => $TotalEnc,'VrIva'=>$TotalIvaEnc,'SubTotal'=>$SubTotalEnc]);
             DB::commit();
             //Autorizamos el documento
             /*$ValidaAut = \Funciones::AutorizarMovimiento($arMovimiento->IdMovimiento);
