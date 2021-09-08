@@ -413,7 +413,7 @@
                     </el-dialog>
                     </div><hr>
                     <div class="form-group row border" v-if="!OcultarPanel">
-                          <el-descriptions class="margin-top"  :column="8" size="small" border>
+                          <el-descriptions class="margin-top"  :column="8" size="medium" border>
                                 <el-descriptions-item>
                                     <template slot="label">
                                         Id Cot
