@@ -34,7 +34,7 @@
         <div class="form-group row border">
             <div class="col-md-12">
                 <div class="form-group btnagregar ">
-                    <button class="btn btn-success form-control col-md-2" v-if="arraryDetallesMovimiento.length >0" @click="EmitirEventoProductos"><i class="fas fa-plus-square"></i> Crear Pedido</button>
+                    <button class="btn btn-success form-control col-md-2" v-if="arraryDetallesMovimiento.length >0" @click.prevent="EmitirEventoProductos"><i class="fas fa-plus-square"></i> Crear Pedido</button>
                 </div>
             </div>
         </div>
@@ -572,28 +572,28 @@ export default {
         },
 
         EmitirEventoProductos(){
-             Swal.fire({
-                title: 'Estas seguro(a) de crear el pedido ?',
-                showDenyButton: false,
-                showCancelButton: true,
-                confirmButtonText: `Crear`,
-                confirmButtonColor: '#28a745',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    let i
-                    for(i =0;i<this.arraryDetallesMovimiento.length;i++){
-                        this.ValidarDatos(this.arraryDetallesMovimiento[i]);
-                    }
-                    if(this.arrMensajeError.length == 0){
-                        EventBus.$emit('arraryDetallesMovimiento',this.arraryDetallesMovimiento);
-                        console.log("Se emitio el evento registrar detalles");
-                    }
-                    else{
-                        this.modalShowErr = true;
-                    }
+            this.$confirm('Estas seguro(a) de crear el pedido ?', 'Warning', {
+                confirmButtonText: 'Crear',
+                cancelButtonText: 'Cancelar',
+                type: 'warning'
+            }).then(() => {
+                let i
+                for(i =0;i<this.arraryDetallesMovimiento.length;i++){
+                    this.ValidarDatos(this.arraryDetallesMovimiento[i]);
                 }
-            })
+                if(this.arrMensajeError.length == 0){
+                    EventBus.$emit('arraryDetallesMovimiento',this.arraryDetallesMovimiento);
+                    console.log("Se emitio el evento registrar detalles");
+                }
+                else{
+                    this.modalShowErr = true;
+                }
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: 'Operacion cancelada'
+                });          
+            });
         }
     },
 
