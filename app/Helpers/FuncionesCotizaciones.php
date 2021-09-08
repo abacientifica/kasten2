@@ -31,6 +31,27 @@ class FuncionesCotizaciones {
         return $Cotizaciones ? $Cotizaciones : [];
     }
 
+    public static function ObtenerCotizacion($IdCot){
+        try{
+            $Cotizacion = Cotizaciones::select('cotizaciones.*','formulario_cotizacion.UsuarioSolicita','NmCiudad')
+            ->with('cliente','cliente.asesorservcliente','cliente.asesor','direccion','direccion.listaprecios','tipocot','subtipocot','segactual','segactual.tipo')
+            ->LEFTJOIN('terceros','terceros.IdTercero','=','cotizaciones.IdTerceroCotizacion')
+            ->LEFTJOIN('grupos_cotizaciones','cotizaciones.IdGrupoCotizacion','=','grupos_cotizaciones.IdGrupoCotizaciones')
+            ->LEFTJOIN('cotizaciones_tipos','cotizaciones_tipos.IdCotizacionTipo','=','cotizaciones.IdCotizacionTipo')
+            ->LEFTJOIN('cotizaciones_subtipos','cotizaciones_subtipos.IdSubTipoCotizacion','=','cotizaciones.IdCotizacionSubTipo')
+            ->LEFTJOIN('comentarios_seguimientoscot','cotizaciones.IdSeguimientoActual','=','comentarios_seguimientoscot.IdComentario','cotizaciones.IdCotizacion','=','comentarios_seguimientoscot.IdCotizacion')
+            ->LEFTJOIN('direcciones','direcciones.IdDireccion','=','cotizaciones.IdDireccionCotizacion')
+            ->LEFTJOIN('lista_precios','lista_precios.IdListaPrecios','=','direcciones.IdListaPreciosDireccion')
+            ->JOIN('formulario_cotizacion' ,'formulario_cotizacion.IdCotizacion','=','cotizaciones.IdCotizacion')
+            ->LEFTJOIN('ciudades','ciudades.IdCiudad','direcciones.IdCiudad')
+            ->where('cotizaciones.IdCotizacion',$IdCot)->first();
+            return $Cotizacion;
+        }
+        catch(Exception $e){
+            return null;
+        }
+    }
+
     public static function TiposCotizaciones(){
         return  DB::select("select * from cotizaciones_tipos order by NmCotizacionTipo");
     }

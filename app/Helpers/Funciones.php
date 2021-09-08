@@ -923,7 +923,7 @@ class Funciones{
                 $arDctoFinanciero = DB::select($strSql);
             }
             if (Count($arDctoFinanciero) != 0)
-                return $arDctoFinanciero;
+                return $arDctoFinanciero[0];
             else
                 return false;
         } catch (Exception $e) {
