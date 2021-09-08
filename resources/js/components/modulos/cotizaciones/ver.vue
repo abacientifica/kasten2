@@ -413,7 +413,7 @@
                     </el-dialog>
                     </div><hr>
                     <div class="form-group row border" v-if="!OcultarPanel">
-                          <el-descriptions class="margin-top"  :column="6" size="small" border>
+                          <el-descriptions class="margin-top"  :column="8" size="small" border>
                                 <el-descriptions-item>
                                     <template slot="label">
                                         Id Cot
@@ -470,15 +470,15 @@
                                 </el-descriptions-item>
                                 <el-descriptions-item>
                                     <template slot="label">
-                                        Comentarios
-                                    </template>
-                                    {{fillCotizacion.Comentarios}}
-                                </el-descriptions-item>
-                                <el-descriptions-item>
-                                    <template slot="label">
                                         Ver mas
                                     </template>
                                     <button class="btn btn-secondary btn-sm" @click.prevent="InfoAmpliadaCot=true"><i class="fas fa-external-link-square-alt"></i> Ampliar</button>
+                                </el-descriptions-item>
+                                <el-descriptions-item>
+                                    <template slot="label">
+                                        Comentarios
+                                    </template>
+                                    {{fillCotizacion.Comentarios}}
                                 </el-descriptions-item>
                           </el-descriptions>
                         <!--<div class="col-md-3">
