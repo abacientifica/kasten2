@@ -188,6 +188,7 @@ export default {
                     }
                 }]
             },
+            PermisosUser:[],
             filtros: {
                 FiltroGeneral:  '' ,
                 NroCotizacion:'',
@@ -342,6 +343,19 @@ export default {
                 headerClass:'bg-info',
                 headerName: 'Ver',
                 resizable: true,
+                cellRenderer: function(params){
+                    if(me.ValidarPermiso('ver')){
+                        var tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = '<span class="btn btn-info btn-sm"><i class="fas fa-eye"></span>';
+                        return tempDiv;
+                    }
+                    return null;
+                },
+                onCellClicked : function(params){
+                    if(me.ValidarPermiso('ver')){
+                        me.VerCotizacion(params);
+                    }
+                },
                 pinned: 'right',
                 width : 90 ,
             });
@@ -524,10 +538,26 @@ export default {
             }
             
         },
+        // Fin metodos grilla
+        VerCotizacion(params){
+            console.log(params.data.IdCotizacion)
+            let IdCot=params.data.IdCotizacion;
+            this.$router.push({name:'cotizaciones.ver', params: { 'id':IdCot }})
+        },
+
+        ValidarPermiso(permiso){
+            if(this.PermisosUser.includes('cotizaciones.'+permiso) || this.PermisosUser.includes(permiso) || this.PermisosUser.includes('administrador.sistema')){
+                return true;
+            }
+            else{
+                return false;
+            }
+        },
 
     },
 
     mounted() {
+        this.PermisosUser = localStorage.getItem('listPermisosFilterByRolUser');
         this.gridApi = this.gridOptions.api;
         this.gridColumnApi = this.gridOptions.columnApi;
         this.FiltrosGuardados();

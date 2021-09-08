@@ -28,6 +28,9 @@ import PlantillasClientesCrear from './components/modulos/plantillas/create.vue'
 import PlantillasClientesVer from './components/modulos/plantillas/ver.vue';
 
 //Cotizaciones
+import CotizacionesVer from './components/modulos/cotizaciones/ver.vue'
+
+//Cotizaciones
 import Cotizaciones from './components/modulos/cotizaciones/index.vue';
 
 
@@ -45,7 +48,7 @@ import TestSistemas from './components/modulos/test/index.vue';
 
 function verificarAcceso(to, from, next) {
     let authUser = JSON.parse(localStorage.getItem('authUser'));
-    if (authUser && validUsuario()) {
+    if (authUser) {
         let listaPermisosByUser = JSON.parse(localStorage.getItem('listPermisosFilterByRolUser'));
         if (listaPermisosByUser.includes(to.name) || listaPermisosByUser.includes('administrador.sistema') || to.name == 'home.index') {
             next();
@@ -293,6 +296,16 @@ export default new Router({
             path: '/cotizaciones/index',
             component: Cotizaciones,
             name: 'cotizaciones.index',
+            props: true,
+            beforeEnter: (to, from, next) => {
+                verificarAcceso(to, from, next);
+            }
+        },
+
+        {
+            path: '/cotizaciones/ver/:id',
+            component: CotizacionesVer,
+            name: 'cotizaciones.ver',
             props: true,
             beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);

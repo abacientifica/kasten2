@@ -54,7 +54,22 @@ class CotizacionesController extends Controller
     }
 
     public function ObtenerCotizacion(Request $request){
-
+        if(!$request->ajax()) return  redirect('/');
+        try{
+            $Cotizacion = \FuncionesCotizaciones::ObtenerCotizacion($request->IdCotizacion);
+            $DctosFinancieros = \Funciones::DevDctosFinancierosTercero($Cotizacion->IdTerceroCotizacion);
+            return[
+                'cotizacion'=>$Cotizacion,
+                'dctos_fin'=>$DctosFinancieros,
+                'cotizaciones_det'=> []
+            ];
+        }
+        catch(Exception $e){
+            return[
+                'status'=>500,
+                'msg'=> 'Ocurrio un error al cargar '.$e->getMessage()
+            ];
+        }
     }
 
     public function FiltrosUsuarioLista(Request $request){
