@@ -265,7 +265,7 @@ export default {
 
     mounted() {
         this.usuario = JSON.parse(sessionStorage.getItem('authUser'));
-        if(this.usuario.Tipo == 2){
+        if(this.usuario && this.usuario.Tipo == 2){
             this.TituloGrafica = 'Compras';
         }
         this.isLoading = true;

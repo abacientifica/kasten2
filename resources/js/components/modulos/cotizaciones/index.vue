@@ -553,7 +553,6 @@ export default {
         },
         // Fin metodos grilla
         VerCotizacion(params){
-            console.log(params.data.IdCotizacion)
             let IdCot=params.data.IdCotizacion;
             this.$router.push({name:'cotizaciones.ver', params: { 'id':IdCot }})
         },
