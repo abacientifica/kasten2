@@ -18,6 +18,19 @@
         <div class="card card-info">
             <div class="card-header bg-head ">
                 <h3 class="card-title">Criterios de Busqueda</h3>
+                <div class="card-tools">
+                    <div class="row">
+                        <div class="btn-group">
+                            <template v-if="ValidarPermiso('crear')">
+                                <nuevacotizacion :titulo="'Nueva Cotización'"></nuevacotizacion>
+                            </template>
+                            <router-link class="btn btn-info btn-sm" :to="{name:'/tpdocumento/lista/'+12}">
+                                <i class="fas fa-arrow-left"></i> Regresar
+                            </router-link>
+                            <modal :titulo="'Ayudas Cotizaciones'" :iddoc="12" :url="'cotizaciones.index'"></modal>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="card-info">
                 <div class="card-body">
@@ -287,7 +300,7 @@ export default {
                 headerClass:'bg-info',
                 headerName: 'Usuario Solicita',
                 resizable: true,
-                field : 'UsuarioSolicita',
+                field : 'UsuarioSolicitud',
                 sortable: true,
                 filter:true, 
             });

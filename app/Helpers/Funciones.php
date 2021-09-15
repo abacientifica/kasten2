@@ -1,6 +1,7 @@
 <?php
 namespace App\Helpers;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Mail;
 use App\Model\Movimientos;
 use App\Model\MovimientosDet;
@@ -1079,6 +1080,10 @@ class Funciones{
 
     public static function ArraryToObject($array){
         return json_decode(json_encode($array, JSON_FORCE_OBJECT));
+    }
+
+    public static function NombresColumnasTabla($tabla){
+        return Schema::getColumnListing($tabla);
     }
 
 

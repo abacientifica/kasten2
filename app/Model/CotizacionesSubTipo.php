@@ -9,4 +9,6 @@ class CotizacionesSubTipo extends Model
     public $timestamps = false;
     protected $table ='cotizaciones_subtipos';
     protected $primaryKey ='IdSubTipoCotizacion';
+
+    
 }

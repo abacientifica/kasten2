@@ -9,6 +9,8 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use App\Events\UserLogin;
 use App\Events\CheckRegister;
 use App\Events\RegistrarLog;
+use App\Events\NuevaCotizacion;
+use App\Events\EditarCotizacion;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -27,11 +29,15 @@ class EventServiceProvider extends ServiceProvider
         CheckRegister::class=>[
             \App\Listeners\NotificarCheckPlantillas::class,
         ],
-        CheckRegister::class=>[
-            \App\Listeners\NotificarCheckPlantillas::class,
-        ],
         RegistrarLog::class=>[
             \App\Listeners\CrearLog::class,
+        ],
+        NuevaCotizacion::class=>[
+            \App\Listeners\CreateCotizacionesLog::class,
+            \App\Listeners\NotificarEmail::class,
+        ],
+        EditarCotizacion::class=>[
+            \App\Listeners\CreateCotizacionesLog::class,
         ]
     ];
 

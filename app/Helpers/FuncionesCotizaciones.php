@@ -11,7 +11,7 @@ use Illuminate\Pipeline\Pipeline;
 class FuncionesCotizaciones {
 
     public static function ObtenerListaCotizaciones($fiterdata=null,$limiteDatos=100){
-        $Cotizaciones = Cotizaciones::select('cotizaciones.*','formulario_cotizacion.UsuarioSolicita')
+        $Cotizaciones = Cotizaciones::select('cotizaciones.*')
         ->with('cliente','direccion','direccion.listaprecios','tipocot','subtipocot','segactual','segactual.tipo')
         ->LEFTJOIN('terceros','terceros.IdTercero','=','cotizaciones.IdTerceroCotizacion')
         ->LEFTJOIN('grupos_cotizaciones','cotizaciones.IdGrupoCotizacion','=','grupos_cotizaciones.IdGrupoCotizaciones')
@@ -20,7 +20,6 @@ class FuncionesCotizaciones {
         ->LEFTJOIN('comentarios_seguimientoscot','cotizaciones.IdSeguimientoActual','=','comentarios_seguimientoscot.IdComentario','cotizaciones.IdCotizacion','=','comentarios_seguimientoscot.IdCotizacion')
         ->LEFTJOIN('direcciones','direcciones.IdDireccion','=','cotizaciones.IdDireccionCotizacion')
         ->LEFTJOIN('lista_precios','lista_precios.IdListaPrecios','=','direcciones.IdListaPreciosDireccion')
-        ->JOIN('formulario_cotizacion' ,'formulario_cotizacion.IdCotizacion','=','cotizaciones.IdCotizacion')
         ->LEFTJOIN('tipos_seguimientos_cotizacion','tipos_seguimientos_cotizacion.IdTipoSeguimiento','=','comentarios_seguimientoscot.TipoSeguimiento');
         $FiltrosK = FiltrosCotizaciones::find(\Auth::user()->Usuario);
         $pipe = app(Pipeline::class);
@@ -33,7 +32,7 @@ class FuncionesCotizaciones {
 
     public static function ObtenerCotizacion($IdCot){
         try{
-            $Cotizacion = Cotizaciones::select('cotizaciones.*','formulario_cotizacion.UsuarioSolicita','NmCiudad')
+            $Cotizacion = Cotizaciones::select('cotizaciones.*','NmCiudad')
             ->with('cliente','cliente.asesorservcliente','cliente.asesor','direccion','direccion.listaprecios','tipocot','subtipocot','segactual','segactual.tipo')
             ->LEFTJOIN('terceros','terceros.IdTercero','=','cotizaciones.IdTerceroCotizacion')
             ->LEFTJOIN('grupos_cotizaciones','cotizaciones.IdGrupoCotizacion','=','grupos_cotizaciones.IdGrupoCotizaciones')
@@ -42,7 +41,6 @@ class FuncionesCotizaciones {
             ->LEFTJOIN('comentarios_seguimientoscot','cotizaciones.IdSeguimientoActual','=','comentarios_seguimientoscot.IdComentario','cotizaciones.IdCotizacion','=','comentarios_seguimientoscot.IdCotizacion')
             ->LEFTJOIN('direcciones','direcciones.IdDireccion','=','cotizaciones.IdDireccionCotizacion')
             ->LEFTJOIN('lista_precios','lista_precios.IdListaPrecios','=','direcciones.IdListaPreciosDireccion')
-            ->JOIN('formulario_cotizacion' ,'formulario_cotizacion.IdCotizacion','=','cotizaciones.IdCotizacion')
             ->LEFTJOIN('ciudades','ciudades.IdCiudad','direcciones.IdCiudad')
             ->where('cotizaciones.IdCotizacion',$IdCot)->first();
             return $Cotizacion;

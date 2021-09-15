@@ -25,24 +25,22 @@
                         <div class="row">
                             <div class="btn-group">
                                 <template v-if="ValidarPermiso('crear')">
-                                    <router-link class="btn btn-info btn-sm" :to="{name:'cotizaciones.crear'}">
-                                        <i class="fas fa-plus-square"></i> Nueva 
-                                    </router-link>
+                                    <nuevacotizacion :titulo="'Nueva Cotización'"></nuevacotizacion>
                                 </template>
                                 <router-link class="btn btn-info btn-sm" :to="{name:'cotizaciones.index'}">
                                     <i class="fas fa-arrow-left"></i> Regresar
                                 </router-link>
-                                <modal :titulo="'Ayudas Cotizaciones'" :iddoc="12" :url="'cotizaciones.index'"></modal>
+                                <modal :titulo="'Ayudas Cotizaciones'" :iddoc="2" :url="'cotizaciones.index'"></modal>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="col-md-12 btn-group-justified"  style="display:flex" >
-                        <logacciones class="btn-margin-left" :IdMovimiento ="fillCotizacion.IdCotizacion" :IdDocumento="12"></logacciones>
+                        <logacciones class="btn-margin-left" :IdMovimiento ="fillCotizacion.IdCotizacion" :IdDocumento="2"></logacciones>
                         <button class="btn btn-success btn-sm btn-margin-left" v-if="fillCotizacion.Estado!='ANULADA'" @click.prevent="dialogAcciones = !dialogAcciones"><i class="fas fa-grip-horizontal"></i> Menu Acciones</button>
-                        <button class="btn btn-secondary btn-sm btn-margin-left" v-if="OcultarPanel" @click.prevent="OcultarMostrarPanel()"><i class="fas fa-eye"></i> Mostrar Encabezado</button>
-                        <button class="btn btn-secondary btn-sm btn-margin-left" v-if="!OcultarPanel" @click.prevent="OcultarMostrarPanel()"><i class="fas fa-eye-slash"></i> Ocultar Encabezado</button>
+                        <button class="btn btn-secondary btn-sm btn-margin-left" v-if="!OcultarPanel" @click.prevent="OcultarMostrarPanel()"><i class="fas fa-eye"></i> Mostrar Encabezado</button>
+                        <button class="btn btn-secondary btn-sm btn-margin-left" v-else @click.prevent="OcultarMostrarPanel()"><i class="fas fa-eye-slash"></i> Ocultar Encabezado</button>
                         
                     <!--Botones de acciones--> 
                     <el-dialog
@@ -56,14 +54,7 @@
                                 <tr>
                                 <th scope="row">1</th>
                                 <td>
-                                    <vs-tooltip>
-                                        <template #tooltip>
-                                            Edita los datos del encabezado.
-                                        </template>
-                                        <el-button type="primary" round :disabled="(ValidarPermiso('editar') && fillCotizacion.Estado=='DIGITADA') ? false : true"  @click.prevent="abrirModalEditar">
-                                        <i class="fas fa-edit"></i> Editar
-                                        </el-button>
-                                    </vs-tooltip>
+                                    <editarcotizacion :titulo="'Editar Cotización'" :cotizacion="fillCotizacion"></editarcotizacion>
                                 </td>
                                 <td>
                                     <vs-tooltip>
@@ -102,7 +93,7 @@
                                 </td>
                                 </tr>
                                 <tr>
-                                <th scope="row">3</th>
+                                <!--<th scope="row">3</th>
                                 <td>
                                     <vs-tooltip>
                                         <template #tooltip>Sirve para crear una plantilla con los mismos datos. </template>
@@ -161,7 +152,7 @@
                                         <template #tooltip>Corre factores de otras plantillas donde coincida la unidad. </template>
                                         <el-button type="primary" round :disabled="(ValidarPermiso('correrfactores') && fillCotizacion.Estado=='DIGITADA') ? false : true" @click.prevent="AbriModalCorrerFactores = true"><i class="fas fa-running"></i> Correr Factores</el-button>
                                     </vs-tooltip>
-                                </td>
+                                </td>-->
                                 </tr>
                             </tbody>
                         </table>
@@ -348,13 +339,13 @@
                                         <template slot="label">
                                             Cliente
                                         </template>
-                                        {{fillCotizacion.IdTercero+' '+fillCotizacion.NombreCorto}}
+                                        {{fillCotizacion.cliente.IdTercero+' '+fillCotizacion.cliente.NombreCorto}}
                                     </el-descriptions-item>
                                     <el-descriptions-item>
                                         <template slot="label">
                                             Dirección
                                         </template>
-                                        {{fillCotizacion.direccion.IdDireccion+' '+fillCotizacion.direccion.Nombre}}
+                                        {{fillCotizacion.direccion.IdDireccion+' '+fillCotizacion.direccion.Direccion+' '+fillCotizacion.direccion.NmDireccion}}
                                     </el-descriptions-item>
                                     <el-descriptions-item>
                                         <template slot="label">
@@ -412,69 +403,70 @@
                         </span>
                     </el-dialog>
                     </div><hr>
-                    <div class="form-group row border" v-if="!OcultarPanel">
-                          <el-descriptions class="margin-top"  :column="8" size="medium" border>
-                                <el-descriptions-item>
+                    <div class="form-group row border" v-if="OcultarPanel">
+                        
+                          <el-descriptions class="margin-top"  :column="4" direction="vertical">
+                                <el-descriptions-item label-class-name="titulo-descripcion">
                                     <template slot="label">
                                         Id Cot
                                     </template>
                                     {{fillCotizacion.IdCotizacion}}
                                 </el-descriptions-item>
-                                <el-descriptions-item>
+                                <el-descriptions-item label-class-name="titulo-descripcion">
                                     <template slot="label">
                                         Nro. Cot
                                     </template>
                                     {{fillCotizacion.NroCotizacion}}
                                 </el-descriptions-item>
-                                <el-descriptions-item>
+                                <el-descriptions-item label-class-name="titulo-descripcion">
                                     <template slot="label">
                                         Nombre
                                     </template>
                                     {{fillCotizacion.NmCotizacion}}
                                 </el-descriptions-item>
-                                <el-descriptions-item>
+                                <el-descriptions-item label-class-name="titulo-descripcion">
                                     <template slot="label">
                                         Dirección
                                     </template>
                                     {{fillCotizacion.direccion['Direccion']}}
                                 </el-descriptions-item>
-                                <el-descriptions-item>
+                                <el-descriptions-item label-class-name="titulo-descripcion">
                                     <template slot="label">
                                         Fecha
                                     </template>
                                     {{moment(fillCotizacion.FechaCotizacion).format('MMMM DD YYYY, h:mm:ss a')}}
                                 </el-descriptions-item>
-                                <el-descriptions-item>
+                                <el-descriptions-item label-class-name="titulo-descripcion">
                                     <template slot="label">
                                         Vig. Oferta
                                     </template>
                                     {{moment(fillCotizacion.FhDesde).format('MMM DD YYYY')}} hasta {{moment(fillCotizacion.FhHasta).format('MMM DD YYYY')}}
                                 </el-descriptions-item>
-                                <el-descriptions-item>
+                                <el-descriptions-item label-class-name="titulo-descripcion">
                                     <template slot="label">
                                         Fh. Oferta Hasta
                                     </template>
                                     {{moment(fillCotizacion.FechaOfertaHasta).format('MMMM DD YYYY')}}
                                 </el-descriptions-item>
-                                <el-descriptions-item>
+                                <el-descriptions-item label-class-name="titulo-descripcion">
                                     <template slot="label">
                                         Valida Precios
                                     </template>
                                     {{fillCotizacion.cliente.ValidarPrecios == 1 ? 'SI':'NO'}}
                                 </el-descriptions-item>
-                                <el-descriptions-item>
+                                <el-descriptions-item label-class-name="titulo-descripcion">
                                     <template slot="label">
                                         Estado Cliente
                                     </template>
                                     {{(fillCotizacion.cliente.Inactivo == 1 ? 'Inactivo':'Activo')}}
                                 </el-descriptions-item>
-                                <el-descriptions-item>
+                                <el-descriptions-item label-class-name="titulo-descripcion">
                                     <template slot="label">
                                         Ver mas
                                     </template>
                                     <button class="btn btn-secondary btn-sm" @click.prevent="InfoAmpliadaCot=true"><i class="fas fa-external-link-square-alt"></i> Ampliar</button>
                                 </el-descriptions-item>
-                                <el-descriptions-item>
+                                <el-descriptions-item label-class-name="titulo-descripcion">
                                     <template slot="label">
                                         Comentarios
                                     </template>
@@ -576,7 +568,7 @@ export default {
             fillCotizacion:null,
             DctosFrosCliente:null,
             servicios:restService,
-            OcultarPanel:true,
+            OcultarPanel:false,
             dialogAcciones:false,
             moment:moment,
             //Variables dialogs
@@ -632,9 +624,18 @@ export default {
         },
     },
     mounted() {
+        EventBus.$on('CotizacionEdit',data=>{
+            console.log(data)
+            this.fillCotizacion = data;
+        });
         this.PermisosUser = localStorage.getItem('listPermisosFilterByRolUser');
         this.CargarCotizacion();
         let PanelOculto = localStorage.getItem('panelOculto') ? this.OcultarPanel = PanelOculto :false;
     },
 }
 </script>
+<style>
+.titulo-descripcion{
+    font-weight: bold !important;
+}
+</style>

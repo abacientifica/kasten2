@@ -82,7 +82,15 @@ export default {
             axios.get(url).then((response)=>{
                 let respuesta = response.data;
                 me.TpDocumento = respuesta.tpdocumento;
-                me.arrDocumentos =  me.TpDocumento.documentos;
+                let Docs =  me.TpDocumento.documentos;
+                me.arrDocumentos = Docs.filter(function(e){
+                    if(e.Indexk2){
+                        return e;
+                    }
+                })
+                if(me.arrDocumentos.length == 1){
+                    this.$router.push({name: me.arrDocumentos[0].Indexk2}).catch(error=>{});
+                }
             }).catch((error)=>{
 
             })
