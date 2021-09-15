@@ -89,7 +89,7 @@ class MovimientosController extends Controller
                 $Tercero = Terceros::findOrFail(\Auth::user()->IdTercero);
             }
             
-            $arMovimiento = new  Movimientos;
+            $arMovimiento = new  Movimientos();
             $arMovimiento->IdDocumento = $Doc->IdDocumento;
             $arMovimiento->TpDocumento = $Doc->Tp;
             $arMovimiento->Fecha = date('Y-m-d H:i:s');

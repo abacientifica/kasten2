@@ -95,15 +95,27 @@ class ControladorGeneral extends Controller
         if(!$request->ajax())  return  redirect('/'); 
         $IdMovimiento = $request->nIdMovimiento;
         $IdDocumento = $request->nIdDocumento;
-        if($IdDocumento && $IdDocumento != 93 || !isset($IdDocumento)){
-            $sql = "select log.*, acciones.NmAccion
-                FROM log LEFT JOIN acciones ON log.IdAccion = acciones.IdAccion
-                WHERE IdMovimiento=" . $IdMovimiento;
-        }
-        else if($IdDocumento && $IdDocumento == 93){
-            $sql="select log_plantillas.*,NmAccion from log_plantillas
-                     LEFT JOIN acciones on acciones.IdAccion = log_plantillas.IdAccion
-                     where IdPlantilla =".$IdMovimiento;
+        $sql ='';
+        switch($IdDocumento){
+            case 93;
+            $sql = "select log_plantillas.*,NmAccion from log_plantillas
+                    LEFT JOIN acciones on acciones.IdAccion = log_plantillas.IdAccion
+                    where IdPlantilla =".$IdMovimiento;
+            break;
+
+            case 2;
+            $sql = "select log_cotizaciones.*,NmAccion from log_cotizaciones
+                    LEFT JOIN acciones on acciones.IdAccion = log_cotizaciones.IdAccion
+                    where IdCotizacion =".$IdMovimiento;
+            break;
+
+            default :
+                $sql = "select log.*, acciones.NmAccion
+                    FROM log LEFT JOIN acciones ON log.IdAccion = acciones.IdAccion
+                    WHERE IdMovimiento=" . $IdMovimiento;
+                break;
+            
+
         }
         $Datos = DB::select($sql);
         return [

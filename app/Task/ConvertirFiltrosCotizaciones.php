@@ -17,9 +17,19 @@ class ConvertirFiltrosCotizaciones {
             if($Filtros->FiltroGeneral){
                 $FSaved->FiltrosGeneralK2 = $Filtros->FiltroGeneral;
                 $FiltroGen = explode(' ',$Filtros->FiltroGeneral." ");
+                $Cont=0;
                 foreach($FiltroGen as $Filt){
-                    $FiltrosActuales = $FiltrosActuales->where(DB::raw("concat_ws(' ',cotizaciones.IdCotizacion,cotizaciones.NroCotizacion,terceros.NombreCorto,CONVERT(NmCotizacionTipo USING utf8),CONVERT(NmTipoSeguimiento USING utf8),CONVERT(NmSubTipoCotizacion USING utf8),CONVERT(cotizaciones.Estado USING utf8),UsuarioSolicita,CONVERT(cotizaciones.Usuario USING utf8))")
-                    ,'like','%'.$Filt.'%');
+                    if($Filt){
+                        if($Cont ==0){
+                            $FiltrosActuales = $FiltrosActuales->where(DB::raw("concat_ws(' ',cotizaciones.IdCotizacion,cotizaciones.NroCotizacion,terceros.NombreCorto,CONVERT(NmCotizacionTipo USING utf8),CONVERT(NmTipoSeguimiento USING utf8),CONVERT(NmSubTipoCotizacion USING utf8),CONVERT(cotizaciones.Estado USING utf8),CONVERT(cotizaciones.Usuario USING utf8),CONVERT(UsuarioSolicitud USING utf8) )")
+                            ,'like','%'.$Filt.'%');
+                        }
+                        else{
+                            $FiltrosActuales = $FiltrosActuales->orwhere(DB::raw("concat_ws(' ',cotizaciones.IdCotizacion,cotizaciones.NroCotizacion,terceros.NombreCorto,CONVERT(NmCotizacionTipo USING utf8),CONVERT(NmTipoSeguimiento USING utf8),CONVERT(NmSubTipoCotizacion USING utf8),CONVERT(cotizaciones.Estado USING utf8),CONVERT(cotizaciones.Usuario USING utf8),CONVERT(UsuarioSolicitud USING utf8) )")
+                            ,'like','%'.$Filt.'%');
+                        }
+                    }
+                    $Cont++;
                 }
             }
             else{
@@ -65,8 +75,6 @@ class ConvertirFiltrosCotizaciones {
                 $Fecha2 = next($Filtros->fRangoFecha);
                 $FSaved->RangoFecha1 = $Fecha1;
                 $FSaved->RangoFecha2 = $Fecha2;
-                //$Fecha1 = Carbon::createFromFormat("Y-m-d",$Fecha1)->toDateString();
-                //$Fecha2 = Carbon::createFromFormat('Y-m-d',$Fecha2)->toDateString();
                 $FiltrosActuales = $FiltrosActuales->whereBetween("cotizaciones.FechaCotizacion",[$Fecha1,$Fecha2]);
             }
             else{
@@ -81,6 +89,8 @@ class ConvertirFiltrosCotizaciones {
             }
             $FSaved->save();
             $data = $FiltrosActuales;
+            $FiltrosActuales->groupBy('cotizaciones.IdCotizacion');
+            $FiltrosActuales->OrderBy('NmTipoSeguimiento','ASC')->OrderBy('FechaCotizacion','DESC')->take($FSaved->Limite);
             return $next($FiltrosActuales);
         }
         else{

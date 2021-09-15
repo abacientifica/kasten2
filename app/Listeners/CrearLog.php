@@ -5,7 +5,6 @@ namespace App\Listeners;
 use App\Events\RegistrarLog;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use App\Model\LogPlantillas;
 use App\Model\Log;
 
 class CrearLog

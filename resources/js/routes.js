@@ -29,6 +29,7 @@ import PlantillasClientesVer from './components/modulos/plantillas/ver.vue';
 
 //Cotizaciones
 import CotizacionesVer from './components/modulos/cotizaciones/ver.vue'
+import CotizacionesCrear from './components/modulos/cotizaciones/create.vue'
 
 //Cotizaciones
 import Cotizaciones from './components/modulos/cotizaciones/index.vue';
@@ -306,6 +307,16 @@ export default new Router({
             path: '/cotizaciones/ver/:id',
             component: CotizacionesVer,
             name: 'cotizaciones.ver',
+            props: true,
+            beforeEnter: (to, from, next) => {
+                verificarAcceso(to, from, next);
+            }
+        },
+
+        {
+            path: '/cotizaciones/crear',
+            component: CotizacionesCrear,
+            name: 'cotizaciones.crear',
             props: true,
             beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);

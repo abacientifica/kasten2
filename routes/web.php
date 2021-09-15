@@ -164,7 +164,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('cotizaciones/lista', 'CotizacionesController@ListaCotizaciones');
         Route::post('cotizaciones/index/filtros', 'CotizacionesController@GuardarFiltroIndex');
         Route::post('cotizaciones/lista', 'CotizacionesController@ListaCotizaciones');
-        Route::get('cotizaciones/ObtenerCotizacion', 'CotizacionesController@ObtenerCotizacion');
+        Route::get('cotizaciones/ObtenerCotizacion/{ IdCotizacion ?}', 'CotizacionesController@ObtenerCotizacion');
+        Route::get('cotizaciones/getTiposCotizaciones', 'TiposController@getTiposCotizaciones');
+        Route::post('cotizaciones/crear', 'CotizacionesController@CrearCotizacion');
+        Route::put('cotizaciones/actualizar', 'CotizacionesController@Actualizar');
     });
     
 });

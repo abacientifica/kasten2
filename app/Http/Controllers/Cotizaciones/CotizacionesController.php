@@ -8,9 +8,115 @@ use Illuminate\Support\Facades\DB;
 use App\Model\Cotizaciones;
 use App\Model\CotizacionesDet;
 use App\Model\FiltrosCotizaciones;
+use App\Events\NuevaCotizacion;
+use App\Events\EditarCotizacion;
 
-class CotizacionesController extends Controller
+class CotizacionesController extends Controller 
 {
+    public function CrearCotizacion(Request $request){
+        if(!$request->ajax()) return  redirect('/');
+        $DatosForm = \Funciones::ArraryToObject($request->params['formNewCot']);
+        try{
+            DB::beginTransaction();
+            $Cotizacion = New Cotizaciones();
+            $Cotizacion->FechaCreacion = date('Y-m-d H:i:s');
+            $Cotizacion->FechaCotizacion = date('Y-m-d H:i:s');
+            $Cotizacion->FechaDesde = $DatosForm->VigDesde;
+            $Cotizacion->FechaHasta = $DatosForm->VigHasta;
+            $Cotizacion->IdTerceroCotizacion = $DatosForm->IdTercero;
+            $Cotizacion->IdDireccionCotizacion = $DatosForm->IdDireccion;
+            $Cotizacion->IdCotizacionTipo = $DatosForm->IdTipo;
+            $Cotizacion->IdCotizacionSubTipo = $DatosForm->IdSubTipo;
+            $Cotizacion->Soporte = $DatosForm->soporteCot;
+            $Cotizacion->NmCotizacion = $DatosForm->nombreCot;
+            $Cotizacion->ContactoCotizacion = $DatosForm->contactoCot;
+            $Cotizacion->EmailCotizacion = $DatosForm->emailCot;
+            $Cotizacion->Plazo = 0;
+            $Cotizacion->Estado = 'DIGITADA';
+            $Cotizacion->Usuario = \Auth::user()->Usuario;
+            $Cotizacion->Comentarios = $DatosForm->comentarioCot;
+            $Cotizacion->CondDevolucion = $DatosForm->comentarioDev;
+            $Cotizacion->TiempoEntrega = $DatosForm->tiempoEntrega;
+            $Cotizacion->TipoTiempoEntrega = $DatosForm->tpEntrega;
+            $Cotizacion->IdDocumento = 2;
+            $Cotizacion->Digitalizado = 0;
+            $Cotizacion->PerteneceContrato = 0;
+            $Cotizacion->AsesorCotizacion = $DatosForm->IdAsesor;
+            $Cotizacion->save();
+            $Log = [
+                'IdAccion'=>8,
+                'IdCotizacion'=>$Cotizacion->IdCotizacion
+            ];
+            event(new NuevaCotizacion($Log,$Cotizacion));
+            DB::commit();
+            return[
+                'status'=>201,
+                'msg'=>'La cotización se creo correctamente con el ID '.$Cotizacion->IdCotizacion,
+                'IdCotizacion'=>$Cotizacion->IdCotizacion
+                
+            ];
+        }
+        catch(Exception $e){
+            DB::rollBack();
+            return[
+                'status'=>500,
+                'msg'=>'Ocurrio un error al crear la cotización. '.$e->getMessage()
+            ];
+        }
+    }
+
+    public function Actualizar(Request $request){
+        if(!$request->ajax()) return  redirect('/');
+        $DatosForm = \Funciones::ArraryToObject($request->params['formEditCot']);
+        try{
+            DB::beginTransaction();
+            $Cotizacion =  Cotizaciones::find($DatosForm->IdCotizacion);
+            $DatosOld = Cotizaciones::find($DatosForm->IdCotizacion);
+            $Cotizacion->FechaDesde = $DatosForm->VigDesde;
+            $Cotizacion->FechaHasta = $DatosForm->VigHasta;
+            $Cotizacion->IdTerceroCotizacion = $DatosForm->IdTercero;
+            $Cotizacion->IdDireccionCotizacion = $DatosForm->IdDireccion;
+            $Cotizacion->IdCotizacionTipo = $DatosForm->IdTipo;
+            $Cotizacion->IdCotizacionSubTipo = $DatosForm->IdSubTipo;
+            $Cotizacion->Soporte = $DatosForm->soporteCot;
+            $Cotizacion->NmCotizacion = $DatosForm->nombreCot;
+            $Cotizacion->ContactoCotizacion = $DatosForm->contactoCot;
+            $Cotizacion->EmailCotizacion = $DatosForm->emailCot;
+            $Cotizacion->Comentarios = $DatosForm->comentarioCot;
+            $Cotizacion->CondDevolucion = $DatosForm->comentarioDev;
+            $Cotizacion->TiempoEntrega = $DatosForm->tiempoEntrega;
+            $Cotizacion->TipoTiempoEntrega = $DatosForm->tpEntrega;
+            $Cotizacion->AsesorCotizacion = $DatosForm->IdAsesor;
+            $Cotizacion->Plazo = $DatosForm->Plazo;
+            $Cotizacion->DctoFin = $DatosForm->DctoFro;
+            $Cotizacion->DiasDctoFin = $DatosForm->DiasDcto;
+            $Cotizacion->PerteneceContrato = $DatosForm->PerteneceCCto;
+            $Cotizacion->TpPrecio = $DatosForm->TpPrecio;
+            $Cotizacion->RequiereGestion = $DatosForm->RequiereGestion;
+            $Cotizacion->PlazoGestion = $DatosForm->PlazoGestion;
+            $Cotizacion->save();
+            event(new EditarCotizacion($Cotizacion,$DatosOld));
+            $Log = [
+                'IdAccion'=>8,
+                'Cotizacion'=>$Cotizacion->IdCotizacion
+            ];
+            //event(new EditarCotizacion($Log,$Cotizacion,$cotizacionOld));
+            DB::commit();
+            return[
+                'status'=>201,
+                'msg'=>'La cotización se edito correctamente.',
+                'Cotizacion'=>\FuncionesCotizaciones::ObtenerCotizacion($Cotizacion->IdCotizacion)
+                
+            ];
+        }
+        catch(Exception $e){
+            DB::rollBack();
+            return[
+                'status'=>500,
+                'msg'=>'Ocurrio un error al editar la cotización. '.$e->getMessage()
+            ];
+        }
+    }
     public function ListaCotizaciones(Request $request){
         if(!$request->ajax()) return  redirect('/');
         try{
