@@ -64,7 +64,7 @@ export default {
     },
 
     mounted() {
-        console.log(this.totalData)
+        //console.log(this.totalData)
     },
 }
 </script>
