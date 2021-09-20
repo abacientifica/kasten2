@@ -131,6 +131,7 @@ export default {
                 nPrecio:0,
                 nIva:0,
                 nCantidad:0,
+                NoValidaCantMinVenta:0
             },
             filtroProd:'',
             tituloModal:'',

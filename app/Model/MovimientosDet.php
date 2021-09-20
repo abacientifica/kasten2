@@ -71,4 +71,8 @@ class MovimientosDet extends Model
     public function item(){
         return $this->hasOne('App\Model\Item','Id_Item','Id_Item');
     }
+
+    public function listaprecios(){
+        return $this->hasOne(\App\Model\ListaPreciosDet::class,'IdListaPreciosDet','IdLista');
+    }
 }

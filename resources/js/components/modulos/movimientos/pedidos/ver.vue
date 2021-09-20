@@ -578,12 +578,17 @@ export default {
                     this.arrMensajeError.push("La cantidad del cod "+articulo.Id_Item+" debe ser mayor a 0");
                 }
 
-                if(articulo.CantMinimaVenta > articulo.Cantidad && this.direccion[0].tipo.NoValidaCantMinVenta  == 0){
+                if(articulo.CantMinimaVenta > articulo.Cantidad && this.direccion[0].tipo.NoValidaCantMinVenta  == 0 && articulo.listaprecios.NoValidaCantMinVenta ==0){
                     this.arrMensajeError.push("La cantidad minima de venta del cod "+articulo.Id_Item+" es "+articulo.CantMinimaVenta);
                 }
 
                 if(articulo.Cantidad >0  && this.Is_Float((articulo.Cantidad / articulo.item.listacostosdet.CantMinimaVenta))){
-                    this.arrMensajeError.push("La cantidad minima de venta es "+articulo.item.listacostosdet.CantMinimaVenta+", debe ser igual o multiplos de esta");
+                    if(articulo.listaprecios.NoValidaCantMinVenta ==0){
+                        this.arrMensajeError.push("La cantidad minima de venta es "+articulo.item.listacostosdet.CantMinimaVenta+", debe ser igual o multiplos de esta");
+                    }
+                    else{
+                        this.arrMensajeError.push("La cantidad debe ser un numero entero.");
+                    }
                 }
 
                 if(this.Is_Float(articulo.Cantidad)){
