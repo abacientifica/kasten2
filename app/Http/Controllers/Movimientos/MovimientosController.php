@@ -56,7 +56,7 @@ class MovimientosController extends Controller
             $Movimiento = $Movimiento->where('IdTercero',\Auth::user()->IdTercero);
         }
         $Movimiento = $Movimiento->get();
-        $MovimientosDet = MovimientosDet::with('item','item.listacostosdet','item.listacostosdet.marca')->where('IdMovimiento',$request->IdMov)->where('IdDocumento',$request->IdDoc)->get();
+        $MovimientosDet = MovimientosDet::with('listaprecios','item','item.listacostosdet','item.listacostosdet.marca')->where('IdMovimiento',$request->IdMov)->where('IdDocumento',$request->IdDoc)->get();
         if(is_countable($Movimiento) && count($Movimiento)>0){
             return[
                 'movimiento'=>$Movimiento,
@@ -149,6 +149,7 @@ class MovimientosController extends Controller
                 $MovimientoDet->save();
             }
             Movimientos::where('IdMovimiento',$arMovimiento->IdMovimiento)->update(['Total' => $TotalEnc,'VrIva'=>$TotalIvaEnc,'SubTotal'=>$SubTotalEnc]);
+            \Funciones::CrearLog(8, $arMovimiento->IdMovimiento, \Auth::user()->Usuario);
             DB::commit();
             //Autorizamos el documento
             /*$ValidaAut = \Funciones::AutorizarMovimiento($arMovimiento->IdMovimiento);
@@ -160,7 +161,6 @@ class MovimientosController extends Controller
             $DatosCliente = \Funciones::ObtenerTercero($arMovimiento->IdTercero);
             $strMensaje = "El usuario  " . \Auth::user()->Nombres . " " . \Auth::user()->Apellidos . " de la institución " . $DatosCliente[0]->NombreCorto . " acaba de autorizar el pedido externo " . $arMovimiento->IdMovimiento;
             \Funciones::EnviarEmail('Autorización Pedido Externo','auxsistemas@aba.com.co',$strMensaje);*/
-            \Funciones::CrearLog(8, $arMovimiento->IdMovimiento, \Auth::user()->Usuario);
             return [
                 'movimiento'=>$arMovimiento->IdMovimiento,
                 'msg'=>"El ".$Doc->Nombre." ha sido creado con exito",

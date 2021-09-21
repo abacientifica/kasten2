@@ -74,7 +74,7 @@
                             <td v-text="detalle.UMV"></td>
                             <td class="texto-derecha" v-text="detalle.CantMinimaVenta"></td>
                             <td>
-                                <input type="number" v-model="detalle.Cantidad" class="form-control" :style="detalle.Cantidad <= 0 || detalle.Cantidad < 1 ? 'border: 2px solid red;':''">
+                                <input type="number" v-model="detalle.Cantidad" class="form-control" :style="detalle.Cantidad <= 0 || detalle.Cantidad < 1 || Is_Float(detalle.Cantidad) ? 'border: 2px solid red;':''">
                             </td>
                             <td class="texto-derecha" v-text="FormatoMoneda(detalle.Precio,2)"></td>
                             <td class="texto-derecha" v-text="FormatoMoneda(detalle.Iva,2)"></td>
@@ -248,7 +248,9 @@ export default {
                 cReferencia:'',
                 nCantidad:0,
                 nCantMinimaVenta:0,
-                nIdLista:''
+                nIdLista:'',
+                NoValidaCantMinVenta:0
+
             },
             filtroProd:'',
             tituloModal:'',
@@ -323,7 +325,8 @@ export default {
                     me.fillProdNuevo.cNmMarca = respuesta.NmMarca;
                     me.fillProdNuevo.nCantMinimaVenta = respuesta.CantMinimaVenta;
                     me.fillProdNuevo.nCantidad = 1;
-                    me.fillProdNuevo.nIdLista = respuesta.IdListaPreciosDet
+                    me.fillProdNuevo.nIdLista = respuesta.IdListaPreciosDet,
+                    me.fillProdNuevo.NoValidaCantMinVenta = respuesta.NoValidaCantMinVenta
                 }
                 else{
                     me.$vs.notification({
@@ -408,7 +411,8 @@ export default {
                     Iva:articulo.Iva,
                     UMM:articulo.UMM,
                     UMV:articulo.UMV,
-                    IdLista : articulo.IdListaPreciosDet
+                    IdLista : articulo.IdListaPreciosDet,
+                    NoValidaCantMinVenta:articulo.NoValidaCantMinVenta
                 });
                 Swal.fire({
                     icon :'success',
@@ -425,14 +429,22 @@ export default {
             if(articulo.Cantidad <=0){
                 this.arrMensajeError.push("La cantidad del cod "+articulo.IId_Item+" debe ser mayor a 0");
             }
-            if(articulo.CantMinimaVenta > articulo.Cantidad && this.direccion[0].tipo.NoValidaCantMinVenta  == 0){
+            if(articulo.CantMinimaVenta > articulo.Cantidad && this.direccion[0].tipo.NoValidaCantMinVenta  == 0 && articulo.NoValidaCantMinVenta ==0){
                 this.arrMensajeError.push("La cantidad minima de venta del cod "+articulo.IId_Item+" es "+articulo.CantMinimaVenta);
             }
             if(this.Is_Float(articulo.Cantidad)){
-                this.arrMensajeError.push("La cantidad minima de venta es "+articulo.CantMinimaVenta+", debe ser igual o multiplos de esta");
+                if(articulo.NoValidaCantMinVenta ==0){
+                    this.arrMensajeError.push("La cantidad minima de venta es "+articulo.CantMinimaVenta+", debe ser igual o multiplos de esta");
+                }else{
+                    this.arrMensajeError.push("La cantidad debe ser un numero entero.");
+                }
             }
             if(articulo.Cantidad >0 && this.direccion[0].tipo.NoValidaCantMinVenta  == 0 && this.Is_Float((articulo.Cantidad / articulo.CantMinimaVenta))){
-                this.arrMensajeError.push("La cantidad minima de venta es "+articulo.CantMinimaVenta+", debe ser igual o multiplos de esta");
+                if(articulo.NoValidaCantMinVenta ==0){
+                    this.arrMensajeError.push("La cantidad minima de venta es "+articulo.CantMinimaVenta+", debe ser igual o multiplos de esta");
+                }else{
+                    this.arrMensajeError.push("La cantidad debe ser un numero entero.");
+                }
             }
             if(articulo.IdLista == '' || articulo.IdLista == 0 ){
                 this.arrMensajeError.push("El cod "+articulo.IId_Item+" no quedo bien enlazado, debes quitarlo y volverlo agregar si el problema continúa comunicarse con el areá de soporte");
@@ -493,7 +505,7 @@ export default {
         },
 
         agregarDetalle(){
-            if(this.fillProdNuevo.nIdItem != 0  && !this.ValidarProductoExiste(this.fillProdNuevo.nIdItem)){
+            if(this.fillProdNuevo.nIdItem  && !this.ValidarProductoExiste(this.fillProdNuevo.nIdItem)){
                 this.arraryDetallesMovimiento.push({
                     'Id_Item':this.fillProdNuevo.nIdItem,
                     'Descripcion':this.fillProdNuevo.cDescripcion,
@@ -507,6 +519,7 @@ export default {
                     'Cantidad':this.fillProdNuevo.nCantidad,
                     'CantMinimaVenta':this.fillProdNuevo.nCantMinimaVenta,
                     'IdLista':this.fillProdNuevo.nIdLista,
+                    'NoValidaCantMinVenta':this.fillProdNuevo.NoValidaCantMinVenta
                 });
 
                 let prodNuevo = this.fillProdNuevo;
@@ -520,8 +533,9 @@ export default {
                 prodNuevo.cUMM='';
                 prodNuevo.cReferencia='';
                 prodNuevo.nCantidad=0;
-                prodNuevo.nCantMinimaVenta=0,
-                prodNuevo.nIdLista=''
+                prodNuevo.nCantMinimaVenta=0;
+                prodNuevo.nIdLista='';
+                prodNuevo.NoValidaCantMinVenta=0;
             }
         },
 
