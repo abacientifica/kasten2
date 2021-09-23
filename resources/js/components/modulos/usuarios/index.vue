@@ -38,7 +38,7 @@
                 <div class="card-body">
                 <div class="container-fluid">
                     <div class="card card-info">
-                    <div class="card-header">
+                    <div class="card-header bg-info">
                         <h3 class="card-title">Criterios de Busqueda</h3>
                     </div>
                     <div class="card-info">
@@ -632,7 +632,7 @@ export default {
                 this.tituloModal ="Actualizar Usuario "+ data.Nombres;
                 this.fillCrearUsuario.cUsuario = data.Usuario;
                 this.fillCrearUsuario.nIdtercero = data.IdTercero;
-                this.fillCrearUsuario.cContrasena = data.Contrasena;
+                this.fillCrearUsuario.cContrasena = data.Contrasena ? data.Contrasena : '';
                 this.fillCrearUsuario.cNombres = data.Nombres;
                 this.fillCrearUsuario.cApellidos = data.Apellidos;
                 this.fillCrearUsuario.cCargo = data.Cargo;
