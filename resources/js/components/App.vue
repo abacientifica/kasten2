@@ -68,7 +68,8 @@ export default {
         //Con json.parse recuperamos un arreglo de json.
         //console.log(JSON.parse(sessionStorage.getItem('listPermisosFilterByRolUser')));
         this.listPermisosFilterByRolUser = localStorage.getItem('listPermisosFilterByRolUser');
-        //console.log(this.listPermisosFilterByRolUser)
+       
+        //Cuando se cambian los permisos ejecutamos este evento 
         EventBus.$on('notififyRolPermisosByUser',data =>{
             console.log("Evento ejecutado desde component App.vue")
             this.listPermisosFilterByRolUser = data;
