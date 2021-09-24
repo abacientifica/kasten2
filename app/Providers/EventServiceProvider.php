@@ -11,6 +11,7 @@ use App\Events\CheckRegister;
 use App\Events\RegistrarLog;
 use App\Events\NuevaCotizacion;
 use App\Events\EditarCotizacion;
+use App\Events\CambioRol;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -38,7 +39,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         EditarCotizacion::class=>[
             \App\Listeners\CreateCotizacionesLog::class,
-        ]
+        ],
     ];
 
     /**

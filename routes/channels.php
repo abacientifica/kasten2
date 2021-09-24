@@ -14,7 +14,11 @@ Broadcast::channel('escribiendo', function ($user) {
 });
 
 Broadcast::channel('logout.{Usuario}', function ($user,$id) {
-     return (string) $user->Usuario ===  (string) $id;
+    return (string) $user->Usuario ===  (string) $id;
+});
+
+Broadcast::channel('cambiorol.{Usuario}', function ($user,$id) {
+    return (string) $user->Usuario ===  (string) $id;
 });
 /*Broadcast::channel('App.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;

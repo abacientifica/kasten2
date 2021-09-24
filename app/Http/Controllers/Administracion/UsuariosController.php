@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Events\LogoutUser;
+use App\Events\CambioRol;
 use App\User;
 
 class UsuariosController extends Controller {
@@ -80,10 +81,10 @@ class UsuariosController extends Controller {
                 $Usuario->imagen = '/storage/users/'.$imageName;
             }
             $Usuario->save();
+            broadcast(new CambioRol($Usuario));
             return[
                 'usuario'=>$Usuario
             ];
-
         }
         else{
             return[
