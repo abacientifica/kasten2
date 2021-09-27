@@ -158,7 +158,7 @@
 </template>
 <script>
 export default {
-    props: ['ruta', 'usuario','listPermisos' ],
+    props: ['ruta', 'usuario','listPermisos'],
     data() {
         return {
             fullscreenloading:false,
@@ -191,6 +191,8 @@ export default {
         getTiposDocumentos(){
             let me = this;
             var url = '/documentos/tipos/lista'
+            this.tiposDocs = [];
+            me.NumDocs =0;
             axios.get(url).then(response => {
                 let respuesta = response.data;
                 //me.tiposDocs = respuesta.tpdocumentos;
@@ -214,6 +216,9 @@ export default {
     mounted() {
         this.rutas = this.ruta
         this.getTiposDocumentos();
+        EventBus.$on('actualizarTpDocs',data =>{
+            this.getTiposDocumentos();
+        });
     },
 }
 </script>
