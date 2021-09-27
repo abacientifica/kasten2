@@ -32,6 +32,6 @@ class CambioPermisos
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('cambio-permisos.'.$usuario);
+        return new PrivateChannel('cambiorol.'.$this->usuario['Usuario']);
     }
 }

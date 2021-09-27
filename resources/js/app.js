@@ -173,16 +173,16 @@ const app = new Vue({
 
         RefrescarPermisos() {
             let usuario = JSON.parse(sessionStorage.getItem('authUser'));
-            let url = "/permiso/ObtenerPermisosByUsuario";
+            let url = "/permiso/ObtenerPermisosUsuario";
             axios.get(url, {
                 params: {
-                    'nIdRol': usuario.IdRol,
-                    'cUsuario': usuario.Usuario
+                    'cUsuario': usuario.Usuario,
                 }
             }).then((response) => {
                 let Datos = response.data;
+                //console.log({ Datos })
                 this.listaPermisosByUser = Datos.permisos;
-                this.filterPermisosByUsuario();
+                this.filterPermisosByUsuario(Datos.permisos);
             }).catch(error => {
                 console.log(error)
                 if (error.response.status == 401) {
@@ -195,15 +195,17 @@ const app = new Vue({
         },
 
 
-        filterPermisosByUsuario() {
+        filterPermisosByUsuario(ListPermisos) {
             let me = this;
-            me.listaPermisosByUser.map(function(x, y) {
+            let listaPermisos = []
+            ListPermisos.map(function(x, y) {
                 if (x.slug != null) {
-                    me.listPermisosFilter.push(x.slug);
+                    listaPermisos.push(x.slug);
                 }
             })
-            sessionStorage.setItem('listPermisosFilterByRolUser', JSON.stringify(me.listPermisosFilter));
-            EventBus.$emit("notififyRolPermisosByUser", sessionStorage.getItem('listPermisosFilterByRolUser'));
+            sessionStorage.setItem('listPermisosFilterByRolUser', JSON.stringify(listaPermisos));
+            EventBus.$emit("permisosActualizados", JSON.stringify(listaPermisos));
+            //EventBus.$emit("notififyRolPermisosByUser", sessionStorage.getItem('listPermisosFilterByRolUser'));
         },
 
         ...mapActions('PermisosUsuario', ['SET_PERMISOS']),
@@ -242,6 +244,12 @@ const app = new Vue({
                     }
                 })
             });
+
+
+            Echo.private(`cambiorol.${this.usuario.Usuario}`).listen('CambioRol', (e) => {
+                this.RefrescarPermisos();
+            });
+
         }
     },
 

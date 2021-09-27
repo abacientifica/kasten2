@@ -7,6 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Model\Permisos;
 use App\Model\PermisosUsuario;
 use Illuminate\Support\Facades\DB;
+use App\Events\CambioRol;
+use App\User;
+
 class PermisosController extends Controller
 {
     public function index(Request $request){
@@ -75,6 +78,7 @@ class PermisosController extends Controller
         if(!$request->ajax()) return redirect("/");
         $Permisos = $request->listPermisosFilter;
         $Usuario = $request->cUsuario;
+        $User = User::find($Usuario);
         if(sizeof($Permisos)>0){
             try {
                 DB::beginTransaction();
@@ -88,6 +92,7 @@ class PermisosController extends Controller
                     }   
                 }
                 DB::commit();
+                broadcast(new CambioRol($User));
                 return ['status'=>201,'msg'=>"Permisos Actualizados"];
             } catch (Exception $e) {
                 DB::rollBack();
