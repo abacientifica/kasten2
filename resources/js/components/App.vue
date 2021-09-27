@@ -73,6 +73,14 @@ export default {
         EventBus.$on('notififyRolPermisosByUser',data =>{
             console.log("Evento ejecutado desde component App.vue")
             this.listPermisosFilterByRolUser = data;
+            
+        });
+        EventBus.$on('permisosActualizados',data =>{
+            console.log("Evento ejecutado desde component App.vue")
+            this.listPermisosFilterByRolUser= "['']";
+            this.listPermisosFilterByRolUser = data;
+            sessionStorage.setItem('listPermisosFilterByRolUser', JSON.stringify(data));
+            EventBus.$emit('actualizarTpDocs',true);
         });
     },
 }
