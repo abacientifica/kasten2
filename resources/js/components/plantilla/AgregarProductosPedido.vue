@@ -442,8 +442,6 @@ export default {
             if(articulo.Cantidad >0 && this.direccion[0].tipo.NoValidaCantMinVenta  == 0 && this.Is_Float((articulo.Cantidad / articulo.CantMinimaVenta))){
                 if(articulo.NoValidaCantMinVenta ==0){
                     this.arrMensajeError.push("La cantidad minima de venta es "+articulo.CantMinimaVenta+", debe ser igual o multiplos de esta");
-                }else{
-                    this.arrMensajeError.push("La cantidad debe ser un numero entero.");
                 }
             }
             if(articulo.IdLista == '' || articulo.IdLista == 0 ){
