@@ -83,6 +83,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/plantillas/clientes/GuardarFiltro','Plantillas\PlantillasClientesController@GuardarFiltro');
     Route::get('/plantillas/clientes/ObtenerFiltro','Plantillas\PlantillasClientesController@ObtenerFiltro');
     Route::put('/plantillas/clientes/CorrerFactores','Plantillas\PlantillasClientesController@CorrerFactoresPlantilla');
+    Route::put('/plantillas/clientes/CorrerCostos','Plantillas\PlantillasClientesController@CorrerCostos');
+
 
     //Lista chequeo plantillas
     Route::get('/plantillas/listachequeo/{IdPlantilla}','Administracion\CheckController@GetListaCheck');

@@ -21,7 +21,12 @@ use App\Model\LogCotizaciones;
 use App\Exception\Handler;
 
 class Funciones{
-
+    /**
+     * Metodo enviar Correo
+     * @subject adjunto
+     * @for email o emails destino
+     * @mensaje cuerpo del correo
+     */
     public static function EnviarEmail($subject,$for,$mensaje){
         try{
             Mail::send('mail.enviarcorreo',['mensaje'=>$mensaje], function($msj) use($subject,$for)
@@ -37,16 +42,28 @@ class Funciones{
         }
     }
 
+    /**
+     * Retorna el nombre del documento
+     * @Id id del documento
+     */
     public static function NombreDoc($Id){
         $Documento = Documentos::FindOrFail($Id);
         return $Documento->Nombre;
     }
 
+    /**
+     * Obtiene los datos de un tercero
+     * @IdTercero id del tercero
+     */
     public static function ObtenerTercero($IdTercero){
         $tercero = DB::table('terceros')->where('IdTercero','=',$IdTercero)->take(1)->get();
         return $tercero;
     }
 
+    /**
+     * Liquida un movimiento
+     * @IdMovimiento
+     */
     public static function Liquidar($IdMovimiento) {
 
         $arItem = new ItemRecord();
@@ -197,7 +214,10 @@ class Funciones{
         }
     }
 
-
+    /**
+     * Autoriza un movimiento
+     * @IdMovimiento
+     */
     public static function AutorizarMovimiento($IdMovimiento) {
         try{
             $Movimientos = Movimientos::findOrFail($IdMovimiento);
@@ -231,6 +251,10 @@ class Funciones{
         }
     }
 
+    /**
+     * Anula un movimiento
+     * @IdMovimiento
+     */
     public static function AnularMovimiento($IdMovimiento){
         try{
             DB::beginTransaction();
@@ -295,6 +319,10 @@ class Funciones{
         }
     }
 
+    /**
+     * Desautoriza un movimiento
+     * @IdMovimiento
+     */
     public function DesAutorizarMovimiento(Request $request){
         try{
             $Movimiento = Movimientos::findOrFail($IdMovimiento);
@@ -325,6 +353,10 @@ class Funciones{
         }
     }
 
+    /**
+     * Asigna un consecutivo a un movimiento
+     * @IdMovimiento
+     */
     public static function Consecutivo($IdMov) {
         try{
             $Movimiento = Movimientos::findOrFail($IdMov);
@@ -351,6 +383,10 @@ class Funciones{
         }
     }
 
+    /**
+     * Retorna el consecutivo actual de un documento
+     * @IdDocumento
+     */
     public static function SacarConsecutivo($IdDocumento) {
         $Documentos = Documentos::findOrFail($IdDocumento);
         $Consecutivo = $Documentos->Consecutivo;
@@ -359,6 +395,12 @@ class Funciones{
         return $Consecutivo;
     }
 
+    /**
+     * Crea un log de un documento
+     * @IdAccion
+     * @IdMovimiento
+     * @strUsuario
+     */
     public static function CrearLog($IdAccion, $IdMovimiento, $strUsuario) {
         $LogNew = new Log;
         $LogNew->IdAccion = $IdAccion;
@@ -368,6 +410,12 @@ class Funciones{
         $LogNew->save();
     }
 
+    /**
+     * Retorna las cantidades al documento afectado
+     * @IdMovimiento
+     * @AfectaCantRef
+     * @TpDocumento
+     */
     public static function DevolverCantidades($IdMovimiento, $AfectaCantRef, $TpDocumento) {
         if ($AfectaCantRef == 1) {
             if ($TpDocumento == 8) {
@@ -386,6 +434,10 @@ class Funciones{
         }
     }
 
+    /**
+     * Retorna el mime type de un documento
+     * @filename
+     */
     function   mime_content_type($filename) {
 
         $mime_types = array(
@@ -459,6 +511,13 @@ class Funciones{
         }
     }
 
+    /**
+     * Retorna objeto de lista de precios 
+     * @intIdItem 
+     * @intIdTercero 
+     * @intIdDireccion
+     * @IdKit
+     */
     public static function DevListaPreciosDet($intIdItem, $intIdTercero, $intIdDireccion,$IdKit =0) {
         if($IdKit =='' || $IdKit == null){
             $IdKit = 0;
@@ -482,6 +541,10 @@ class Funciones{
         }
     }
 
+    /**
+     * Retorna el tipo de extencion de un archivo
+     * @Mime
+     */
     public static function obteneInformacionArchivo($Mime){
         $Row = '';
         $Mime = str_replace('data:','',$Mime);
@@ -529,6 +592,12 @@ class Funciones{
         ];
     }
 
+    /**
+     * Carga los detalles de plantillas clientes
+     * @IdPlantilla
+     * @IdDoc=83 predeterminado id del documento
+     * @Filtros
+     */
     public static function CargarDetallesPlantillaClientes($IdPlantilla,$IdDoc=83,$Filtros){
         $Sql = "select IdPlantillaDet,plantillas_det.CodCliente,plantillas_det.Grupo,plantillas_det.IdItemCliente,plantillas_det.DescripcionCliente,plantillas_det.MarcaSugerida,plantillas_det.UMCliente,plantillas_det.CantidadConsumo,
                 plantillas_det.ComentariosCliente
@@ -569,7 +638,10 @@ class Funciones{
                                 'pinned'=>$conf->pinned,
                                 'FormatoCelda'=>$conf->FormatoCelda,
                                 'ancho'=>$conf->Ancho,
-                                'edit'=>$conf->editable];
+                                'edit'=>$conf->editable,
+                                'visible'=>$conf->visible
+                            
+                            ];
                             break;
                         }
                     }
@@ -588,6 +660,12 @@ class Funciones{
         ];
     }
 
+    /**
+     * Retorna objetos del filtro de homologacion
+     * @IdTercero
+     * @Criterios
+     * @Filtros
+     */
     public static function DatosHomologarPlantilla($IdTercero,$Criterios,$Filtros){
         $sql = "SELECT lista_costos_prov_det.*, lista_costos_prov.NmListaCostos,
                       lista_costos_prov.CostosCliente, item.UMM, lista_costos_prov.IdTercero as IdProveedor,
@@ -669,6 +747,10 @@ class Funciones{
         return $sql;
     }
 
+    /**
+     * Liquida plantillas clientes
+     * @IdPlantilla
+     */
     public static function ActualizarDatosPlantillaClientes($IdPlantilla){
         try{
             $PlantillaDet = PlantillasDet::where('IdPlantilla',$IdPlantilla)->get();
@@ -737,6 +819,14 @@ class Funciones{
         }
     }
 
+    /**
+     * Crea un log de plantillas clientes
+     * @IdAccion
+     * @IdPlantilla
+     * @IdPlantillaDet
+     * @Comentario
+     * @IdItem
+     */
     public static function CrearLogPlantillas($IdAccion,$IdPlantilla,$IdPlantillaDet=null,$Comentario ='',$IdItem=null){
         $Log = new LogPlantillas();
         $Log->Fecha = date('Y-m-d H:i:s');
@@ -750,6 +840,12 @@ class Funciones{
         return true;
     }
 
+    /**
+     * Comprueba un permiso por el antiguo modulo
+     * @IdDocumento 
+     * @Tipo
+     * @Usuario
+     */
     public static function ComprobarPermiso($IdDocumento, $Tipo, $Usuario) {
         if ( \Auth::user()->Tipo !=1) {
             $Permiso = false;
@@ -864,10 +960,10 @@ class Funciones{
         }
     }
 
-    public static function ConvertirFiltros($Filtros){
-        $cont ==0;
-    }
-
+    /**
+     * Retorna el Id lista de costos principal partiendo de otro
+     * @intIdDetalle
+     */
     public static function DevEnlaceRaizListaCostos($intIdDetalle) {
         $boolEnlace = true;
         $ListaDetAct = ListaCostosProvDet::find($intIdDetalle);
@@ -910,6 +1006,11 @@ class Funciones{
         }
     }
 
+    /**
+     * Retorna objeto de descuentos financieros cliente
+     * @intIdTercero
+     * @Op 
+     */
     public static function DevDctosFinancierosTercero($intIdTercero, $Op = false) {
         try {
             if ($Op) {
@@ -932,6 +1033,10 @@ class Funciones{
         }
     }
 
+    /**
+     * Crea un registro nuevo en cotizaciones
+     * $IdTercero,$IdDireccion,$Tipo,$Subtipo,$PerteneceContrato,$NmCot
+     */
     public static function CrearCotizacion($IdTercero,$IdDireccion,$Tipo,$Subtipo,$PerteneceContrato,$NmCot){
         $Tercero = Terceros::find($IdTercero);
         $DesctoFinanciero = \Funciones::DevDctosFinancierosTercero($IdTercero);
@@ -969,6 +1074,11 @@ class Funciones{
         return $Cotizacion;
     }
 
+    /**
+     * Guarda los detalles desde una plantilla cliente a una cotizacion
+     * @Cotizacion Objeto de cotizacon
+     * @PlantillaDet Objeto de plantilla
+     */
     public static function GuardarDetallesCotizacion($Cotizacion, $PlantillaDet) {
         $LisCosDet = new ListaCostosProvDet();
         $LisCosDet = ListaCostosProvDet::find($PlantillaDet['IdListaCostosDetPlantDet']);
@@ -1028,6 +1138,11 @@ class Funciones{
         return [];
     }
 
+    /**
+     * Obtiene el tipo de margen de una cotizacion
+     * @Tipo
+     * @ListaCostoDet
+     */
     public static function MargenCot($Tipo, $ListaCostoDet) {
         $Margen = 0;
         switch ($Tipo) {
@@ -1046,6 +1161,11 @@ class Funciones{
         return $Margen;
     }
 
+    /**
+     * Crea un log en cotizaciones
+     * @IdAccion
+     * @IdCotizacion
+     */
     public static function CrearLogCotizaciones($IdAccion, $IdCotizacion) {
         try{
             $LogNew = new LogCotizaciones;
@@ -1062,6 +1182,11 @@ class Funciones{
         
     }
 
+    /**
+     * Optiene la lista de chequedo de una plantilla cliente
+     * @IdAccion
+     * @IdCotizacion
+     */
     public static function ObtenerListaChequeo($IdPlantilla){
         $Lista = DB::select("select lista_check_documentos.*,check_plantillas.Usuario,check_plantillas.FhCheck,check_plantillas.Comentarios from lista_check_documentos
                             LEFT JOIN check_plantillas on check_plantillas.Id_Check = lista_check_documentos.Id_Check and check_plantillas.idPlantilla = ".$IdPlantilla." and check_plantillas.Anulado =0
@@ -1069,6 +1194,10 @@ class Funciones{
         return  $Lista;
     }
 
+    /**
+     * Retorna los permisos filtrados por permiso
+     * @Permiso filtro enviado
+     */
     public static function ObtenerUsuariosPermiso($Permiso){
         $Sql = "select permisos.id,permisos.nombre,permisos.slug,permisos_usuario.usuario,usuarios.Email from usuarios
                 LEFT JOIN permisos_usuario on permisos_usuario.usuario = usuarios.Usuario
@@ -1078,13 +1207,65 @@ class Funciones{
         return $Permisos;
     }
 
+    /**
+     * Convierte un tipo array en un objeto
+     * Sirve para trabajar con -> y no con []
+     * @array
+     */
     public static function ArraryToObject($array){
         return json_decode(json_encode($array, JSON_FORCE_OBJECT));
     }
 
+    /**
+     * Retorna el nombre de las columnas de una tabla.
+     * @tabla
+     */
     public static function NombresColumnasTabla($tabla){
         return Schema::getColumnListing($tabla);
     }
+    /**
+     * Retorna objeto con los datos para llenar opciones de correr costos
+     */
+    public static function ObtenerDatosRestablecerCostosPlantillas($IdPlantilla,$IdTercero){
+        
+        $sql = "Select distinct marcas.IdMarca, NmMarca 
+                from plantillas_det 
+                left join lista_costos_prov_det on plantillas_det.IdListaCostosDetPlantDet=lista_costos_prov_det.IdListaCostosProvDet 
+                left join marcas on lista_costos_prov_det.IdMarca=marcas.IdMarca where IdPlantilla=".$IdPlantilla." HAVING  NmMarca is not null order by NmMarca";
+        $Marcas = DB::select($sql);
 
+        $sql = "Select distinct listap.IdListaCostosProv, CONCAT(listap.NmListaCostos,' - ', listap.IdListaCostosProv) as NmListaCostos 
+                from plantillas_det 
+                left join lista_costos_prov_det on plantillas_det.IdListaCostosDetPlantDet=lista_costos_prov_det.IdListaCostosProvDet 
+                left join lista_costos_prov on lista_costos_prov_det.IdListaCostosProv=lista_costos_prov.IdListaCostosProv 
+                LEFT JOIN  item on item.Id_Item = lista_costos_prov_det.Id_Item
+                LEFT JOIN lista_costos_prov_det as listadetp on listadetp.IdListaCostosProvDet = item.IdListaCostosDetItem
+                LEFT JOIN lista_costos_prov as listap on listap.IdListaCostosProv = listadetp.IdListaCostosProv
+                where IdPlantilla=$IdPlantilla HAVING  NmListaCostos is not null  order by NmListaCostos";
+
+        $Listas = DB::select($sql);
+
+        $sql = "Select NmListaCostos, IdListaCostosProv, CONCAT(NmListaCostos,' - ', lista_costos_prov.IdListaCostosProv) as NmListaCostos
+              from lista_costos_prov 
+              where IdTercero = $IdTercero and Inactivo =0 HAVING  NmListaCostos is not null order by NmListaCostos";
+        $ListaEsp = DB::select($sql);
+        return[
+            'marcas'=>$Marcas,
+            'listas'=>$Listas,
+            'listaesp'=>$ListaEsp
+        ];
+    }
+
+    /**
+     * Retorna listado de detalles que 
+     */
+    public static function getDatosPlantillaListaCostos($IdPlantilla,$IdLista){
+        $strSql = "SELECT IdPlantillaDet, IdListaCostosDetPlantDet
+            FROM plantillas_det 
+            LEFT JOIN lista_costos_prov_det on plantillas_det.IdListaCostosDetPlantDet=lista_costos_prov_det.IdListaCostosProvDet
+            WHERE lista_costos_prov_det.IdListaCostosProv=" . $IdLista . " AND  IdPlantilla=" . $IdPlantilla;
+        $Datos = DB::select($strSql);
+        return $Datos;
+    }
 
 }
