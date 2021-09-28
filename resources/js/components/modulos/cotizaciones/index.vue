@@ -24,10 +24,10 @@
                             <template v-if="ValidarPermiso('crear')">
                                 <nuevacotizacion :titulo="'Nueva Cotización'"></nuevacotizacion>
                             </template>
-                            <router-link class="btn btn-info btn-sm" :to="{name:'/tpdocumento/lista/'+12}">
+                            <router-link class="btn btn-info btn-sm" to='/tpdocumento/lista/12'>
                                 <i class="fas fa-arrow-left"></i> Regresar
                             </router-link>
-                            <modal :titulo="'Ayudas Cotizaciones'" :iddoc="12" :url="'cotizaciones.index'"></modal>
+                            <modal :titulo="'Ayudas Cotizaciones'" :iddoc="2" :url="'cotizaciones.index'"></modal>
                         </div>
                     </div>
                 </div>

@@ -97,8 +97,8 @@
                                 </td>
                                 <td>
                                     <vs-tooltip>
-                                        <template #tooltip>Sirve para enlazar los detalles a la lista principal del proveedor </template>
-                                        <el-button type="primary" round :disabled="(ValidarPermiso('restablecercostos') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="RestablecerCostos"> <i class="fas fa-retweet"></i>Restablecer Costos</el-button>
+                                        <template #tooltip>Sirve para enlazar los detalles a la lista principal del proveedor o pasar de una lista general a la especial del cliente</template>
+                                        <el-button type="primary" round :disabled="(ValidarPermiso('restablecercostos') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AbriModalRestablecerCostos = true"> <i class="fas fa-retweet"></i>Restablecer Costos</el-button>
                                     </vs-tooltip>
                                 </td>
                                 </tr>
@@ -518,6 +518,49 @@
                         </el-table>
                     </el-dialog>
 
+                    <el-dialog title="Retablecer Costos " :visible.sync="AbriModalRestablecerCostos" width="65%">
+                   
+                    <div class="form-group row border" >
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Aplicar Lista General</label><br>
+                                <el-button type="primary" @click.prevent="RestablecerCostos" :disabled="ListasGenerales.length<=0">Restablecer Todos</el-button><hr>
+
+                                <label>Desde Lista</label><br>
+                                <el-select v-model="restablecerCostos.idListaDesde" clearable placeholder="Select">
+                                    <el-option
+                                    v-for="item in ListasGenerales"
+                                    :key="item.IdListaCostosProv"
+                                    :label="item.NmListaCostos"
+                                    :value="item.IdListaCostosProv">
+                                    </el-option>
+                                </el-select>
+
+                                <label>A lista</label>
+                                <el-select  clearable v-model="restablecerCostos.idListaHasta" placeholder="Select">
+                                    <el-option
+                                    v-for="item in ListasEspeciales"
+                                    :key="item.IdListaCostosProv"
+                                    :label="item.NmListaCostos"
+                                    :value="item.IdListaCostosProv">
+                                    </el-option>
+                                </el-select>
+
+                                <label>Opciones Items</label><br>
+                                <el-radio v-model="restablecerCostos.opItems" label="opTodos">Todos</el-radio>
+                                <el-radio v-model="restablecerCostos.opItems" label="opSel">Seleccionados</el-radio><br>
+                                <label>Aplicar Costos Proximos</label><br>
+                                <el-switch
+                                    v-model="restablecerCostos.costosProximos"
+                                    active-text="Aplicar"
+                                    inactive-text="No Aplicar">
+                                </el-switch><br>
+                                <el-button type="primary" @click.prevent="CorrerCostos()" :disabled="!restablecerCostos.idListaDesde && !restablecerCostos.idListaHasta && (!restablecerCostos.opTodos || !restablecerCostos.opSeleccionados)">Aplicar</el-button><br>
+                            </div>
+                        </div>
+                    </div>
+                    </el-dialog>
+
 
                     <!--Fin Acciones-->
                     </div><hr>
@@ -867,6 +910,8 @@ export default {
             //Cotizacion
             AbrirModalCotizacion: false,
             
+            //Restablecer Costos
+            AbriModalRestablecerCostos:false,
             FillCrearCot : {
                 CotExist:'',
                 optionsCot: [{
@@ -906,6 +951,19 @@ export default {
             dialogNovedades:false,
             Novedades:[],
             TituloModalNovedad:'',
+
+            //Correr Costos
+            ListasGenerales:[],
+            ListasEspeciales:[],
+            restablecerCostos:{
+                IdPlantilla:this.$attrs.id,
+                idListaDesde:null,
+                idListaHasta:null,
+                opTodos:false,
+                opSeleccionados:false,
+                opItems:['opTodos','opSel'],
+                costosProximos:false
+            }
         }
     },
     watch:{
@@ -1034,11 +1092,14 @@ export default {
             let Filtros = JSON.parse(localStorage.getItem('filtros'));
             let url ="/plantillas/clientes/ObtenerPlantilla/"+this.$attrs.id ;
             let me = this;
+            const loaders = this.loaderk();
             axios.get(url,{params:{
                 'filtros':Filtros
             }}).then(response=>{    
                 this.fillPlantilla = response.data.plantilla;
                 this.fillDetallesPlantilla = response.data.plantillas_det;
+                this.ListasGenerales = response.data.datos_listas.listas;
+                this.ListasEspeciales = response.data.datos_listas.listaesp;
                 if(this.MantenerFiltros){
                     var itemsToUpdate = [];
                     var itemsToDelete = [];
@@ -1113,7 +1174,9 @@ export default {
             //Refrescamos los botones renderizados en la grilla
             this.gridApi.refreshCells({ force: true })
             this.OpcionAccionDets = null;
+            loaders.close();
             }).catch(error =>{
+                loaders.close();
                 console.log(error)
                 if(error.response.status ==401){
                     this.$router.push({name: 'login'})
@@ -2415,6 +2478,30 @@ export default {
                 }
             }
             return true;
+        },
+
+        CorrerCostos(){
+            let me = this;
+            let url = "/plantillas/clientes/CorrerCostos";
+            const loaders = this.loaderk();
+            this.MantenerFiltros = true;
+            axios.put(url,{
+                'restablecerCostos':me.restablecerCostos,
+                'ItemsSeleccionados':me.ItemsSeleccionados
+            }).then(response=>{
+                let respuesta = response.data;
+                me.AlertMensaje(respuesta.msg,1)
+                loaders.close();
+                respuesta.items_actualizados > 0 ? me.listarPlantilla() : this.MantenerFiltros = false;
+                me.restablecerCostos.idListaDesde = null;
+                me.restablecerCostos.idListaHasta = null;
+                me.restablecerCostos.opTodos=false;
+                me.restablecerCostos.opSeleccionados=false;
+                me.restablecerCostos.costosProximos=false;
+            }).catch(error=>{
+                loaders.close();
+                me.AlertMensaje(error,3)
+            })
         }
 
     },

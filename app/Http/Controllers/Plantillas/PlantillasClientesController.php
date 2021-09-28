@@ -59,12 +59,13 @@ class PlantillasClientesController extends Controller
             $Filtros = ($Filtros) ? json_decode($Filtros) : null;
             $Plantillas = Plantillas::with('tercero','direccion','plantillasdet')->find($Id);
             $PlantillasDet = \Funciones::CargarDetallesPlantillaClientes($Id,93,$Filtros);
-            
+            $DatosHomologar = \Funciones::ObtenerDatosRestablecerCostosPlantillas($Plantillas->IdPlantilla,$Plantillas->IdTerceroPlant);
             return[
                 'plantilla'=>$Plantillas,
                 'plantillas_det'=>$PlantillasDet['plantillas_det'],
                 'columnas'=>$PlantillasDet['columnas'],
-                'filtros'=>$Filtros
+                'filtros'=>$Filtros,
+                'datos_listas'=>$DatosHomologar
             ];
         }
         catch(Exception $e){
@@ -1055,6 +1056,67 @@ class PlantillasClientesController extends Controller
             return[
                 'status'=>500,
                 'msg'=>'Ocurrio un error al correr los factores, valida los datos ingresados e intenta nuevamente.',
+            ];
+        }
+    }
+
+    public function CorrerCostos(Request $request){
+        if(!$request->ajax()) return  redirect('/');
+        $Datos = \Funciones::ArraryToObject($request->restablecerCostos);
+        $ItemsSeleccionados = $request->ItemsSeleccionados;
+        $ItemsUpdate =0;
+        if($Datos->idListaDesde && $Datos->idListaHasta){
+            $DatosListaSel = \Funciones::getDatosPlantillaListaCostos($Datos->IdPlantilla,$Datos->idListaDesde);
+            if($DatosListaSel){
+                $Items = \Funciones::ArraryToObject($ItemsSeleccionados);
+                if($Datos->opItems == 'opTodos'){
+                    $Items = PlantillasDet::where('IdPlantilla',$Datos->IdPlantilla)->get();
+                }
+                foreach($Items as $row){
+                    $strSql = "SELECT lista_costos_prov_det.* FROM lista_costos_prov_det WHERE Inactivo = 0 AND IdListaCostosProv=" . $Datos->idListaHasta . " AND IdListaDetReferencia=" . $row->IdListaCostosDetPlantDet;
+                    $DatoDet = DB::select($strSql);
+                    if($DatoDet && $row->Autorizado != 1){
+                        $DatoDet = $DatoDet[0];
+                        $PlantillaDet = PlantillasDet::find($row->IdPlantillaDet);
+                        $PlantillaDet->IdListaCostosDetPlantDet = $DatoDet->IdListaCostosProvDet;
+                        $PlantillaDet->FhDesdeLista = $DatoDet->FhDesde;
+                        $PlantillaDet->FhHastaLista = $DatoDet->FhHasta;
+                        if ($Datos->costosProximos) {
+                            if ($DatoDet->CostoUMMProximo != 0 && $DatoDet->CostoUMMProximo != NULL) {
+                                $PlantillaDet->CostoUMMProximo = $DatoDet->CostoUMMProximo;
+                                $PlantillaDet->FhDesdeLista = $DatoDet->FhDesdeCostoProx;
+                                $PlantillaDet->FhHastaLista = $DatoDet->FhHastaCostoProx;
+                                $PlantillaDet->CProximo = 1;
+                                $PlantillaDet->CProyectado = $DatoDet->CostoProyectado;
+                                $PlantillaDet->save();
+                                $ItemsUpdate++;
+                            }
+                        } else {
+                            if ($DatoDet->CostoUMM != 0) {
+                                $PlantillaDet->CostoUMMProximo = 0;
+                                $PlantillaDet->FhDesdeLista = $DatoDet->FhDesde;
+                                $PlantillaDet->FhHastaLista = $DatoDet->FhHasta;
+                                $PlantillaDet->CProximo =0;
+                                $PlantillaDet->CProyectado = 0;
+                                $PlantillaDet->save();
+                                $ItemsUpdate++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        try {
+            return[
+                'msg'=>'Se actualizaron '.$ItemsUpdate.' detalles.',
+                'status'=>200,
+                'items_actualizados'=>$ItemsUpdate
+            ];
+        }
+        catch(Exception $e){
+            return[
+                'msg'=>'Ocurrio un error al correr el proceso.',
+                'status'=>500
             ];
         }
     }

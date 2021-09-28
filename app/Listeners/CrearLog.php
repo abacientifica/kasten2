@@ -6,6 +6,7 @@ use App\Events\RegistrarLog;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Model\Log;
+use App\Model\LogPlantillas;
 
 class CrearLog
 {
