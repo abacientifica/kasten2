@@ -163,6 +163,22 @@
                                         <el-button type="primary" round :disabled="(ValidarPermiso('correrfactores') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AbriModalCorrerFactores = true"><i class="fas fa-running"></i> Correr Factores</el-button>
                                     </vs-tooltip>
                                 </td>
+                               
+                                </tr>
+                                <tr>
+                                    <th scope="row">5</th>
+                                    <td>
+                                        <vs-tooltip>
+                                            <template #tooltip>Traer items vendidos en un rango de fecha no homologados</template>
+                                            <el-button type="primary" round :disabled="(ValidarPermiso('itemsnohomologados') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AbrirModalItemsHm = true"><i class="fas fa-clipboard-list"></i> Items no Homologados</el-button>
+                                        </vs-tooltip>
+                                    </td>
+                                    <td>
+                                        <vs-tooltip>
+                                            <template #tooltip>Actualizar los totales de la plantilla</template>
+                                            <el-button type="primary" round :disabled="(ValidarPermiso('actualizar') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="ActualizarValoresPlantilla()"><i class="fas fa-retweet"></i> Actualizar </el-button>
+                                        </vs-tooltip>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -561,6 +577,33 @@
                     </div>
                     </el-dialog>
 
+                    <el-dialog title="Agregar Items No Homologados" :visible.sync="AbrirModalItemsHm">
+                        <div class="form-group row border" >
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Selecione un rango de fechas:</label>
+                                    <el-date-picker
+                                            v-model="oRangoFechasItemsNoHm"
+                                            class="form-control"
+                                            type="daterange"
+                                            align="right"
+                                            unlink-panels
+                                            range-separator="A"
+                                            start-placeholder="Desde"
+                                            end-placeholder="Hasta"
+                                            :picker-options="pickerOptions"
+                                            format="yyyy-MM-dd"
+                                            value-format="yyyy-MM-dd">
+                                    </el-date-picker>
+                                </div>
+                            </div>
+                        </div>
+                        <span slot="footer" class="dialog-footer">
+                            <el-button @click="AbrirModalItemsHm = false">Cancelar</el-button>
+                            <el-button type="success" @click="AgregarItemsNoHomologados()">Aplicar</el-button>
+                        </span>
+                    </el-dialog>
+
 
                     <!--Fin Acciones-->
                     </div><hr>
@@ -629,12 +672,12 @@
                             </div>
                         </div>
 
-                        <!--<div class="col-md-3">
+                        <div class="col-md-3">
                             <div class="form-group margen-form-item">
-                                <label class='label-strong margen-label-encabezado'>Año</label>
+                                <label class='label-strong margen-label-encabezado'>Periodo Año-Mes</label>
                                 <p class="p-encabezado" >{{fillPlantilla.Periodo}}</p>
                             </div>
-                        </div>-->
+                        </div>
                         
                         <div class="col-md-3">
                             <div class="form-group margen-form-item">
@@ -663,7 +706,7 @@
                                 :columnDefs="columnDefs"
                                 :rowData="rowData"
                                 :rowSelection="rowSelection"
-                                :menuTabs="['filterMenuTab']"
+                                :autoGroupColumnDef="false"
                                 :editType="editType"
                                 :pagination="true"
                                 :sideBar="sideBar"
@@ -719,7 +762,6 @@ export default {
             //Parametros de configuracion de la grilla
             columnDefs: [],
             rowData: [],
-            autoGroupColumnDef: null,
             paginationPageSize:100,
             //gridOptions: null,
             gridOptions :{
@@ -963,7 +1005,10 @@ export default {
                 opSeleccionados:false,
                 opItems:['opTodos','opSel'],
                 costosProximos:false
-            }
+            },
+            //Items no Homologados
+            AbrirModalItemsHm:false,
+            oRangoFechasItemsNoHm:false
         }
     },
     watch:{
@@ -1171,18 +1216,22 @@ export default {
                 this.rowData = this.fillDetallesPlantilla;
                 this.FillCrearCot.ItemsPlantilla = this.rowData;
             }
+            
             //Refrescamos los botones renderizados en la grilla
             this.gridApi.refreshCells({ force: true })
             this.OpcionAccionDets = null;
             loaders.close();
+            
             }).catch(error =>{
                 loaders.close();
                 console.log(error)
-                if(error.response.status ==401){
+                let msgerror = error.message.split(" ");
+                let coderror = msgerror.find(error => error == '401') ?  msgerror.find(error => error == '401') :  msgerror.find(error => error == '419');
+                coderror =='' ? msgerror.find(error => error == '401') :msgerror.find(error => error == '419');
+                if(coderror == 401 || coderror == 419){
                     this.$router.push({name: 'login'})
                     location.reload();
                     sessionStorage.clear();
-                    this.fullscreenLoading = false;
                 }
             })
         },
@@ -1690,6 +1739,8 @@ export default {
                 this.AlertMensaje(respuesta.msg,1);
                 this.MantenerFiltros = true;
                 this.listarPlantilla(true);
+                let pinnedButtomData = me.generatePinnedButtomData();
+                me.gridApi.setPinnedBottomRowData([pinnedButtomData]);
             }).catch(error=>{
                 console.log(error)
                 this.AlertMensaje('Ocurrio un error al editar ',3);
@@ -1701,6 +1752,38 @@ export default {
             let DatosFiltro = JSON.stringify(params.api.getFilterModel());
             localStorage.setItem('filtros',DatosFiltro);
             this.GuardarFiltros();
+            let pinnedButtomData = this.generatePinnedButtomData();
+            this.gridApi.setPinnedBottomRowData([pinnedButtomData]);
+        },
+
+        generatePinnedButtomData(){
+            let result = {};
+            this.gridColumnApi.getAllGridColumns().forEach(item =>{
+                result[item.colId] = null;
+            });
+            console.log(result)
+            return this.calculatedPinnedButtomData(result);
+        },
+
+        calculatedPinnedButtomData(target){
+            let columnWithAggregation = ['IdPlantillaDet','SubTotal','SubTotalVenta','SubTotalConsumo'];
+            let me = this;
+            columnWithAggregation.forEach(element=>{
+                console.log({'element':element});
+                if(element != 'IdPlantillaDet'){
+                    me.gridApi.forEachNodeAfterFilter(function (rowNode, index){
+                        target[element] += Number(typeof rowNode.data[element] =='number' && rowNode.data[element].toFixed(2));
+                    });
+                    if(target[element]){
+                        target[element] = `${target[element].toFixed(2)}`;
+                    }
+                }
+                else{
+                    target[element] = 'Totales :'
+                }
+                
+            })
+            return target;
         },
 
         GuardarOrdenColumnas(params){
@@ -2044,6 +2127,10 @@ export default {
                 this.fillColumnas.map(function(x,y){
                     if(x.columna != null){
                         let Edit = (x.edit == 'true' && me.fillPlantilla.Estado =='DIGITADA' && me.ValidarPermiso('editardetallles')) ? true: false;
+                        let filtro = x.filtro == 'true' ? true : x.filtro;
+                        if(x.columna){
+                            
+                        }
                         if(x.columna =='AceptaAlternativa'){
                             me.columnDefs.push({
                                 headerClass:'bg-info',
@@ -2052,8 +2139,8 @@ export default {
                                 resizable: true,
                                 field : x.columna,
                                 sortable: true,
-                                filter:true, 
-                                editable: params => params.data.Autorizado != 1 ? Edit :  false, 
+                                filter:filtro, 
+                                editable: params => params.data.Autorizado != 1 && !params.node.rowPinned ? Edit :  false, 
                                 width : 147 ,
                                 cellEditor:'select',
                                 cellEditorParams:{
@@ -2063,7 +2150,12 @@ export default {
                                     ]
                                 },
                                 refData:me.ValAceptaAlt,
-                                cellClassRules:validarClaseCelda
+                                cellClassRules:validarClaseCelda,
+                                cellStyle:(params)=>{
+                                    if(params.node.rowPinned){
+                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold' } ;
+                                    }
+                                }
                             });
                         }
                         else if(x.columna =='ReqMuestras'){
@@ -2074,8 +2166,8 @@ export default {
                                 resizable: true,
                                 field : x.columna,
                                 sortable: true,
-                                filter:true, 
-                                editable: params => params.data.Autorizado != 1 ? Edit :  false, 
+                                filter:filtro, 
+                                editable: params => params.data.Autorizado != 1 && !params.node.rowPinned ? Edit :  false, 
                                 width : 147 ,
                                 cellEditor:'select',
                                 cellEditorParams:{
@@ -2085,7 +2177,12 @@ export default {
                                     ]
                                 },
                                 refData:me.ValReqMuestras,
-                                cellClassRules:validarClaseCelda
+                                cellClassRules:validarClaseCelda,
+                                cellStyle:(params)=>{
+                                    if(params.node.rowPinned){
+                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold' } ;
+                                    }
+                                }
                             });
                         }
                         else if(x.columna =='Revisado'){
@@ -2096,8 +2193,8 @@ export default {
                                 resizable: true,
                                 field : x.columna,
                                 sortable: true,
-                                filter:true, 
-                                editable: params => params.data.Autorizado != 1 ? Edit :  false, 
+                                filter:filtro, 
+                                editable: params => params.data.Autorizado != 1 && !params.node.rowPinned ? Edit :  false, 
                                 width : 147 ,
                                 cellEditor:'select',
                                 cellEditorParams:{
@@ -2107,7 +2204,12 @@ export default {
                                     ]
                                 },
                                 refData:me.ValSolCot,
-                                cellClassRules:validarClaseCelda
+                                cellClassRules:validarClaseCelda,
+                                cellStyle:(params)=>{
+                                    if(params.node.rowPinned){
+                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold' } ;
+                                    }
+                                }
                             });
                         }
                         else if(x.columna =='Autorizado'){
@@ -2118,8 +2220,8 @@ export default {
                                 resizable: true,
                                 field : x.columna,
                                 sortable: true,
-                                filter:true, 
-                                editable: params => (me.fillPlantilla.Estado =='DIGITADA') ? Edit :  false, 
+                                filter:filtro, 
+                                editable: params => (me.fillPlantilla.Estado =='DIGITADA' && !params.node.rowPinned) ? Edit :  false, 
                                 width : 147 ,
                                 cellEditor:'select',
                                 cellEditorParams:{
@@ -2129,7 +2231,12 @@ export default {
                                     ]
                                 },
                                 refData:me.ValAut,
-                                cellClassRules:validarClaseCelda
+                                cellClassRules:validarClaseCelda,
+                                cellStyle:(params)=>{
+                                    if(params.node.rowPinned){
+                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold' } ;
+                                    }
+                                }
                             });
                         }
                         else if(x.columna =='VendidoAnterioridad'){
@@ -2140,10 +2247,15 @@ export default {
                                 resizable: true,
                                 field : x.columna,
                                 sortable: true,
-                                filter:true, 
+                                filter:filtro, 
                                 editable: me.Edit,
                                 refData:me.ValAceptaAlt,
-                                cellClassRules:validarClaseCelda
+                                cellClassRules:validarClaseCelda,
+                                cellStyle:(params)=>{
+                                    if(params.node.rowPinned){
+                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold' } ;
+                                    }
+                                }
                             });
                         }
                         else if(x.columna =='Opciones' && me.fillPlantilla.Estado == 'DIGITADA'){
@@ -2157,10 +2269,12 @@ export default {
                                     let Homologado = params.data.NmListaCostos;
                                     var tempDiv = document.createElement('div');
                                     if(params.data.Autorizado != 1 && (params.data.EnlaceCot <=0 || !params.data.EnlaceCot )){
-                                        if(Homologado){
-                                            tempDiv.innerHTML = '<span  class="btn btn-success btn-sm"><i class="fas fa-search"></span>';
-                                        }else{
-                                            tempDiv.innerHTML = '<span  class="btn btn-primary btn-sm"><i class="fas fa-search"></span>';
+                                        if(!params.node.rowPinned){
+                                            if(Homologado){
+                                                tempDiv.innerHTML = '<span  class="btn btn-success btn-sm"><i class="fas fa-search"></span>';
+                                            }else{
+                                                tempDiv.innerHTML = '<span  class="btn btn-primary btn-sm"><i class="fas fa-search"></span>';
+                                            }
                                         }
                                     }
                                     return tempDiv;
@@ -2170,6 +2284,11 @@ export default {
                                         me.AbrirHomologacion(params);
                                     }
                                 },
+                                cellStyle:(params)=>{
+                                    if(params.node.rowPinned){
+                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold' } ;
+                                    }
+                                }
                             });
                         }
                         else if(x.columna =='Eliminar'  && me.fillPlantilla.Estado == 'DIGITADA'){
@@ -2182,14 +2301,14 @@ export default {
                                 cellRenderer: function(params){
                                     
                                     var tempDiv = document.createElement('div');
-                                    if(params.data.Autorizado != 1){
+                                    if(params.data.Autorizado != 1 && !params.node.rowPinned){
                                         tempDiv.innerHTML =
                                         '<span class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></span>';
                                     }
                                     return tempDiv;
                                 },
                                 onCellClicked : function(params){
-                                    if(params.data.Autorizado != 1){
+                                    if(params.data.Autorizado != 1 && !params.node.rowPinned){
                                         me.EliminarDetalle(params);
                                     }
                                 },
@@ -2205,13 +2324,13 @@ export default {
                                 width : 50,
                                 cellRenderer: function(params){
                                     var tempDiv = document.createElement('div');
-                                    if(params.data.Autorizado != 1){
+                                    if(params.data.Autorizado != 1 && !params.node.rowPinned){
                                         tempDiv.innerHTML = '<span class="btn btn-info btn-sm"><i class="fas fa-edit"></span>';
                                     }
                                     return tempDiv;
                                 },
                                 onCellClicked : function(params){
-                                    if(params.data.Autorizado != 1){
+                                    if(params.data.Autorizado != 1 && !params.node.rowPinned){
                                         me.EditarDetalle(params);
                                     }
                                 },
@@ -2221,9 +2340,17 @@ export default {
                         else if(x.columna =='IdListaCostosDetPlantDet'){
                             me.columnDefs.push({
                                 headerName: 'Id Lista C.',
+                                headerClass:'bg-info',
                                 field : x.columna,
+                                resizable: true, 
+                                filter:filtro, 
                                 width : 50,
                                 hide:true,
+                                cellStyle:(params)=>{
+                                    if(params.node.rowPinned){
+                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold' } ;
+                                    }
+                                }
                             });
                         }
                         else if(x.columna =='IdPlantillaDet'){
@@ -2238,11 +2365,16 @@ export default {
                                 checkboxSelection:true,
                                 valueFormatter: (x.FormatoCelda == 'FormatoMoneda') ? FormatoMoneda: '',
                                 sortable: true,
-                                filter:'agTextColumnFilter', 
+                                filter:filtro, 
                                 editable: Edit, 
                                 tooltipField: x.columna,
                                 cellClassRules:validarClaseCeldaItemNovedad,
                                 width : 147,
+                                cellStyle:(params)=>{
+                                    if(params.node.rowPinned){
+                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold' } ;
+                                    }
+                                }
                             });
                         }
                         else if (x.columna !='Editar' && x.columna !='Eliminar' && x.columna !='Opciones'){ 
@@ -2254,9 +2386,13 @@ export default {
                                 field : x.columna, 
                                 valueFormatter: (x.FormatoCelda == 'FormatoMoneda') ? FormatoMoneda: '',
                                 sortable: true,
-                                filter:'agTextColumnFilter', 
-                                editable: params => params.data.Autorizado != 1 ? Edit :  false, 
+                                filter:filtro, 
+                                editable: params => params.data.Autorizado != 1 && !params.node.rowPinned ? Edit :  false, 
                                 cellStyle:params =>{
+                                    if(params.node.rowPinned){
+                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold' } ;
+                                    }
+
                                     if(x.columna == 'ItemAba' && params.data.Autorizado && params.data.VendidoAnterioridad ){
                                         return {
                                             'background-color': '#7fd47f'
@@ -2265,6 +2401,7 @@ export default {
                                     if(typeof params.value === 'number' || me.Is_Float(params.value) || !isNaN(params.value)){
                                         return { 'text-align': 'right' }
                                     }
+                                    
                                 },
                                 tooltipField: x.columna,
                                 width : 147,
@@ -2276,6 +2413,14 @@ export default {
                                         return ['item-enviado-cot'];
                                     }
                                 },
+                                cellRendererSelector:(params)=>{
+                                    if(params.node.rowPinned){
+                                        return {
+                                            //component: 'customPinnedRowRenderer',
+                                            params: { style: { 'font-style': 'italic','background-color':'red','font-weight': 'bold' } },
+                                        };
+                                    }
+                                }
                             });
                         }
                     }
@@ -2502,6 +2647,66 @@ export default {
                 loaders.close();
                 me.AlertMensaje(error,3)
             })
+        },
+
+        AgregarItemsNoHomologados(){
+            let me = this;
+            let url ="/plantillas/clientes/AgregarNoHomologados";
+            const loader = me.loaderk();
+            axios.put(url,{
+                params:{
+                    'IdPlantilla':me.fillPlantilla.IdPlantilla,
+                    'oRangoFecha':me.oRangoFechasItemsNoHm,
+                }
+            }).then(response=>{    
+                let respuesta = response.data;
+                me.AlertMensaje(respuesta.msg,1);
+                me.MantenerFiltros = false;
+                me.listarPlantilla();
+                loader.close();
+                console.log(respuesta)
+            }).catch(error =>{
+                me.AlertMensaje("Ocurrio un error al generar los no homologados",3);
+                loader.close();
+                console.log(error)
+                let msgerror = error.message.split(" ");
+                let coderror = msgerror.find(error => error == '401') ?  msgerror.find(error => error == '401') :  msgerror.find(error => error == '419');
+                coderror =='' ? msgerror.find(error => error == '401') :msgerror.find(error => error == '419');
+                if(coderror == 401 || coderror == 419){
+                    this.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                }
+            })
+        },
+
+        ActualizarValoresPlantilla(){
+            let me = this;
+            let url ="/plantillas/clientes/Actualizar";
+            const loader = me.loaderk();
+            axios.put(url,{
+                params:{
+                    'IdPlantilla':me.fillPlantilla.IdPlantilla,
+                }
+            }).then(response=>{    
+                let respuesta = response.data;
+                me.AlertMensaje(respuesta.msg,1);
+                me.MantenerFiltros = true;
+                me.listarPlantilla();
+                loader.close();
+            }).catch(error =>{
+                me.AlertMensaje("Ocurrio un error al generar los no homologados",3);
+                loader.close();
+                console.log(error)
+                let msgerror = error.message.split(" ");
+                let coderror = msgerror.find(error => error == '401') ?  msgerror.find(error => error == '401') :  msgerror.find(error => error == '419');
+                coderror =='' ? msgerror.find(error => error == '401') :msgerror.find(error => error == '419');
+                if(coderror == 401 || coderror == 419){
+                    this.$router.push({name: 'login'})
+                    location.reload();
+                    sessionStorage.clear();
+                }
+            })
         }
 
     },
@@ -2509,31 +2714,56 @@ export default {
     
     beforeMount() {
         //Carga de datos del grid
-        let url ="/plantillas/clientes/ObtenerPlantilla/"+ this.$attrs.id;
-        let me = this;
-        axios.get(url).then(response=>{    
-            this.fillPlantilla = response.data.plantilla;
-            this.CargarColumnas(response);
-        });
+        try{
+            let url ="/plantillas/clientes/ObtenerPlantilla/"+ this.$attrs.id;
+            let me = this;
+            axios.get(url).then(response=>{    
+                this.fillPlantilla = response.data.plantilla;
+                this.CargarColumnas(response);
+            });
+        }
+        catch(error){
+            let msgerror = error.message.split(" ");
+            let coderror = msgerror.find(error => error == '401') ?  msgerror.find(error => error == '401') :  msgerror.find(error => error == '419');
+            coderror =='' ? msgerror.find(error => error == '401') :msgerror.find(error => error == '419');
+            if(coderror == 401 || coderror == 419){
+                this.$router.push({name: 'login'})
+                location.reload();
+                sessionStorage.clear();
+            }
+        }
+        
         //Fin carga de datos
     },
     mounted() {
         //this.ObtenerPlantilla(this.$attrs.id);
-        this.PermisosUser = localStorage.getItem('listPermisosFilterByRolUser');
-        this.gridApi = this.gridOptions.api;
-        this.gridColumnApi = this.gridOptions.columnApi;
-        this.gridApi.closeToolPanel();
-        let PanelOculto = localStorage.getItem('panelOculto');
-        if(PanelOculto){
-            this.OcultarPanel = PanelOculto
-        }
-        this.ObtenerFiltros();
+        try{
+            this.PermisosUser = localStorage.getItem('listPermisosFilterByRolUser');
+            this.gridApi = this.gridOptions.api;
+            this.gridColumnApi = this.gridOptions.columnApi;
+            this.gridApi.closeToolPanel();
+            let PanelOculto = localStorage.getItem('panelOculto');
+            if(PanelOculto){
+                this.OcultarPanel = PanelOculto
+            }
+            this.ObtenerFiltros();
 
-        EventBus.$on('arrNovedades',data =>{
-            this.dialogNovedades = !this.dialogNovedades
-            this.TituloModalNovedad = 'Novedades Item',
-            this.Novedades = data;
-        });
+            EventBus.$on('arrNovedades',data =>{
+                this.dialogNovedades = !this.dialogNovedades
+                this.TituloModalNovedad = 'Novedades Item',
+                this.Novedades = data;
+            });
+        }
+        catch(error){
+            let msgerror = error.message.split(" ");
+            let coderror = msgerror.find(error => error == '401') ?  msgerror.find(error => error == '401') :  msgerror.find(error => error == '419');
+            coderror =='' ? msgerror.find(error => error == '401') :msgerror.find(error => error == '419');
+            if(coderror == 401 || coderror == 419){
+                this.$router.push({name: 'login'})
+                location.reload();
+                sessionStorage.clear();
+            }
+        }
     },
     
 }

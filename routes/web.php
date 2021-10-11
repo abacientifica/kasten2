@@ -66,6 +66,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/plantillas/clientes/nueva','Plantillas\PlantillasClientesController@CrearPlantilla');
     Route::get('/plantillas/ObtenerDatosHomolgar','Plantillas\PlantillasClientesController@CargarDatosHomologacion');
     Route::put('/plantillas/clientes/AsignarLista','Plantillas\PlantillasClientesController@AsignarLista');
+    Route::put('/plantillas/clientes/DesligarLista','Plantillas\PlantillasClientesController@DesligarLista');
     Route::put('/plantillas/clientes/GuardarCambiosGrilla','Plantillas\PlantillasClientesController@GuardarDatosEdit');
     Route::put('/plantillas/clientes/Editar','Plantillas\PlantillasClientesController@ActualizarPlantilla');
     Route::put('/plantillas/clientes/Autorizar','Plantillas\PlantillasClientesController@Autorizar');
@@ -84,6 +85,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/plantillas/clientes/ObtenerFiltro','Plantillas\PlantillasClientesController@ObtenerFiltro');
     Route::put('/plantillas/clientes/CorrerFactores','Plantillas\PlantillasClientesController@CorrerFactoresPlantilla');
     Route::put('/plantillas/clientes/CorrerCostos','Plantillas\PlantillasClientesController@CorrerCostos');
+    Route::put('/plantillas/clientes/AgregarNoHomologados','Plantillas\PlantillasClientesController@AgregarItemsNoHomologados');
+    Route::put('/plantillas/clientes/Actualizar','Plantillas\PlantillasClientesController@Actualizar');
 
 
     //Lista chequeo plantillas

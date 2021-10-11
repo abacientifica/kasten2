@@ -8,6 +8,9 @@
                         :title="tituloModal"
                         :closable="false"
                         type="success">
+                        <button type="button" v-if="ItemSel && ItemSel.IdListaCostosDetPlantDet && (ItemSel && ItemSel.Autorizado != 1)" class="btn btn-danger btn-sm" @click.prevent="desligarItem()" >
+                            <i class="fas fa-minus-circle"></i>
+                        </button>
                     </el-alert>
                     <button type="button" class="btn btn-info" v-if="indexItem >0" @click="seleccionarItem('ant')" >
                         <i class="fas fa-arrow-alt-circle-left"></i>
@@ -63,7 +66,7 @@
                                 </tr>
                             </thead>
 
-                            <tbody v-if="listarArticulosPaginate.length >0">
+                            <tbody v-if="listarArticulosPaginate.length >0 && (ItemSel && ItemSel.Autorizado != 1)">
                                 <tr v-for="(articulo,index) in listarArticulosPaginate" :key="index"  >
                                     <td v-text="articulo.Id_Item"></td>
                                     <td v-text="articulo.NmListaCostos"></td>
@@ -99,11 +102,17 @@
                             <tbody v-else>
                                 <tr>
                                     <td colspan="14">
-                                        <vs-alert>
-                                        <template #title>
-                                            Alerta !!
-                                        </template>
-                                            No se encontraron registros con los filtros : {{this.filtros}}
+                                        <vs-alert v-if="ItemSel && ItemSel.Autorizado != 1">
+                                            <template #title>
+                                                Alerta !!
+                                            </template >
+                                                No se encontraron registros con los filtros : {{this.filtros}}
+                                        </vs-alert>
+                                        <vs-alert v-else>
+                                            <template #title>
+                                                Alerta !!
+                                            </template >
+                                                El item se encuentra autorizado por lo cual no puedes cambiar la lista homologada.
                                         </vs-alert>
                                     </td>
                                 </tr>
@@ -183,7 +192,7 @@ export default {
                 value: 'lista_costos_prov_det.RefFabricante',
                 label: 'Referencia'
             }, {
-                value: 'lista_costos_prov_det.CodigoProveedor',
+                value: 'lista_costos_prov_det.CodProveedor',
                 label: 'Cod. Prov'
             },{
                 value: 'lista_costos_prov_det.DescripcionProv',
@@ -223,7 +232,6 @@ export default {
     },
     watch:{
         modalShow(val){
-            console.log(val)
             this.indexFin = this.datos.length;
             this.ItemSel = this.datosItem.data;
             this.indexItem = this.datosItem.childIndex;
@@ -395,6 +403,7 @@ export default {
         enlazarLista(index){
             let Item = this.listarArticulosPaginate[index];
             let me = this;
+            const load = this.loaderk();
             axios.put('/plantillas/clientes/AsignarLista',{
                 params:{
                     'IdPlantillaDet':me.ItemSel.IdPlantillaDet,
@@ -406,6 +415,7 @@ export default {
                 me.ItemSel.IdListaCostosDetPlantDet = Item.IdListaCostosProvDet;
                 me.ItemSel.DescripcionAba = Item.Descripcion;
                 me.ItemSel.ItemAba = Item.Id_Item;
+                load.close();
                 Swal.fire({
                     position: 'top-center',
                     icon: 'success',
@@ -416,6 +426,7 @@ export default {
                 this.listarDatos();
             }).catch(error=>{
                 console.log(error)
+                load.close();
                 Swal.fire({
                     position: 'top-center',
                     icon: 'warning',
@@ -424,7 +435,49 @@ export default {
                     timer: 1300
                 });
             })
-        }
+        },
+
+        desligarItem(){
+            let me = this;
+            const load = this.loaderk();
+            axios.put('/plantillas/clientes/DesligarLista',{
+                params:{
+                    'IdPlantillaDet':me.ItemSel.IdPlantillaDet,
+                    'IdItem':me.ItemSel.ItemAba,
+                }
+            }).then((response)=>{
+                let respuesta = response.data;
+                me.ItemSel = respuesta.detalle;
+                load.close();
+                Swal.fire({
+                    position: 'top-center',
+                    icon: 'success',
+                    title: respuesta.msg,
+                    showConfirmButton: false,
+                    timer: 1300
+                });
+                this.listarDatos();
+            }).catch(error=>{
+                console.log(error)
+                load.close();
+                Swal.fire({
+                    position: 'top-center',
+                    icon: 'warning',
+                    title: 'Ocurrio un error al quitar enlace ',
+                    showConfirmButton: false,
+                    timer: 1300
+                });
+            })
+        },
+
+        loaderk() {
+            return this.$vs.loading({
+                type : 'square',
+                background: '#babaea',
+                color: '#fff',
+                text:'Cargando...'
+            });
+        },
 
     },
     mounted() {

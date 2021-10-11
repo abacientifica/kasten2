@@ -339,10 +339,35 @@ class PlantillasClientesController extends Controller
         $PlantDet->IdListaCostosDetPlantDet = $request->params['IdLista'];
         if ($PlantDet->save()) {
             event(new RegistrarLog(['Tipo'=>1,'IdAccion'=>42,'Id'=>$PlantDet->IdPlantilla,'IdDet'=>$PlantDet->IdPlantillaDet,'IdItem'=>$IdItem,'Comentarios'=>'Homologar '.$IdItem]));
-            \Funciones::ActualizarDatosPlantillaClientes($PlantDet->IdPlantilla);
+            \Funciones::ActualizarDatosPlantillaClientes($PlantDet->IdPlantilla,$PlantDet->IdPlantillaDet);
             return[
                 'status'=>201,
                 'msg'=>"El detalle ha sido homologado"
+            ];
+        }
+        else{
+            return[
+                'status'=>500,
+                'msg'=>"Ocurrio un error"
+            ];
+        }
+    }
+
+    public function DesligarLista(Request $request) {
+        if(!$request->ajax()) return  redirect('/');
+        $PlantDet = new PlantillasDet();
+        $PlantDet = PlantillasDet::find($request->params['IdPlantillaDet']);
+        $IdItem = $request->params['IdItem'];
+        $PlantDet->IdListaCostosDetPlantDet = null;
+        if ($PlantDet->save()) {
+            event(new RegistrarLog(['Tipo'=>1,'IdAccion'=>42,'Id'=>$PlantDet->IdPlantilla,'IdDet'=>$PlantDet->IdPlantillaDet,'IdItem'=>$IdItem,'Comentarios'=>'Des-Homologar '.$IdItem]));
+            \Funciones::ActualizarDatosPlantillaClientes($PlantDet->IdPlantilla,$PlantDet->IdPlantillaDet);
+            $PlantillaDet = \Funciones::CargarDetallesPlantillaClientes($PlantDet->IdPlantilla,93,' and plantillas_det.IdPlantillaDet = '.$PlantDet->IdPlantillaDet);
+            $PlantillaDet = $PlantillaDet['plantillas_det'];
+            return[
+                'status'=>201,
+                'msg'=>"El detalle ha sido des-homologado",
+                'detalle'=>$PlantillaDet[0]
             ];
         }
         else{
@@ -367,8 +392,9 @@ class PlantillasClientesController extends Controller
                 $PlantillaDet->save();
                 $Comentario = "La columna '".$Columna."'  dato anterior era  = ".$DatoAnt." y el dato nuevo es = ".$DatoNuevo;
                 \Funciones::CrearLogPlantillas(16,$PlantillaDet->IdPlantilla,$PlantillaDet->IdPlantillaDet,$Comentario,$PlantillaDet->ItemAba);
+                $ActualizarDetalle = \Funciones::ActualizarDatosPlantillaClientes($PlantillaDet->IdPlantilla,$PlantillaDet->IdPlantillaDet);
+                if(!$ActualizarDetalle) throw new Exception("Ocurrio un error al actualizar los datos");
             }
-            \Funciones::ActualizarDatosPlantillaClientes($PlantillaDet->IdPlantilla);
             DB::commit();
             return [
                 'msg'=>"Los datos del detalle ".$request->params['IdPlantillaDet']." han sido modificados!!",
@@ -567,7 +593,7 @@ class PlantillasClientesController extends Controller
                 $PlantillaDet = PlantillasDet::where('IdPlantilla',$IdPlantilla)->get();
                 foreach ($PlantillaDet as $Detalle) {
                     if ($Detalle->IdListaCostosDetPlantDet == null) {
-                        if ($NroCot) {
+                        if ($NroCot == '0' || $NroCot !='') {
                             $strSql = "SELECT
                                 cotizaciones.IdCotizacion,
                                 cotizaciones_det.IdCotizacionDet,
@@ -583,15 +609,14 @@ class PlantillasClientesController extends Controller
                                 WHERE
                                 cotizaciones_det.IdListaCostosDetCot IS NOT NULL";
 
-                            if ($NroCot >0) {
+                            if ($NroCot !='0' && $nro) {
                                 $strSql = $strSql . " AND cotizaciones.NroCotizacion = " . $NroCot;
                             }
                             if ($Grupo !='') {
                                 $strSql = $strSql . " AND cotizaciones.IdGrupoCotizacion = " . $Grupo;
                             }
                             if ($oFechasCot) {
-                                $strSql = $strSql . " AND cotizaciones.FechaCotizacion >= '" . $oFechasCot[0] . "' AND cotizaciones.FechaCotizacion <= '" . $oFechasCot[1] . "'
-                                                AND cotizaciones.IdTerceroCotizacion = " . $Plantilla->IdTerceroPlant;
+                                $strSql = $strSql . " AND cotizaciones.FechaCotizacion >= '" . $oFechasCot[0] . "' AND cotizaciones.FechaCotizacion <= '" . $oFechasCot[1] . "' AND cotizaciones.IdTerceroCotizacion = " . $Plantilla->IdTerceroPlant;
                             }
                             if ($Detalle->CodCliente != '' || $Detalle->DescripcionCliente != '') {
                                 if ($Detalle->CodCliente != '') {
@@ -600,7 +625,7 @@ class PlantillasClientesController extends Controller
                             }
                             $strSql = $strSql . " ORDER BY cotizaciones.NroCotizacion DESC LIMIT 1";
                             $arBuscarDet = DB::select($strSql);
-                        } else if ($IdPlantilla > 0) {
+                        } else if ($IdPlant == '0' || $IdPlant !='') {
                             $strSql = "SELECT
                                 plantillas.IdPlantilla,
                                 plantillas_det.IdPlantillaDet,
@@ -616,7 +641,7 @@ class PlantillasClientesController extends Controller
                                 plantillas_det.IdListaCostosDetPlantDet IS NOT NULL";
 
                         
-                            if ($IdPlant > 0) {
+                            if ($IdPlant != '0' && $IdPlant !='') {
                                 $strSql = $strSql . " AND plantillas.IdPlantilla = " . $IdPlant;
                             }
                             if ($Grupo !='') {
@@ -632,7 +657,7 @@ class PlantillasClientesController extends Controller
                                 $strSql = $strSql . " AND (plantillas_det.CodCliente = '" . $Detalle->CodCliente . "' OR plantillas_det.DescripcionCliente = '" . $Detalle->DescripcionCliente . "')" . "AND plantillas.IdTerceroPlant  = " . $Plantilla->IdTerceroPlant;                         
                             }
 
-                            $strSql = $strSql . " and plantillas.IdPlantilla != ".$Detalle->IdPlantilla."  ORDER BY plantillas.IdPlantilla DESC LIMIT 1";
+                            $strSql = $strSql . " and plantillas.IdPlantilla != ".$Detalle->IdPlantilla." and  plantillas.Tipo <>1 ORDER BY plantillas.IdPlantilla DESC LIMIT 1";
                             $arBuscarDet = DB::select($strSql);
                         }
 
@@ -655,7 +680,7 @@ class PlantillasClientesController extends Controller
                 foreach ($DetallesSel as $Detalle) {
                     if ($Detalle->IdListaCostosDetPlantDet == null) {
 
-                        if ($NroCot) {
+                        if ($NroCot !='' || $NroCot == '0') {
                             $strSql = "SELECT
                                 cotizaciones.IdCotizacion,
                                 cotizaciones_det.IdCotizacionDet,
@@ -671,7 +696,7 @@ class PlantillasClientesController extends Controller
                                 WHERE
                                 cotizaciones_det.IdListaCostosDetCot IS NOT NULL";
 
-                            if ($NroCot >0) {
+                            if ($NroCot !='0' && $NroCot !='') {
                                 $strSql = $strSql . " AND cotizaciones.NroCotizacion = " . $NroCot;
                             }
                             if ($Grupo !='') {
@@ -688,7 +713,7 @@ class PlantillasClientesController extends Controller
                             }
                             $strSql = $strSql . " ORDER BY cotizaciones.NroCotizacion DESC LIMIT 1";
                             $arBuscarDet = DB::select($strSql);
-                        } else if ($IdPlant) {
+                        } else if ($IdPlant == '0' || $IdPlant != '') {
                             $strSql = "SELECT
                                 plantillas.IdPlantilla,
                                 plantillas_det.IdPlantillaDet,
@@ -704,7 +729,7 @@ class PlantillasClientesController extends Controller
                                 plantillas_det.IdListaCostosDetPlantDet IS NOT NULL";
 
                         
-                            if ($IdPlant > 0) {
+                            if ($IdPlant != '0' && $IdPlant !='') {
                                 $strSql = $strSql . " AND plantillas.IdPlantilla = " . $IdPlant;
                             }
                             if ($Grupo !='') {
@@ -742,6 +767,7 @@ class PlantillasClientesController extends Controller
             return [
                 'msg'=>"El proceso de homologacion ha sido corrido con exito, se actualizaron ".$ItemsHM,
                 'status'=>201,
+                'sql'=>$strSql
             ];
         }
         catch(Exception $e){
@@ -1119,5 +1145,61 @@ class PlantillasClientesController extends Controller
                 'status'=>500
             ];
         }
+    }
+
+    public function AgregarItemsNoHomologados(Request $request){
+        if(!$request->ajax()) return  redirect('/');
+        $IdPlantilla = $request->params['IdPlantilla'];
+        $Fechas = $request->params['oRangoFecha'];
+        $Datos = \Funciones::getVentasClientePlantilla($IdPlantilla,$Fechas[0],$Fechas[1]);
+        $DatosInsert = 0;
+        if($Datos){
+            foreach($Datos as $Row){
+                $DatoNuevo = new PlantillasDet();
+                $DatoNuevo->IdPlantilla = $IdPlantilla;
+                if ($Row->CodTercero) {
+                    $DatoNuevo->CodCliente = $Row->CodTercero;
+                } else {
+                    $DatoNuevo->CodCliente = '';
+                }
+                $DatoNuevo->IdItemCliente = $Row->CodTercero;
+                if ($Row->DescripcionTercero) {
+                    $DatoNuevo->DescripcionCliente = $Row->DescripcionTercero;
+                } else {
+                    $DatoNuevo->DescripcionCliente = '';
+                }
+                if ($Row->UMV) {
+                    $DatoNuevo->UMCliente = $Row->UMV;
+                }
+                $DatoNuevo->IdListaCostosDetPlantDet = $Row->IdListaCostosProvDet;
+                $DatoNuevo->ComentariosHM = "No homologados ".\Auth::user()->Usuario." Fechas $Fechas[0]  $Fechas[1]";
+                $DatoNuevo->save();
+                $DatosInsert++;
+            }
+        }
+        return [
+            'msg'=>'Se insertaron '.$DatosInsert." que no estaban homologados en la plantilla.",
+            'status'=>201
+        ];
+    }
+
+    public function Actualizar(Request $request){
+        if(!$request->ajax()) return  redirect('/');
+        $IdPlantilla = $request->params['IdPlantilla'];
+        try{
+            \Funciones::ActualizarDatosPlantillaClientes($IdPlantilla);
+            return [
+                'msg'=>'Se actualizaron los datos',
+                'status'=>201
+            ];
+        }
+        catch(Exception $e){
+            return [
+                'msg'=>'Ocurrio un error al actualizar los datos '.$e->getMessage(),
+                'status'=>500
+            ];
+        }
+        
+        
     }
 }

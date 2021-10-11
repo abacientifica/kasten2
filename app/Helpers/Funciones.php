@@ -598,8 +598,8 @@ class Funciones{
      * @IdDoc=83 predeterminado id del documento
      * @Filtros
      */
-    public static function CargarDetallesPlantillaClientes($IdPlantilla,$IdDoc=83,$Filtros){
-        $Sql = "select IdPlantillaDet,plantillas_det.CodCliente,plantillas_det.Grupo,plantillas_det.IdItemCliente,plantillas_det.DescripcionCliente,plantillas_det.MarcaSugerida,plantillas_det.UMCliente,plantillas_det.CantidadConsumo,
+    public static function CargarDetallesPlantillaClientes($IdPlantilla,$IdDoc=93,$Filtros){
+        $Sql = "select IdPlantillaDet,plantillas_det.CodCliente,plantillas_det.Grupo,plantillas_det.IdItemCliente,replace(plantillas_det.DescripcionCliente,',','') as DescripcionCliente,plantillas_det.MarcaSugerida,plantillas_det.UMCliente,plantillas_det.CantidadConsumo,
                 plantillas_det.ComentariosCliente
                 ,plantillas_det.PrecioTecho,plantillas_det.PrecioSugerido,plantillas_det.MesesConsumo,plantillas_det.CantConsumoMesDet,IF(plantillas_det.AceptaAlternativa = 1,'1','0') AS  AceptaAlternativa ,
                 plantillas_det.MarcaAsesor, IF(plantillas_det.ReqMuestras = 1,1,0) as ReqMuestras, plantillas_det.CantMuestras ,ComentariosMuestras ,
@@ -618,7 +618,7 @@ class Funciones{
                 LEFT JOIN terceros on terceros.IdTercero = if(lista_costos_prov_det.IdListaDetReferencia is NULL,lista_costos_prov.IdTercero,ListaProv.IdTercero)
                 LEFT JOIN terceros as cliente on cliente.IdTercero = plantillas_det.IdTerceroCliente
                 where plantillas_det.IdPlantilla =" . $IdPlantilla;
-                
+        is_string($Filtros) ? $Sql.= $Filtros : '';
         $PlantillasDet = DB::select($Sql);
 
         $ColumnasConf = DB::select("select * from configuraciones_columnas_documentos_det 
@@ -639,7 +639,8 @@ class Funciones{
                                 'FormatoCelda'=>$conf->FormatoCelda,
                                 'ancho'=>$conf->Ancho,
                                 'edit'=>$conf->editable,
-                                'visible'=>$conf->visible
+                                'visible'=>$conf->visible,
+                                'filtro'=>$conf->filtro
                             
                             ];
                             break;
@@ -648,6 +649,23 @@ class Funciones{
                 }
             }
             $Cols[] = ['columna'=>'Opciones' ,'alias'=>'HM','pinned'=>'right','edit'=>'false'];
+        }
+        else{
+            if(count($ColumnasConf)>0){
+                foreach($ColumnasConf as $conf){
+                    $Cols[] = [
+                        'columna'=>$conf->IdCampo,
+                        'alias'=>$conf->AliasCampo,
+                        'pinned'=>$conf->pinned,
+                        'FormatoCelda'=>$conf->FormatoCelda,
+                        'ancho'=>$conf->Ancho,
+                        'edit'=>$conf->editable,
+                        'visible'=>$conf->visible,
+                        'filtro'=>$conf->filtro
+                    ];
+                }
+                $Cols[] = ['columna'=>'Opciones' ,'alias'=>'HM','pinned'=>'right','edit'=>'false'];
+            }
         }
         
         
@@ -751,41 +769,52 @@ class Funciones{
      * Liquida plantillas clientes
      * @IdPlantilla
      */
-    public static function ActualizarDatosPlantillaClientes($IdPlantilla){
+    public static function ActualizarDatosPlantillaClientes($IdPlantilla,$IdPlantillaDet = null){
         try{
-            $PlantillaDet = PlantillasDet::where('IdPlantilla',$IdPlantilla)->get();
+            if($IdPlantillaDet){
+                $PlantillaDet = PlantillasDet::where('IdPlantillaDet',$IdPlantillaDet)->get();
+            }
+            else{
+                $PlantillaDet = PlantillasDet::where('IdPlantilla',$IdPlantilla)->get();
+            }
             $Plantilla = Plantillas::find($IdPlantilla);
             $DatosActualizados = 0;
             if(count($PlantillaDet)>0){
                 foreach ($PlantillaDet as $PlantillaDet){
-                    if($PlantillaDet->IdListaCostosDetPlantDet !=''){
-                        $LCdet = ListaCostosProvDet::find($PlantillaDet->IdListaCostosDetPlantDet);
+                    if($PlantillaDet){
                         $Costo =0;
-                        if($PlantillaDet->CProximo >0 && $PlantillaDet->CostoUMMProximo >0){
-                            $Costo = $PlantillaDet->CostoUMMProximo;
+                        if($PlantillaDet->IdListaCostosDetPlantDet){
+                            $LCdet = ListaCostosProvDet::find($PlantillaDet->IdListaCostosDetPlantDet);
+                            
+                            if($PlantillaDet->CProximo >0 && $PlantillaDet->CostoUMMProximo >0){
+                                $Costo = $PlantillaDet->CostoUMMProximo;
+                            }
+                            else if ($LCdet){
+                                $Costo = $LCdet->CostoUMM;
+                            }
                         }
-                        else if ($LCdet){
-                            $Costo = $LCdet->CostoUMM;
-                        }
-                        if($PlantillaDet->CantidadConsumo>1 && $PlantillaDet->MesesConsumo>0){
+                        if($PlantillaDet->CantidadConsumo>0 && $PlantillaDet->MesesConsumo>0){
                             $PlantillaDet->CantConsumoMesDet = $PlantillaDet->CantidadConsumo / $PlantillaDet->MesesConsumo;
+                        }
+                        else{
+                            $PlantillaDet->CantConsumoMesDet = 0;
                         }
                         
                         if($PlantillaDet->FactorCliente >0){
-                        $PlantillaDet->CantUMMAbaMes = $PlantillaDet->CantConsumoMesDet / $PlantillaDet->FactorCliente;
+                            $PlantillaDet->CantUMMAbaMes = ($PlantillaDet->CantConsumoMesDet / $PlantillaDet->FactorCliente);
                         }
                         else{
                             $PlantillaDet->CantUMMAbaMes =0;
                         }
                         $PlantillaDet->SubTotal = $PlantillaDet->CantUMMAbaMes * $Costo;
                         if($PlantillaDet->FactorCliente >0){
-                            $PlantillaDet->SubTotalConsumo = $PlantillaDet->CantidadConsumo / $PlantillaDet->FactorCliente * $Costo;
+                            $PlantillaDet->SubTotalConsumo = ($PlantillaDet->CantidadConsumo / $PlantillaDet->FactorCliente) * $Costo;
                         }
                         else{
                             $PlantillaDet->SubTotalConsumo = 0;
                         }
                         if($PlantillaDet->FactorCliente > 0){
-                            $PlantillaDet->PrecioTechoUMM = $PlantillaDet->PrecioTecho * $PlantillaDet->FactorCliente;
+                            $PlantillaDet->PrecioTechoUMM = ($PlantillaDet->PrecioTecho * $PlantillaDet->FactorCliente);
                         }
                         else{
                             $PlantillaDet->PrecioTechoUMM =0;
@@ -1266,6 +1295,26 @@ class Funciones{
             WHERE lista_costos_prov_det.IdListaCostosProv=" . $IdLista . " AND  IdPlantilla=" . $IdPlantilla;
         $Datos = DB::select($strSql);
         return $Datos;
+    }
+
+    public static function getVentasClientePlantilla($IdPlantilla,$Fecha1,$Fecha2){
+        $Plantilla = Plantillas::find($IdPlantilla);
+        $Sql = "select movimientos_det.Id_Item,movimientos_det.SubTotal,movimientos_det.IdLista,NmListaPrecios,lista_costos_prov_det.IdListaCostosProvDet ,lista_precios_det.CodTercero,lista_precios_det.DescripcionTercero,lista_precios_det.UMV   from `movimientos` 
+                LEFT JOIN documentos on documentos.IdDocumento = movimientos.IdDocumento 
+                LEFT JOIN conceptos on conceptos.IdConcepto = movimientos.IdConcepto 
+                LEFT JOIN movimientos_det on movimientos_det.IdMovimiento = movimientos.IdMovimiento 
+                LEFT JOIN lista_precios_det on lista_precios_det.IdListaPreciosDet = movimientos_det.IdLista
+                LEFT JOIN lista_precios on lista_precios.IdListaPrecios = lista_precios_det.IdListaPrecios
+                LEFT JOIN lista_costos_prov_det on lista_costos_prov_det.IdListaCostosProvDet = lista_precios_det.IdListaCostosDet
+                LEFT JOIN lista_costos_prov on lista_costos_prov.IdListaCostosProv = lista_costos_prov_det.IdListaCostosProv
+                where  movimientos.`IdTercero` = ".$Plantilla->IdTerceroPlant." AND `movimientos`.`Impresion` > 0
+                and (movimientos.TpDocumento = 5)
+                and (movimientos.Estado='AUTORIZADA' OR movimientos.Estado='CERRADA' ) and movimientos_det.Id_Item  not in (
+                select if(lista_costos_prov_det.Id_Item,lista_costos_prov_det.Id_Item,0 ) from plantillas_det  LEFT JOIN lista_costos_prov_det on lista_costos_prov_det.IdListaCostosProvDet =  plantillas_det.IdListaCostosDetPlantDet  where IdPlantilla = $IdPlantilla
+                and lista_costos_prov_det.Inactivo =0 ) and (movimientos.FhAutoriza >= "."'".$Fecha1."'"." and movimientos.FhAutoriza <="."'".$Fecha2."')
+                group by movimientos_det.IdMovimientoDet";
+        $ventas=DB::select($Sql); 
+        return $ventas;
     }
 
 }
