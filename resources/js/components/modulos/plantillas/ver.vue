@@ -1216,7 +1216,8 @@ export default {
                 this.rowData = this.fillDetallesPlantilla;
                 this.FillCrearCot.ItemsPlantilla = this.rowData;
             }
-            
+            let pinnedButtomData = this.generatePinnedButtomData();
+            this.gridApi.setPinnedBottomRowData([pinnedButtomData]);
             //Refrescamos los botones renderizados en la grilla
             this.gridApi.refreshCells({ force: true })
             this.OpcionAccionDets = null;
@@ -1625,7 +1626,7 @@ export default {
             else{
                 return false;
             }
-        },
+        },  
 
         Is_Float(num){
             return !isNaN(num) && Math.round(num) != num;
@@ -1920,7 +1921,7 @@ export default {
         },
 
         ValidarPermiso(permiso){
-            if(this.PermisosUser.includes('plantillas_clientes.'+permiso) || this.PermisosUser.includes(permiso) || this.PermisosUser.includes('administrador.sistema')){
+            if(this.PermisosUser.includes('plantillas_clientes.'+permiso) || this.PermisosUser.includes(permiso) || this.PermisosUser.includes('administrador.sistema') || this.PermisosUser.includes('plantillas_cliente_det.'+permiso)){
                 return true;
             }
             else{
@@ -2126,11 +2127,9 @@ export default {
                 this.fillColumnas = response.data.columnas;
                 this.fillColumnas.map(function(x,y){
                     if(x.columna != null){
-                        let Edit = (x.edit == 'true' && me.fillPlantilla.Estado =='DIGITADA' && me.ValidarPermiso('editardetallles')) ? true: false;
+                        let Edit = (x.edit == 'true' && me.fillPlantilla.Estado =='DIGITADA' && (me.ValidarPermiso('editardetallles')  || (x.permiso && me.ValidarPermiso(x.permiso)) )) ? true: false;
                         let filtro = x.filtro == 'true' ? true : x.filtro;
-                        if(x.columna){
-                            
-                        }
+                        
                         if(x.columna =='AceptaAlternativa'){
                             me.columnDefs.push({
                                 headerClass:'bg-info',
@@ -2153,7 +2152,7 @@ export default {
                                 cellClassRules:validarClaseCelda,
                                 cellStyle:(params)=>{
                                     if(params.node.rowPinned){
-                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold' } ;
+                                         return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold','text-align': 'right' } ;
                                     }
                                 }
                             });
@@ -2180,7 +2179,7 @@ export default {
                                 cellClassRules:validarClaseCelda,
                                 cellStyle:(params)=>{
                                     if(params.node.rowPinned){
-                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold' } ;
+                                         return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold','text-align': 'right' } ;
                                     }
                                 }
                             });
@@ -2207,7 +2206,7 @@ export default {
                                 cellClassRules:validarClaseCelda,
                                 cellStyle:(params)=>{
                                     if(params.node.rowPinned){
-                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold' } ;
+                                         return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold','text-align': 'right' } ;
                                     }
                                 }
                             });
@@ -2234,7 +2233,7 @@ export default {
                                 cellClassRules:validarClaseCelda,
                                 cellStyle:(params)=>{
                                     if(params.node.rowPinned){
-                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold' } ;
+                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold','text-align': 'right' } ;
                                     }
                                 }
                             });
@@ -2253,7 +2252,7 @@ export default {
                                 cellClassRules:validarClaseCelda,
                                 cellStyle:(params)=>{
                                     if(params.node.rowPinned){
-                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold' } ;
+                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold','text-align': 'right' } ;
                                     }
                                 }
                             });
@@ -2286,7 +2285,7 @@ export default {
                                 },
                                 cellStyle:(params)=>{
                                     if(params.node.rowPinned){
-                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold' } ;
+                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold','text-align': 'right' } ;
                                     }
                                 }
                             });
@@ -2348,7 +2347,7 @@ export default {
                                 hide:true,
                                 cellStyle:(params)=>{
                                     if(params.node.rowPinned){
-                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold' } ;
+                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold','text-align': 'right' } ;
                                     }
                                 }
                             });
@@ -2372,7 +2371,7 @@ export default {
                                 width : 147,
                                 cellStyle:(params)=>{
                                     if(params.node.rowPinned){
-                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold' } ;
+                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold','text-align': 'right' } ;
                                     }
                                 }
                             });
@@ -2390,7 +2389,7 @@ export default {
                                 editable: params => params.data.Autorizado != 1 && !params.node.rowPinned ? Edit :  false, 
                                 cellStyle:params =>{
                                     if(params.node.rowPinned){
-                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold' } ;
+                                        return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold','text-align': 'right' } ;
                                     }
 
                                     if(x.columna == 'ItemAba' && params.data.Autorizado && params.data.VendidoAnterioridad ){
@@ -2416,8 +2415,7 @@ export default {
                                 cellRendererSelector:(params)=>{
                                     if(params.node.rowPinned){
                                         return {
-                                            //component: 'customPinnedRowRenderer',
-                                            params: { style: { 'font-style': 'italic','background-color':'red','font-weight': 'bold' } },
+                                            params: { style: { 'font-style': 'italic','background-color':'red','font-weight': 'bold','text-align': 'right'} },
                                         };
                                     }
                                 }

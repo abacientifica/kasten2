@@ -640,7 +640,8 @@ class Funciones{
                                 'ancho'=>$conf->Ancho,
                                 'edit'=>$conf->editable,
                                 'visible'=>$conf->visible,
-                                'filtro'=>$conf->filtro
+                                'filtro'=>$conf->filtro,
+                                'permiso'=>$conf->PermisoEditar
                             
                             ];
                             break;
@@ -661,7 +662,8 @@ class Funciones{
                         'ancho'=>$conf->Ancho,
                         'edit'=>$conf->editable,
                         'visible'=>$conf->visible,
-                        'filtro'=>$conf->filtro
+                        'filtro'=>$conf->filtro,
+                        'permiso'=>$conf->PermisoEditar
                     ];
                 }
                 $Cols[] = ['columna'=>'Opciones' ,'alias'=>'HM','pinned'=>'right','edit'=>'false'];
