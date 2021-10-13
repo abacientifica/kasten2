@@ -179,6 +179,12 @@
                                             <el-button type="primary" round :disabled="(ValidarPermiso('actualizar') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="ActualizarValoresPlantilla()"><i class="fas fa-retweet"></i> Actualizar </el-button>
                                         </vs-tooltip>
                                     </td>
+                                    <td>
+                                        <vs-tooltip>
+                                            <template #tooltip>Configuraciones predeterminadas de columnas tabla</template>
+                                            <el-button type="primary" round :disabled="(ValidarPermiso('configurar_grilla') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AbrirModalOpcionesGrilla = true"><i class="fas fa-sort-amount-up-alt"></i> Opciones Tabla Dinamica </el-button>
+                                        </vs-tooltip>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -604,6 +610,30 @@
                         </span>
                     </el-dialog>
 
+                    <el-dialog title="Opciones Tabla Dinamica" :visible.sync="AbrirModalOpcionesGrilla">
+                        <div class="form-group row border" >
+                            
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Opciones</label>
+                                    <el-select v-model="grillaSeleccionada" placeholder="Seleccione" clearable>
+                                        <el-option
+                                            v-for="item in configuracionesGrilla"
+                                            :key="item.id"
+                                            :label="item.Descripcion"
+                                            :value="item.id"
+                                            >
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                            </div>
+                        </div>
+                        <span slot="footer" class="dialog-footer">
+                            <el-button @click="AbrirModalOpcionesGrilla = false">Cancelar</el-button>
+                            <el-button type="primary" :disabled="grillaSeleccionada == null" @click="cambiarGrilla()">Aplicar</el-button>
+                        </span>
+                    </el-dialog>
+
 
                     <!--Fin Acciones-->
                     </div><hr>
@@ -1008,7 +1038,13 @@ export default {
             },
             //Items no Homologados
             AbrirModalItemsHm:false,
-            oRangoFechasItemsNoHm:false
+            oRangoFechasItemsNoHm:false,
+
+            //Configuraciones grilla
+            configuracionesGrilla:null,
+            configuracionesGrillaDet:null,
+            AbrirModalOpcionesGrilla:false,
+            grillaSeleccionada:null
         }
     },
     watch:{
@@ -1112,7 +1148,7 @@ export default {
                 Meses.push(i);
             }
             return Meses;
-        },
+        }
     },
     methods: {
         DatosEditarPlantilla(Id){
@@ -1145,6 +1181,9 @@ export default {
                 this.fillDetallesPlantilla = response.data.plantillas_det;
                 this.ListasGenerales = response.data.datos_listas.listas;
                 this.ListasEspeciales = response.data.datos_listas.listaesp;
+                this.configuracionesGrilla = response.data.configuraciones;
+                this.configuracionesGrillaDet = response.data.configuraciones_det;
+                
                 if(this.MantenerFiltros){
                     var itemsToUpdate = [];
                     var itemsToDelete = [];
@@ -1155,49 +1194,49 @@ export default {
                     });
                     console.log(TotalItems)
                     if(TotalItems >0 ){ 
-                    //Obtenemos los items que esten filtrados
-                    this.gridApi.forEachNodeAfterFilterAndSort(function (rowNode, index) {
-                        //Llenamos los datos actuales
-                        var data = rowNode.data;
-                        //Obtenemos los objetos del dato actual osea las columnas.
-                        let Objetos = Object.keys(data);
+                        //Obtenemos los items que esten filtrados
+                        this.gridApi.forEachNodeAfterFilterAndSort(function (rowNode, index) {
+                            //Llenamos los datos actuales
+                            var data = rowNode.data;
+                            //Obtenemos los objetos del dato actual osea las columnas.
+                            let Objetos = Object.keys(data);
 
-                        //Recorremos cada dato que retorno la consulta
-                        me.fillDetallesPlantilla.map(function(x){
-                            //Validamos si el dato que retorno actual es igual  al dato que se esta actualizando
-                            if(me.OpcionAccionDets !='elim' && me.OpcionAccionDets !='add'){
-                                if(x.IdPlantillaDet == data.IdPlantillaDet){
-                                    //Si es el mismo dato validamos el objeto entrante vs el anterior si cambio obtiene los cambios
-                                    Objetos.map(function(e){
-                                        if(data[e] != x[e]){
-                                            data[e] = x[e];
-                                        }
-                                    });
+                            //Recorremos cada dato que retorno la consulta
+                            me.fillDetallesPlantilla.map(function(x){
+                                //Validamos si el dato que retorno actual es igual  al dato que se esta actualizando
+                                if(me.OpcionAccionDets !='elim' && me.OpcionAccionDets !='add'){
+                                    if(x.IdPlantillaDet == data.IdPlantillaDet){
+                                        //Si es el mismo dato validamos el objeto entrante vs el anterior si cambio obtiene los cambios
+                                        Objetos.map(function(e){
+                                            if(data[e] != x[e]){
+                                                data[e] = x[e];
+                                            }
+                                        });
+                                    }
+                                }
+                                
+                            });
+
+                            if(me.OpcionAccionDets =='elim'){
+                                if(!me.validarExist(me.fillDetallesPlantilla,data.IdPlantillaDet,'IdPlantillaDet')){
+                                    itemsToDelete.push(data);
                                 }
                             }
-                            
+
+                            else if(me.OpcionAccionDets =='add'){
+                                if(!me.validarExist(me.fillDetallesPlantilla,data.IdPlantillaDet,'IdPlantillaDet')){
+                                    itemsToInsert.push(data);
+                                }
+                            }
+                            itemsToUpdate.push(data);
                         });
-
-                        if(me.OpcionAccionDets =='elim'){
-                            if(!me.validarExist(me.fillDetallesPlantilla,data.IdPlantillaDet,'IdPlantillaDet')){
-                                itemsToDelete.push(data);
-                            }
-                        }
-
-                        else if(me.OpcionAccionDets =='add'){
-                            if(!me.validarExist(me.fillDetallesPlantilla,data.IdPlantillaDet,'IdPlantillaDet')){
-                                itemsToInsert.push(data);
-                            }
-                        }
-                        itemsToUpdate.push(data);
-                    });
-                }
-                else{
-                    this.CargarColumnas(response);
-                    if(me.OpcionAccionDets =='add'){
-                        itemsToInsert = me.fillDetallesPlantilla;
                     }
-                }
+                    else{
+                        this.CargarColumnas(response);
+                        if(me.OpcionAccionDets =='add'){
+                            itemsToInsert = me.fillDetallesPlantilla;
+                        }
+                    }
                 //Aplicamos los cambios a la grilla
                 if(me.OpcionAccionDets !='elim' && me.OpcionAccionDets !='add'){
                     console.log("Entro a actualizar")
@@ -1213,6 +1252,7 @@ export default {
                 }
             }   
             else{
+                this.CargarColumnas(response);
                 this.rowData = this.fillDetallesPlantilla;
                 this.FillCrearCot.ItemsPlantilla = this.rowData;
             }
@@ -1762,7 +1802,6 @@ export default {
             this.gridColumnApi.getAllGridColumns().forEach(item =>{
                 result[item.colId] = null;
             });
-            console.log(result)
             return this.calculatedPinnedButtomData(result);
         },
 
@@ -1770,7 +1809,6 @@ export default {
             let columnWithAggregation = ['IdPlantillaDet','SubTotal','SubTotalVenta','SubTotalConsumo'];
             let me = this;
             columnWithAggregation.forEach(element=>{
-                console.log({'element':element});
                 if(element != 'IdPlantillaDet'){
                     me.gridApi.forEachNodeAfterFilter(function (rowNode, index){
                         target[element] += Number(typeof rowNode.data[element] =='number' && rowNode.data[element].toFixed(2));
@@ -1782,7 +1820,6 @@ export default {
                 else{
                     target[element] = 'Totales :'
                 }
-                
             })
             return target;
         },
@@ -2124,7 +2161,27 @@ export default {
             this.columnDefs = [];
             if(response.data.columnas){
                 this.fillDetallesPlantilla = response.data.plantillas_det;
-                this.fillColumnas = response.data.columnas;
+                let columnas = [];
+                me.grillaSeleccionada = me.grillaSeleccionada ? me.grillaSeleccionada : localStorage.getItem('grillaSel');
+                if(me.grillaSeleccionada && me.configuracionesGrillaDet){
+                    var grilla = me.configuracionesGrillaDet.filter(filter=>{ return filter.id == me.grillaSeleccionada})
+                    grilla.map((e)=>{
+                        if(e.IdCampo){
+                            columnas.push({
+                                'columna':e.IdCampo,
+                                'alias':e.AliasCampo,
+                                'pinned':e.pinned,
+                                'FormatoCelda':e.FormatoCelda,
+                                'ancho':e.Ancho,
+                                'edit':e.editable,
+                                'visible':e.visible,
+                                'filtro':e.filtro,
+                                'permiso':e.PermisoEditar
+                            })
+                        }
+                    })
+                }
+                this.fillColumnas = columnas.length >0 ? columnas : response.data.columnas;
                 this.fillColumnas.map(function(x,y){
                     if(x.columna != null){
                         let Edit = (x.edit == 'true' && me.fillPlantilla.Estado =='DIGITADA' && (me.ValidarPermiso('editardetallles')  || (x.permiso && me.ValidarPermiso(x.permiso)) )) ? true: false;
@@ -2705,6 +2762,21 @@ export default {
                     sessionStorage.clear();
                 }
             })
+        },
+
+        cambiarGrilla(){
+            if(this.grillaSeleccionada){
+                this.MantenerFiltros = false;
+                localStorage.removeItem('columnas');
+                this.listarPlantilla();
+                localStorage.setItem('grillaSel',this.grillaSeleccionada);
+                let filtros = JSON.parse(localStorage.getItem('filtros'));
+                console.log(filtros)
+                this.gridApi.setFilterModel(filtros);
+            }
+            else{
+                this.AlertMensaje('Debes Seleccionar una opcion de grilla',3);
+            }
         }
 
     },
