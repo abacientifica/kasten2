@@ -25,7 +25,6 @@ class PlantillasClientesController extends Controller
             $Estado = isset($request->Estado) ? $request->Estado : null;
             $Cliente = isset($request->IdTercero) ? $request->IdTercero : null;
             $oRangoFechas = isset($request->oRangoFechas) ? $request->oRangoFechas : null;
-            
             $Plantillas = Plantillas::with('tercero','direccion')->where('Tipo',0);
             if($Id){
                 //$Plantillas = $Plantillas->where("IdPlantilla",$Id);
@@ -60,12 +59,16 @@ class PlantillasClientesController extends Controller
             $Plantillas = Plantillas::with('tercero','direccion','plantillasdet')->find($Id);
             $PlantillasDet = \Funciones::CargarDetallesPlantillaClientes($Id,93,$Filtros);
             $DatosHomologar = \Funciones::ObtenerDatosRestablecerCostosPlantillas($Plantillas->IdPlantilla,$Plantillas->IdTerceroPlant);
+            $ConfiguracionesGrilla = \Funciones::ObtenerConfiguracionesGrilla(93,true);
+            $ConfiguracionesGrillaDet = \Funciones::ObtenerConfiguracionesGrilla(93);
             return[
                 'plantilla'=>$Plantillas,
                 'plantillas_det'=>$PlantillasDet['plantillas_det'],
                 'columnas'=>$PlantillasDet['columnas'],
                 'filtros'=>$Filtros,
-                'datos_listas'=>$DatosHomologar
+                'datos_listas'=>$DatosHomologar,
+                'configuraciones'=>$ConfiguracionesGrilla,
+                'configuraciones_det'=>$ConfiguracionesGrillaDet,
             ];
         }
         catch(Exception $e){
@@ -848,7 +851,7 @@ class PlantillasClientesController extends Controller
                 $SubTipo=1;
             }
             $CotExist = (int) $Parametros['CotExist'];
-            if($CotExist && is_numeric($CotExist)){
+            if($CotExist && is_numeric($CotExist) && $CotExist >0){
                 $CotizacionNueva = Cotizaciones::find($CotExist);
                 if($CotizacionNueva){
                     $MensajeError = [];
@@ -905,7 +908,7 @@ class PlantillasClientesController extends Controller
             else{
                 DB::rollBack();
                 return[
-                    'msg'=>is_numeric($CotExist)? 'No se inserto ningun dato a la cotizacion, valida nuevamente' :'No se pudo crear la cotizacion por que no se insertaron detalles',
+                    'msg'=>is_numeric($CotExist)? 'No se inserto ningun dato a la cotizacion, valida nuevamente'.$CotExist :'No se pudo crear la cotizacion por que no se insertaron detalles',
                     'status'=>'501'
                 ];
             }
