@@ -640,7 +640,8 @@ class Funciones{
                                 'ancho'=>$conf->Ancho,
                                 'edit'=>$conf->editable,
                                 'visible'=>$conf->visible,
-                                'filtro'=>$conf->filtro
+                                'filtro'=>$conf->filtro,
+                                'permiso'=>$conf->PermisoEditar
                             
                             ];
                             break;
@@ -661,7 +662,8 @@ class Funciones{
                         'ancho'=>$conf->Ancho,
                         'edit'=>$conf->editable,
                         'visible'=>$conf->visible,
-                        'filtro'=>$conf->filtro
+                        'filtro'=>$conf->filtro,
+                        'permiso'=>$conf->PermisoEditar
                     ];
                 }
                 $Cols[] = ['columna'=>'Opciones' ,'alias'=>'HM','pinned'=>'right','edit'=>'false'];
@@ -1088,8 +1090,8 @@ class Funciones{
         $Tercero->PlazoPago != 0 ? $Cotizacion->Plazo = $Tercero->PlazoPago : $Cotizacion->Plazo = 0;
         
         if ($DesctoFinanciero) {
-            $Cotizacion->DctoFin = $DesctoFinanciero[0]->PorDcto;
-            $Cotizacion->DiasDctoFin = $DesctoFinanciero[0]->DiasPago;
+            $Cotizacion->DctoFin = $DesctoFinanciero->PorDcto;
+            $Cotizacion->DiasDctoFin = $DesctoFinanciero->DiasPago;
         } else {
             $Cotizacion->DctoFin = 0;
             $Cotizacion->DiasDctoFin = 0;
@@ -1317,4 +1319,27 @@ class Funciones{
         return $ventas;
     }
 
+    /**
+     * Retorna las configuraciones especiales de grilla
+     */
+    public static function ObtenerConfiguracionesGrilla($IdDocumento,$Agrupar=false){
+        try{
+            $Sql = "select configuraciones_columnas_documentos_det.*,configuraciones_especiales_documentos_det.Orden as IdOrden,configuraciones_especiales_documentos.Descripcion,configuraciones_especiales_documentos.id  from configuraciones_especiales_documentos_det 
+                    LEFT JOIN configuraciones_especiales_documentos on configuraciones_especiales_documentos.id = configuraciones_especiales_documentos_det.IdConfiguracion
+                    LEFT JOIN configuraciones_columnas_documentos_det on configuraciones_columnas_documentos_det.IdConfigDet = configuraciones_especiales_documentos_det.IdConfiguracionDet
+                    LEFT JOIN configuraciones_columnas_documentos on configuraciones_columnas_documentos.IdConfiguracion  = configuraciones_columnas_documentos_det.IdConfiguracion
+                    where configuraciones_columnas_documentos.IdDocumento = ".$IdDocumento;
+            if($Agrupar){
+                $Sql .=" GROUP BY configuraciones_especiales_documentos.id";
+            }
+            $Datos = DB::select($Sql);
+            return $Datos;
+        }
+        catch(Exception $e){
+            return null;
+        }
+        catch(QueryException $y){
+            return null;
+        }
+    }
 }
