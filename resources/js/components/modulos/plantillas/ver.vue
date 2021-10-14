@@ -635,7 +635,6 @@
                         </span>
                     </el-dialog>
 
-
                     <!--Fin Acciones-->
                     </div><hr>
                     <div class="form-group row border" v-if="!OcultarPanel">
@@ -726,7 +725,6 @@
                     </div>
                     <div class="form-group row border">
                         <div class="table-responsive col-md-12">
-                            <!--<button  v-on:click="autoSizeAll(true)">Auto-Size All</button>-->
                             <ag-grid-vue
                                 class="ag-theme-alpine"
                                 :style="{width,height }"
