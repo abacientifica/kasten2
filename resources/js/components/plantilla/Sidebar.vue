@@ -25,7 +25,7 @@
                 </template>-->
             </div>
             <div class="info">
-                <router-link :to="'/'" :usuario="usuario" class="d-block" >
+                <router-link :to="'/'" :usuario="usuario" class="d-block" @click="DocSel =  null" >
                     Aba científica
                 </router-link>
             </div>
@@ -44,7 +44,7 @@
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
             <!-- Add icons to the links using the .nav-icon class
                 with font-awesome or any other icon font library -->
-            <li class="nav-item has-treeview">
+            <li class="nav-item has-treeview" @click="DocSel =  null">
                 <router-link :to="'/'" class="nav-link">
                     <i class="nav-icon fas fa-tachometer-alt"></i>
                     <p>Home</p>
@@ -53,7 +53,7 @@
             <!--<template v-if="listPermisos.includes('pedidos.index')">
                 <li class="nav-header">MOVIMIENTOS</li>
                 <template v-if="listPermisos.includes('pedidos.index')">
-                    <li class="nav-item">
+                    <li class="nav-item" @click="DocSel =  null">
                         <router-link class="nav-link" :to="'/pedidos/index'">
                             <i class="nav-icon fas fa-cash-register"></i>
                             <p> Pedidos</p>
@@ -72,8 +72,8 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
-              <li  v-for="item in tiposDocs" :key="item.IdTpDocumento" class="nav-item">
-                <router-link  class="nav-link" :to="'/tpdocumento/lista/'+item.IdTpDocumento">
+              <li  v-for="item in tiposDocs" :key="item.IdTpDocumento" class="nav-item" @click="DocSel = item.IdTpDocumento">
+                <router-link  class="nav-link" :to="'/tpdocumento/lista/'+item.IdTpDocumento"   :class="DocSel ==  item.IdTpDocumento? 'nav-link active': ''">
                     <i class="far fa-circle nav-icon"></i>
                     <p v-text="item.NmTpDocumento"></p>
                 </router-link>
@@ -84,7 +84,7 @@
             <template v-if="listPermisos.includes('usuarios.index','roles.index','permisos.index')">
                 <li class="nav-header">ADMINISTRACIÓN</li>
                 <template v-if="listPermisos.includes('usuarios.index')">
-                    <li class="nav-item">
+                    <li class="nav-item" @click="DocSel =  null">
                         <router-link :to="'/usuarios'" class="nav-link">
                             <i class="nav-icon fas fa-users"></i>
                             <p>Usuarios</p>
@@ -92,7 +92,7 @@
                     </li>
                 </template>
                 <template v-if="listPermisos.includes('roles.index')">
-                    <li class="nav-item">
+                    <li class="nav-item" @click="DocSel =  null">
                         <router-link :to="'/roles'" class="nav-link">
                             <i class="nav-icon fas fa-user-tag"></i>
                             <p>Roles</p>
@@ -101,7 +101,7 @@
                 </template>
                 
                 <template v-if="listPermisos.includes('permisos.index')">
-                    <li class="nav-item">
+                    <li class="nav-item" @click="DocSel =  null">
                         <router-link :to="'/permisos'" class="nav-link">
                             <i class="nav-icon fas fa-key"></i>
                             <p>Permisos</p>
@@ -110,13 +110,13 @@
                 </template>
 
                 <template v-if="listPermisos.includes('configuraciondoc.index') || listPermisos.includes('administrador.sistema')">
-                    <li class="nav-item">
+                    <li class="nav-item" @click="DocSel =  null">
                         <router-link :to="'/configuracion/documentos'" class="nav-link">
                             <i class="nav-icon fas fa-cogs"></i>
                             <p>Config. Documentos</p>
                         </router-link>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" @click="DocSel =  null">
                         <router-link :to="'/ayudas/index'" class="nav-link">
                             <i class="nav-icon fas fa-cogs"></i>
                             <p>Config. Ayudas</p>
@@ -127,13 +127,13 @@
             <template v-if="listPermisos.includes('reporte.ventas.index') || listPermisos.includes('administrador.sistema') ">
                 <li class="nav-header">REPORTES</li>
                 <template v-if="listPermisos.includes('reporte.ventas.index') || listPermisos.includes('administrador.sistema')">
-                    <li class="nav-item">
+                    <li class="nav-item" @click="DocSel =  null">
                         <router-link :to="'/reportes/ventas'" class="nav-link">
                             <i class="nav-icon fas fa-chart-bar"></i>
                             <p>Reporte Ventas Grafico</p>
                         </router-link>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" @click="DocSel =  null">
                         <router-link :to="'/reportes/ventas/grilla'" class="nav-link">
                             <i class="nav-icon fas fa-table"></i>
                             <p>Reporte Ventas Tabla</p>
@@ -143,7 +143,7 @@
             </template>
             <template v-if="listPermisos.includes('chat.index') || listPermisos.includes('administrador.sistema') ">
                 <li class="nav-header">CHAT INTERNO</li>
-                <router-link :to="'/chat'" class="nav-link">
+                <router-link :to="'/chat'" class="nav-link" @click="DocSel =  null">
                     <i class="nav-icon fas fa-comments"></i>
                     <p>Chat</p>
                 </router-link>
@@ -165,6 +165,7 @@ export default {
             rutas:'',
             tiposDocs:[],
             NumDocs:0,
+            DocSel:null
         }
     },
     methods: {
