@@ -617,6 +617,7 @@
                                 <div class="form-group">
                                     <label>Opciones</label>
                                     <el-select v-model="grillaSeleccionada" placeholder="Seleccione" clearable>
+                                        <el-option :key="0" :label="'Predeterminada'" :value="0"></el-option>
                                         <el-option
                                             v-for="item in configuracionesGrilla"
                                             :key="item.id"
@@ -1258,6 +1259,8 @@ export default {
             }
             let pinnedButtomData = this.generatePinnedButtomData();
             this.gridApi.setPinnedBottomRowData([pinnedButtomData]);
+            /*let filtros = JSON.parse(localStorage.getItem('filtros'));
+            this.gridApi.setFilterModel(filtros);*/
             //Refrescamos los botones renderizados en la grilla
             this.gridApi.refreshCells({ force: true })
             this.OpcionAccionDets = null;
@@ -2163,7 +2166,8 @@ export default {
                 this.fillDetallesPlantilla = response.data.plantillas_det;
                 let columnas = [];
                 me.grillaSeleccionada = me.grillaSeleccionada ? me.grillaSeleccionada : localStorage.getItem('grillaSel');
-                if(me.grillaSeleccionada && me.configuracionesGrillaDet){
+                me.grillaSeleccionada = me.grillaSeleccionada ?  parseInt(me.grillaSeleccionada) : null;
+                if((me.grillaSeleccionada && me.grillaSeleccionada >0) && me.configuracionesGrillaDet){
                     var grilla = me.configuracionesGrillaDet.filter(filter=>{ return filter.id == me.grillaSeleccionada})
                     grilla.map((e)=>{
                         if(e.IdCampo){
@@ -2179,7 +2183,8 @@ export default {
                                 'permiso':e.PermisoEditar
                             })
                         }
-                    })
+                    });
+                    columnas.length >0 ? columnas.push({'columna':'Opciones' ,'alias':'HM','pinned':'right','edit':'false'}) : '';
                 }
                 this.fillColumnas = columnas.length >0 ? columnas : response.data.columnas;
                 this.fillColumnas.map(function(x,y){
@@ -2481,6 +2486,7 @@ export default {
                     }
                 });
             }
+            
         },
 
         validarExist(arreglo,find,campo){
@@ -2765,13 +2771,12 @@ export default {
         },
 
         cambiarGrilla(){
-            if(this.grillaSeleccionada){
+            if(this.grillaSeleccionada || this.grillaSeleccionada == 0){
                 this.MantenerFiltros = false;
                 localStorage.removeItem('columnas');
                 this.listarPlantilla();
-                localStorage.setItem('grillaSel',this.grillaSeleccionada);
+                localStorage.setItem('grillaSel',Number(this.grillaSeleccionada));
                 let filtros = JSON.parse(localStorage.getItem('filtros'));
-                console.log(filtros)
                 this.gridApi.setFilterModel(filtros);
             }
             else{
