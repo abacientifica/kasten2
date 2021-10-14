@@ -1205,4 +1205,24 @@ class PlantillasClientesController extends Controller
         
         
     }
+
+    public function AplicarOpcionLicitacion(Request $request){
+        if(!$request->ajax()) return  redirect('/');
+        $Datos = $request->params;
+        $ItemsSel =  \Funciones::ArraryToObject($Datos['ItemsSel']);
+        $Opcion = $Datos['Opcion'];
+        $ItemsAplicados = 0;
+        foreach($ItemsSel as $Item){
+            if($Item->Autorizado != 1){
+                $PlantillaDet = PlantillasDet::find($Item->IdPlantillaDet);
+                $PlantillaDet->Opcion  = $Opcion;
+                $PlantillaDet->save();
+                $ItemsAplicados++;
+            }
+        }
+        return[
+            'msg'=>" Se aplico la opcion a ".$ItemsAplicados.", excepto los items autorizados.",
+            'status'=>201,
+        ];
+    }
 }

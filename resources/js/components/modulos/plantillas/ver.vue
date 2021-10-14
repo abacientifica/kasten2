@@ -144,7 +144,7 @@
                                 </td>
                                 </tr>
                                 <tr>
-                                <th scope="row">4</th>
+                                <th scope="row">5</th>
                                 <td>
                                     <vs-tooltip>
                                         <template #tooltip>Sirve para importar una lista en formato cvs </template>
@@ -166,7 +166,7 @@
                                
                                 </tr>
                                 <tr>
-                                    <th scope="row">5</th>
+                                    <th scope="row">6</th>
                                     <td>
                                         <vs-tooltip>
                                             <template #tooltip>Traer items vendidos en un rango de fecha no homologados</template>
@@ -183,6 +183,15 @@
                                         <vs-tooltip>
                                             <template #tooltip>Configuraciones predeterminadas de columnas tabla</template>
                                             <el-button type="primary" round :disabled="(ValidarPermiso('configurar_grilla') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AbrirModalOpcionesGrilla = true"><i class="fas fa-sort-amount-up-alt"></i> Opciones Tabla Dinamica </el-button>
+                                        </vs-tooltip>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">6</th>
+                                    <td>
+                                        <vs-tooltip>
+                                            <template #tooltip>Aplica la opción de licitación a los items seleccionados</template>
+                                            <el-button type="primary" round :disabled="(ValidarPermiso('aplicaropcion') && fillPlantilla.Estado=='DIGITADA') ? false : true" @click.prevent="AbrirModalOpciones = true"><i class="fas fa-check-square"></i> Aplicar Opción</el-button>
                                         </vs-tooltip>
                                     </td>
                                 </tr>
@@ -635,6 +644,26 @@
                         </span>
                     </el-dialog>
 
+                    <el-dialog title="Aplicar Opcion" :visible.sync="AbrirModalOpciones">
+                        <div class="form-group row border" >
+                            
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Opciones</label>
+                                    <el-select v-model="opcionLicitaction" placeholder="Seleccione" clearable>
+                                        <el-option :key="1" :label="'1'" :value="1"></el-option>
+                                        <el-option :key="2" :label="'2'" :value="2"></el-option>
+                                        <el-option :key="3" :label="'3'" :value="3"></el-option>
+                                    </el-select>
+                                </div>
+                            </div>
+                        </div>
+                        <span slot="footer" class="dialog-footer">
+                            <el-button @click="AbrirModalOpciones = false">Cancelar</el-button>
+                            <el-button type="primary" :disabled="opcionLicitaction == null || ItemsSeleccionados.length <=0" @click="aplicarOpcionlic()">Aplicar</el-button>
+                        </span>
+                    </el-dialog>
+
                     <!--Fin Acciones-->
                     </div><hr>
                     <div class="form-group row border" v-if="!OcultarPanel">
@@ -1043,7 +1072,10 @@ export default {
             configuracionesGrilla:null,
             configuracionesGrillaDet:null,
             AbrirModalOpcionesGrilla:false,
-            grillaSeleccionada:null
+            grillaSeleccionada:null,
+            //
+            AbrirModalOpciones:false,
+            opcionLicitaction:null,
         }
     },
     watch:{
@@ -2779,6 +2811,38 @@ export default {
             }
             else{
                 this.AlertMensaje('Debes Seleccionar una opcion de grilla',3);
+            }
+        },
+
+
+        aplicarOpcionlic(){
+            if(this.ItemsSeleccionados.length >0){
+                let url ="/plantillas/clientes/AplicarOpcionLicitacion"
+                let me = this;
+                axios.put(url,{params:{
+                    'IdPlantilla':me.fillPlantilla.IdPlantilla,
+                    'ItemsSel':me.ItemsSeleccionados,
+                    'Opcion':me.opcionLicitaction
+                }}).then(response=>{
+                    let respuesta = response.data;
+                    me.MantenerFiltros = true;
+                    me.listarPlantilla();
+                    me.AlertMensaje(respuesta.msg, 1);
+                }).catch(error=>{
+                    let codError = this.serviceApp.ObtenerTpError(error);
+                    if(codError){
+                        if(coderror == 401 || coderror == 419){
+                            this.$router.push({name: 'login'})
+                            location.reload();
+                            sessionStorage.clear();
+                        }
+                    }
+                    console.log(error);
+                    this.AlertMensaje('Ocurrio un error al aplicar la opción ', 3)
+                })
+            }
+            else{
+                this.AlertMensaje("Debes seleccionar al menos 1 registro",2);
             }
         }
 
