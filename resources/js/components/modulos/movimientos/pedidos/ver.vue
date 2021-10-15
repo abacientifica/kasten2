@@ -47,9 +47,11 @@
                         <button class="btn btn-primary btn-margin-left" v-if="fillMovimiento.cEstado == 'DIGITADA' && accionMovimiento==0" @click.prevent="Editar()"><i class="fas fa-edit"></i> Editar</button>
                         <button class="btn btn-success btn-margin-left" v-if="fillMovimiento.cEstado == 'DIGITADA' && accionMovimiento==1" @click.prevent="ActualizarDatos()"><i class="fas fa-check"></i> Guardar Cambios</button>
                         <button class="btn btn-warning btn-margin-left" v-if="fillMovimiento.cEstado == 'DIGITADA' && accionMovimiento==1" @click.prevent="Editar()"><i class="fas fa-times-circle"></i> Cancelar Edición</button>
+                        <button class="btn btn-secondary btn-sm btn-margin-left" v-if="OcultarPanel" @click.prevent="OcultarMostrarPanel()"><i class="fas fa-eye"></i> Mostrar Encabezado</button>
+                        <button class="btn btn-secondary btn-sm btn-margin-left" v-if="!OcultarPanel" @click.prevent="OcultarMostrarPanel()"><i class="fas fa-eye-slash"></i> Ocultar Encabezado</button>
                         <logacciones :IdMovimiento ="fillMovimiento.nIdMovimiento"></logacciones>
                     </div><hr>
-                    <div class="form-group row border">
+                    <div class="form-group row border" v-if="!OcultarPanel">
                         <div class="col-md-3">
                             <div class="form-group margen-form-item">
                                 <label for="" class='label-strong margen-label-encabezado'>IdMovimiento</label>
@@ -329,7 +331,9 @@ export default {
             active:false,
             msgAnulacion:'',
             AptoAnular:true,
-            MovActual:this.$attrs.id
+            MovActual:this.$attrs.id,
+            //Panel oculto
+            OcultarPanel:false
         }
     },
     computed: {
@@ -809,7 +813,12 @@ export default {
                 color: '#fff',
                 text:'Cargando...'
             });
-        }
+        },
+
+        OcultarMostrarPanel(){
+            this.OcultarPanel = !  this.OcultarPanel;
+            localStorage.setItem('panelOcultoPed', this.OcultarPanel);
+        },
     },
     mounted() {
         this.ListarMovimiento(this.$attrs.id,this.$attrs.iddoc);
@@ -834,6 +843,10 @@ export default {
             });
             this.ListarMovimiento(this.$attrs.id,this.$attrs.iddoc);
         });
+        let PanelOculto = localStorage.getItem('panelOcultoPed');
+        if(PanelOculto){
+            this.OcultarPanel = PanelOculto
+        }
     },
     
 }

@@ -50,7 +50,7 @@
                     <p>Home</p>
                 </router-link>
             </li>
-            <template v-if="listPermisos.includes('pedidos.index')">
+            <!--<template v-if="listPermisos.includes('pedidos.index')">
                 <li class="nav-header">MOVIMIENTOS</li>
                 <template v-if="listPermisos.includes('pedidos.index')">
                     <li class="nav-item">
@@ -60,8 +60,8 @@
                         </router-link>
                     </li>
                 </template>
-            </template>
-
+            </template>-->
+            <li class="nav-header">MOVIMIENTOS</li>
             <li class="nav-item has-treeview">
             <a href="#" class="nav-link" v-if="NumDocs >0">
               <i class="nav-icon fas fa-copy"></i>
