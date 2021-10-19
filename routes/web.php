@@ -87,6 +87,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::put('/plantillas/clientes/CorrerCostos','Plantillas\PlantillasClientesController@CorrerCostos');
     Route::put('/plantillas/clientes/AgregarNoHomologados','Plantillas\PlantillasClientesController@AgregarItemsNoHomologados');
     Route::put('/plantillas/clientes/Actualizar','Plantillas\PlantillasClientesController@Actualizar');
+    Route::put('/plantillas/clientes/AplicarOpcionLicitacion','Plantillas\PlantillasClientesController@AplicarOpcionLicitacion');
+
 
 
     //Lista chequeo plantillas

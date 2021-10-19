@@ -67,7 +67,7 @@
                                     </td>
                                     <td v-text="item.TituloAyuda"></td>
                                     <td v-text="item.Descripcion"></td>
-                                    <td><a  v-if="item.Imagen !=null"  @click.prevent="verDocPdf(item)"><visualizar-archivo v-model="archivo"  :archivo="item.Imagen"  :descripcion="item.Descripcion" :titulo="item.TituloAyuda" :ver="verPdf" :key="index"></visualizar-archivo></a></td>
+                                    <td><a  v-if="item.Imagen"  @click.prevent="verDocPdf(item)"><visualizar-archivo v-if="item.Imagen" v-model="archivo"  :archivo="item.Imagen"  :descripcion="item.Descripcion" :titulo="item.TituloAyuda" :ver="verPdf" :key="index"></visualizar-archivo></a></td>
                                 </tr>
                             </tbody>
                         </table>

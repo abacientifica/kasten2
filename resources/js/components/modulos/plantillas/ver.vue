@@ -966,21 +966,10 @@ export default {
             showHomologar:false,
             DatosHomologar:[],
             DatoEditado:[],
-            ValAceptaAlt:{
-                '1':'SI',
-                '0':'NO'
-            },
-            ValReqMuestras :{
-                '1':'SI',
-                '0':'NO'
-            },
-            ValSolCot :{
-                '1':'SI',
-                '0':'NO'
-            },
-            ValAut :{
-                '1':'SI',
-                '0':'NO'
+            refsOpcion:{
+                '':'',
+                1:'SI',
+                0:'NO'
             },
             OcultarPanel:false,
             MantenerFiltros:false,
@@ -2236,11 +2225,12 @@ export default {
                                 cellEditor:'select',
                                 cellEditorParams:{
                                     values:[
-                                        '0',
-                                        '1'
+                                        '',
+                                        0,
+                                        1
                                     ]
                                 },
-                                refData:me.ValAceptaAlt,
+                                refData:me.refsOpcion,
                                 cellClassRules:validarClaseCelda,
                                 cellStyle:(params)=>{
                                     if(params.node.rowPinned){
@@ -2263,11 +2253,12 @@ export default {
                                 cellEditor:'select',
                                 cellEditorParams:{
                                     values:[
+                                        '',
                                         0,
                                         1
                                     ]
                                 },
-                                refData:me.ValReqMuestras,
+                                refData:me.refsOpcion,
                                 cellClassRules:validarClaseCelda,
                                 cellStyle:(params)=>{
                                     if(params.node.rowPinned){
@@ -2290,11 +2281,12 @@ export default {
                                 cellEditor:'select',
                                 cellEditorParams:{
                                     values:[
+                                        '',
                                         0,
                                         1
                                     ]
                                 },
-                                refData:me.ValSolCot,
+                                refData:me.refsOpcion,
                                 cellClassRules:validarClaseCelda,
                                 cellStyle:(params)=>{
                                     if(params.node.rowPinned){
@@ -2317,11 +2309,12 @@ export default {
                                 cellEditor:'select',
                                 cellEditorParams:{
                                     values:[
-                                        '0',
-                                        '1'
+                                        '',
+                                        0,
+                                        1
                                     ]
                                 },
-                                refData:me.ValAut,
+                                refData:me.refsOpcion,
                                 cellClassRules:validarClaseCelda,
                                 cellStyle:(params)=>{
                                     if(params.node.rowPinned){
