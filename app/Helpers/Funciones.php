@@ -1111,62 +1111,66 @@ class Funciones{
      * @PlantillaDet Objeto de plantilla
      */
     public static function GuardarDetallesCotizacion($Cotizacion, $PlantillaDet) {
-        $LisCosDet = new ListaCostosProvDet();
-        $LisCosDet = ListaCostosProvDet::find($PlantillaDet['IdListaCostosDetPlantDet']);
-        $Cotizacion = Cotizaciones::find($Cotizacion['IdCotizacion']);
-        if ($Cotizacion && $PlantillaDet['IdListaCostosDetPlantDet'] && $PlantillaDet['Autorizado'] == 1) {
-            $CotDet = new CotizacionesDet();
-            $CotDet->IdCotizacion = $Cotizacion->IdCotizacion;
-            $CotDet->IdItemCotizacion = $LisCosDet->Id_Item;
-            $CotDet->DescripcionCliente = $PlantillaDet['DescripcionCliente'];
-            $CotDet->DescripcionCotizacion = $LisCosDet->DescripcionProv;
-            $CotDet->FactorVCot = $LisCosDet->CantMinimaVenta;
+        try{
+            $LisCosDet = new ListaCostosProvDet();
+            $LisCosDet = ListaCostosProvDet::find($PlantillaDet['IdListaCostosDetPlantDet']);
+            $Cotizacion = Cotizaciones::find($Cotizacion['IdCotizacion']);
+            if ($Cotizacion && $PlantillaDet['IdListaCostosDetPlantDet'] && $PlantillaDet['Autorizado'] == 1) {
+                $CotDet = new CotizacionesDet();
+                $CotDet->IdCotizacion = $Cotizacion->IdCotizacion;
+                $CotDet->IdItemCotizacion = $LisCosDet->Id_Item;
+                $CotDet->DescripcionCliente = $PlantillaDet['DescripcionCliente'];
+                $CotDet->DescripcionCotizacion = $LisCosDet->DescripcionProv;
+                $CotDet->FactorVCot = $LisCosDet->CantMinimaVenta;
 
-            if ($LisCosDet->UMV == "") {
-                if ($LisCosDet->Id_Item != "") {
-                    $Item = Item::find($LisCosDet->Id_Item);
-                    $CotDet->UMVCot = $Item->UMM;
+                if ($LisCosDet->UMV == "") {
+                    if ($LisCosDet->Id_Item != "") {
+                        $Item = Item::find($LisCosDet->Id_Item);
+                        $CotDet->UMVCot = $Item->UMM;
+                    } else {
+                        $CotDet->UMVCot = $LisCosDet->UMC;
+                    }
                 } else {
-                    $CotDet->UMVCot = $LisCosDet->UMC;
+                    $CotDet->UMVCot = $LisCosDet->UMV;
                 }
-            } else {
-                $CotDet->UMVCot = $LisCosDet->UMV;
-            }
 
-            $CostoUMM = $LisCosDet->CostoUMM;
-            $CotDet->FhDesdeLista = $LisCosDet->FhDesde;
-            $CotDet->FhHastaLista = $LisCosDet->FhHasta;
-            $CotDet->CodCliente = $PlantillaDet['CodCliente'];
-            $CotDet->ItemCliente = $PlantillaDet['IdItemCliente'];
-            $CotDet->MarcaSugerida = $PlantillaDet['MarcaSugerida'];
-            $CotDet->UMCliente = $PlantillaDet['UMCliente'];
-            $CotDet->FactorCliente = $PlantillaDet['FactorCliente'];
-            $CotDet->FhDesdePrecioCot = $Cotizacion['FechaDesde'];
-            $CotDet->FhHastaPrecioCot = $Cotizacion['FechaHasta'];
-            $CotDet->IdListaCostosDetCot = $LisCosDet->IdListaCostosProvDet;
-            $Margen = \Funciones::MargenCot(1, $LisCosDet);
-            $CotDet->Margen = $Margen;
-            $CotDet->MargenOriginal = $Margen;
-            $CotDet->PrecioCotizacion = $CostoUMM / (1 - ($Margen / 100));
-            $CotDet->CostoCotizacion = $CostoUMM;
-            $CotDet->PrecioTecho = $PlantillaDet['PrecioTecho'];
-            $CotDet->Redondeo = 1;
-            $CotDet->Alternativa = $PlantillaDet['AceptaAlternativa'];
-            $CotDet->Consumo = $PlantillaDet['CantidadConsumo'];
-            $CotDet->AceptadoCliente = null;
-            $CotDet->PorIvaCotizacion = $LisCosDet->IvaLC;
-            $CotDet->CantidadCotizacion = $PlantillaDet['CantidadConsumo'];
-            $CotDet->DescuentoFcieroCot = $LisCosDet->DescuentoFciero;
-            $CotDet->GrupoPlantilla = $PlantillaDet['Grupo'];
-            $CotDet->ComentarioInterno = $PlantillaDet['ComentariosHM'];
+                $CostoUMM = $LisCosDet->CostoUMM;
+                $CotDet->FhDesdeLista = $LisCosDet->FhDesde;
+                $CotDet->FhHastaLista = $LisCosDet->FhHasta;
+                $CotDet->CodCliente = $PlantillaDet['CodCliente'];
+                $CotDet->ItemCliente = $PlantillaDet['IdItemCliente'];
+                $CotDet->MarcaSugerida = $PlantillaDet['MarcaSugerida'];
+                $CotDet->UMCliente = $PlantillaDet['UMCliente'];
+                $CotDet->FactorCliente = $PlantillaDet['FactorCliente'];
+                $CotDet->FhDesdePrecioCot = $Cotizacion['FechaDesde'];
+                $CotDet->FhHastaPrecioCot = $Cotizacion['FechaHasta'];
+                $CotDet->IdListaCostosDetCot = $LisCosDet->IdListaCostosProvDet;
+                $Margen = \Funciones::MargenCot(1, $LisCosDet);
+                $CotDet->Margen = $Margen;
+                $CotDet->MargenOriginal = $Margen;
+                $CotDet->PrecioCotizacion = $CostoUMM / (1 - ($Margen / 100));
+                $CotDet->CostoCotizacion = $CostoUMM;
+                $CotDet->PrecioTecho = $PlantillaDet['PrecioTecho'];
+                $CotDet->Redondeo = 1;
+                $CotDet->Alternativa = $PlantillaDet['AceptaAlternativa'];
+                $CotDet->Consumo = $PlantillaDet['CantidadConsumo'];
+                $CotDet->AceptadoCliente = null;
+                $CotDet->PorIvaCotizacion = $LisCosDet->IvaLC;
+                $CotDet->CantidadCotizacion = $PlantillaDet['CantidadConsumo'];
+                $CotDet->DescuentoFcieroCot = $LisCosDet->DescuentoFciero;
+                $CotDet->GrupoPlantilla = $PlantillaDet['Grupo'];
+                $CotDet->ComentarioInterno = $PlantillaDet['ComentariosHM'];
 
-            if (isset($PlantillaDet['Opcion'])) {
-                $CotDet->Opcion = $PlantillaDet->Opcion;
-            }
-            $CotDet->save();
-            return $CotDet;
-        } 
-        return [];
+                if (isset($PlantillaDet['Opcion'])) {
+                    $CotDet->Opcion = $PlantillaDet->Opcion;
+                }
+                $CotDet->save();
+                return $CotDet;
+            } 
+        }
+        catch(Exception $e){
+            return false;
+        }
     }
 
     /**
