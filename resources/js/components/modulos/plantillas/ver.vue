@@ -20,6 +20,7 @@
             <div class="card">
                 <div class="card-header bg-info">
                     <b class="aling-left" v-if="fillPlantilla.tercero" v-text="fillPlantilla.tercero.IdTercero+' '+fillPlantilla.tercero.NombreCorto"></b>
+                    <b class="opcion-sel" v-if="nmOpcionSeleccionada" v-text="'Configuración Seleccionada : '+nmOpcionSeleccionada"></b>
                     <div class="card-tools">
                         <div class="row">
                             <div class="btn-group">
@@ -1062,6 +1063,7 @@ export default {
             configuracionesGrillaDet:null,
             AbrirModalOpcionesGrilla:false,
             grillaSeleccionada:null,
+            nmOpcionSeleccionada:null,
             //
             AbrirModalOpciones:false,
             opcionLicitaction:null,
@@ -1283,6 +1285,14 @@ export default {
             //Refrescamos los botones renderizados en la grilla
             this.gridApi.refreshCells({ force: true })
             this.OpcionAccionDets = null;
+            if(localStorage.getItem('grillaSel') && localStorage.getItem('grillaSel') > 0 && this.configuracionesGrilla){
+                let NmOpcionSel = this.configuracionesGrilla.filter(filtro => filtro.id == parseInt(localStorage.getItem('grillaSel')));
+                NmOpcionSel = NmOpcionSel[0];
+                this.nmOpcionSeleccionada = NmOpcionSel.Descripcion;
+            }
+            else{
+                this.nmOpcionSeleccionada = 'Predeterminada ';
+            }
             loaders.close();
             
             }).catch(error =>{
@@ -2207,9 +2217,10 @@ export default {
                 }
                 this.fillColumnas = columnas.length >0 ? columnas : response.data.columnas;
                 this.fillColumnas.map(function(x,y){
-                    if(x.columna != null){
+                    if(x.columna != null && (x.permiso_ver && me.ValidarPermiso(x.permiso_ver) || !x.permiso_ver)){
                         let Edit = (x.edit == 'true' && me.fillPlantilla.Estado =='DIGITADA' && (me.ValidarPermiso('editardetallles')  || (x.permiso && me.ValidarPermiso(x.permiso)) )) ? true: false;
                         let filtro = x.filtro == 'true' ? true : x.filtro;
+                        let colVisible = x.visible =='false' ? true: false;
                         
                         if(x.columna =='AceptaAlternativa'){
                             me.columnDefs.push({
@@ -2220,6 +2231,7 @@ export default {
                                 field : x.columna,
                                 sortable: true,
                                 filter:filtro, 
+                                hide:colVisible,
                                 editable: params => params.data.Autorizado != 1 && !params.node.rowPinned ? Edit :  false, 
                                 width : 147 ,
                                 cellEditor:'select',
@@ -2248,6 +2260,7 @@ export default {
                                 field : x.columna,
                                 sortable: true,
                                 filter:filtro, 
+                                hide:colVisible,
                                 editable: params => params.data.Autorizado != 1 && !params.node.rowPinned ? Edit :  false, 
                                 width : 147 ,
                                 cellEditor:'select',
@@ -2276,6 +2289,7 @@ export default {
                                 field : x.columna,
                                 sortable: true,
                                 filter:filtro, 
+                                hide:colVisible,
                                 editable: params => params.data.Autorizado != 1 && !params.node.rowPinned ? Edit :  false, 
                                 width : 147 ,
                                 cellEditor:'select',
@@ -2304,6 +2318,7 @@ export default {
                                 field : x.columna,
                                 sortable: true,
                                 filter:filtro, 
+                                hide:colVisible,
                                 editable: params => (me.fillPlantilla.Estado =='DIGITADA' && !params.node.rowPinned) ? Edit :  false, 
                                 width : 147 ,
                                 cellEditor:'select',
@@ -2335,6 +2350,7 @@ export default {
                                 editable: me.Edit,
                                 refData:me.ValAceptaAlt,
                                 cellClassRules:validarClaseCelda,
+                                hide:colVisible,
                                 cellStyle:(params)=>{
                                     if(params.node.rowPinned){
                                         return  { 'font-style': 'italic','background-color':'#87a1ea','font-weight': 'bold','text-align': 'right' } ;
@@ -2471,6 +2487,7 @@ export default {
                                 valueFormatter: (x.FormatoCelda == 'FormatoMoneda') ? FormatoMoneda: '',
                                 sortable: true,
                                 filter:filtro, 
+                                hide:colVisible,
                                 editable: params => params.data.Autorizado != 1 && !params.node.rowPinned ? Edit :  false, 
                                 cellStyle:params =>{
                                     if(params.node.rowPinned){
@@ -2801,6 +2818,10 @@ export default {
                 localStorage.setItem('grillaSel',Number(this.grillaSeleccionada));
                 let filtros = JSON.parse(localStorage.getItem('filtros'));
                 this.gridApi.setFilterModel(filtros);
+                let NmOpcionSel = this.configuracionesGrilla.filter(filtro => filtro.id == this.grillaSeleccionada);
+                NmOpcionSel = NmOpcionSel[0];
+                this.nmOpcionSeleccionada = NmOpcionSel.Descripcion;
+                this.AlertMensaje('Has seleccionado la configuración :' + NmOpcionSel.Descripcion+", recuerda que esta trae unas columnas configuradas por defecto.",1);
             }
             else{
                 this.AlertMensaje('Debes Seleccionar una opcion de grilla',3);
@@ -2964,5 +2985,9 @@ window.FormatoMoneda = function FormatoMoneda(params){
 
 .el-table .success-row {
     background: #f0f9eb;
+}
+.opcion-sel{
+    margin-left: 30%;
+    color: rgb(199, 178, 153);;
 }
 </style>
