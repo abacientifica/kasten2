@@ -2822,6 +2822,8 @@ export default {
                 NmOpcionSel = NmOpcionSel[0];
                 this.nmOpcionSeleccionada = NmOpcionSel.Descripcion;
                 this.AlertMensaje('Has seleccionado la configuración :' + NmOpcionSel.Descripcion+", recuerda que esta trae unas columnas configuradas por defecto.",1);
+                this.AbrirModalOpcionesGrilla = false;
+                this.dialogAcciones = false;
             }
             else{
                 this.AlertMensaje('Debes Seleccionar una opcion de grilla',3);
