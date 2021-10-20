@@ -641,7 +641,8 @@ class Funciones{
                                 'edit'=>$conf->editable,
                                 'visible'=>$conf->visible,
                                 'filtro'=>$conf->filtro,
-                                'permiso'=>$conf->PermisoEditar
+                                'permiso'=>$conf->PermisoEditar,
+                                'permiso_ver'=>$conf->PermisoVer
                             
                             ];
                             break;
@@ -663,7 +664,8 @@ class Funciones{
                         'edit'=>$conf->editable,
                         'visible'=>$conf->visible,
                         'filtro'=>$conf->filtro,
-                        'permiso'=>$conf->PermisoEditar
+                        'permiso'=>$conf->PermisoEditar,
+                        'permiso_ver'=>$conf->PermisoVer
                     ];
                 }
                 $Cols[] = ['columna'=>'Opciones' ,'alias'=>'HM','pinned'=>'right','edit'=>'false'];

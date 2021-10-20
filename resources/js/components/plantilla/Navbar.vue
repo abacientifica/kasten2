@@ -76,13 +76,11 @@ export default {
     methods: {
         querySearch(queryString, cb) {
             var links = this.listPermisosFilterByRolUser;
-            console.log(links)
             var results = queryString ? links.filter(this.createFilter(queryString.toLowerCase())) : links;
             // call callback function to return suggestion objects
             cb(results);
         },
         createFilter(queryString) {
-            console.log(queryString)
             return (link) => {
                 return (link.value.toLowerCase().includes(queryString.toLowerCase()));
             };
