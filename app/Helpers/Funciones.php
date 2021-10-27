@@ -1325,6 +1325,32 @@ class Funciones{
         return $ventas;
     }
 
+    public static function ObtenerConfiguracionGrilla($IdDoc){
+        $ColumnasConf = DB::select("select * from configuraciones_columnas_documentos_det 
+                                    LEFT JOIN configuraciones_columnas_documentos on configuraciones_columnas_documentos.IdConfiguracion = configuraciones_columnas_documentos_det.IdConfiguracion
+                                    where (IdDocumento =".$IdDoc." ) order by IdOrden");
+
+        $Cols=[];
+        if(count($ColumnasConf)>0){
+            foreach($ColumnasConf as $conf){
+                $Cols[] = [
+                    'columna'=>$conf->IdCampo,
+                    'alias'=>$conf->AliasCampo,
+                    'pinned'=>$conf->pinned,
+                    'FormatoCelda'=>$conf->FormatoCelda,
+                    'ancho'=>$conf->Ancho,
+                    'edit'=>$conf->editable,
+                    'visible'=>$conf->visible,
+                    'filtro'=>$conf->filtro,
+                    'permiso'=>$conf->PermisoEditar,
+                    'permiso_ver'=>$conf->PermisoVer
+                ];
+            }
+            $Cols[] = ['columna'=>'Opciones' ,'alias'=>'HM','pinned'=>'right','edit'=>'false'];
+        }
+        return $Cols;
+    }
+
     /**
      * Retorna las configuraciones especiales de grilla
      */
@@ -1348,4 +1374,30 @@ class Funciones{
             return null;
         }
     }
+
+    public static function obtenerDetallePlantilla($IdPlantillaDet){
+        $Sql = "select IdPlantillaDet,plantillas_det.CodCliente,plantillas_det.Grupo,plantillas_det.IdItemCliente,replace(plantillas_det.DescripcionCliente,',','') as DescripcionCliente,plantillas_det.MarcaSugerida,plantillas_det.UMCliente,plantillas_det.CantidadConsumo,
+                plantillas_det.ComentariosCliente
+                ,plantillas_det.PrecioTecho,plantillas_det.PrecioSugerido,plantillas_det.MesesConsumo,plantillas_det.CantConsumoMesDet,IF(plantillas_det.AceptaAlternativa = 1,'1','0') AS  AceptaAlternativa ,
+                plantillas_det.MarcaAsesor, IF(plantillas_det.ReqMuestras = 1,1,0) as ReqMuestras, plantillas_det.CantMuestras ,ComentariosMuestras ,
+                terceros.NombreCorto as Prov,item.Id_Item as ItemAba,item.Descripcion as DescripcionAba,lista_costos_prov.NmListaCostos, lista_costos_prov_det.CategoriaPortafolio,NmMarca,lista_costos_prov_det.CodProveedor,lista_costos_prov_det.RefFabricante,
+                lista_costos_prov_det.Presentacion,lista_costos_prov_det.UMC,lista_costos_prov_det.UMV,plantillas_det.FactorCliente as FactorCliente,plantillas_det.CantUMMAbaMes,lista_costos_prov_det.CostoUMM,plantillas_det.PrecioTechoUMM,plantillas_det.SubTotal,
+                if(plantillas_det.PrecioTecho >0 , plantillas_det.CantConsumoMesDet * plantillas_det.PrecioTecho, plantillas_det.CantidadConsumo * lista_costos_prov_det.CostoUMM) as SubTotalVenta,format((plantillas_det.PrecioTecho - lista_costos_prov_det.CostoUMM ) /lista_costos_prov_det.CostoUMM , 2) as UtilVsTecho,'' as FhUltimaFact,'' as ItemContrato,IF(Revisado = 1, 1,0)  as Revisado,
+                IF(lista_costos_prov_det.HabCotizar =1 ,'SI','NO') as HabCotizar,if(Autorizado is null,'',if(Autorizado =1,1,if(Autorizado is null,null,0))) as Autorizado,plantillas_det.ComentariosHM,EnlaceCot,IdListaCostosDetPlantDet,VendidoAnterioridad,plantillas_det.Opcion
+                ,SubTotalConsumo,item.EnNovedad
+                from plantillas_det
+                LEFT JOIN lista_costos_prov_det  on lista_costos_prov_det.IdListaCostosProvDet = plantillas_det.IdListaCostosDetPlantDet  
+                LEFT JOIN lista_costos_prov_det as ListaDet on ListaDet.IdListaCostosProvDet = lista_costos_prov_det.IdListaDetReferencia
+                LEFT JOIN item on item.Id_Item = lista_costos_prov_det.Id_Item
+                LEFT JOIN marcas on marcas.IdMarca = lista_costos_prov_det.IdMarca
+                LEFT JOIN lista_costos_prov on lista_costos_prov.IdListaCostosProv = lista_costos_prov_det.IdListaCostosProv
+                LEFT JOIN lista_costos_prov as ListaProv on ListaProv.IdListaCostosProv = ListaDet.IdListaCostosProv
+                LEFT JOIN terceros on terceros.IdTercero = if(lista_costos_prov_det.IdListaDetReferencia is NULL,lista_costos_prov.IdTercero,ListaProv.IdTercero)
+                LEFT JOIN terceros as cliente on cliente.IdTercero = plantillas_det.IdTerceroCliente
+                where plantillas_det.IdPlantillaDet =" . $IdPlantillaDet;
+        $PlantillaDet = DB::select($Sql);
+        return $PlantillaDet;
+    }
+
+
 }

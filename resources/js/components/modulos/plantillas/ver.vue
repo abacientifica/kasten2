@@ -968,9 +968,9 @@ export default {
             DatosHomologar:[],
             DatoEditado:[],
             refsOpcion:{
-                '':'',
-                1:'SI',
-                0:'NO'
+                null:'',
+                '1':'SI',
+                '0':'NO'
             },
             OcultarPanel:false,
             MantenerFiltros:false,
@@ -1739,11 +1739,6 @@ export default {
         },
 
         onGridReady(params) {
-            /* this.fillDetallesPlantilla.map(function(x,y){
-                me.rowData.push(x);
-            })*/
-            //this.rowData = this.fillDetallesPlantilla;
-            //this.gridApi.setDomLayout("autoHeight");
             let Filtros = JSON.parse(localStorage.getItem('filtros'));
             let Columnas = JSON.parse(localStorage.getItem('columnas'));
             this.gridApi.setFilterModel(Filtros);
@@ -1787,7 +1782,7 @@ export default {
             let DatoNuevo = event.newValue;
             let DatoAnterior = event.oldValue;
             if(DatoNuevo){
-                this.DatoEditado.push({'Columna':Columna,'DatoNuevo':DatoNuevo,'DatoAnt':DatoAnterior});
+                this.DatoEditado.push({'Columna':Columna,'DatoNuevo':DatoNuevo,'DatoAnt':DatoAnterior,'index':event.rowIndex});
             }
         },
 
@@ -1799,6 +1794,22 @@ export default {
             }
             this.DatoEditado = [];
         },
+        
+        getData(){
+            let rowData =[];
+            this.gridApi.forEachNodeAfterFilter(node=> rowData.push(node.data));
+            return rowData;
+        },
+
+        setItemGrilla(index,data){
+            let rowData =[];
+            this.gridApi.forEachNodeAfterFilter(node=> {
+                if(node.rowIndex == index){
+                    node.data = data;
+                }
+            });
+            return rowData;
+        },
 
         guardarDatoEditadoGrid(id,Datos){
             let me = this;
@@ -1809,12 +1820,15 @@ export default {
                 }
             }).then((response)=>{
                 let respuesta = response.data;
-                this.AlertMensaje(respuesta.msg,1);
-                this.MantenerFiltros = true;
-                this.listarPlantilla(true);
+                this.AlertMensaje(respuesta.msg,1,1200);
+                me.setItemGrilla(Datos[0].index , respuesta.detalle[0]);
+                me.rowData = me.getData();
+                this.gridApi.applyTransaction({ update: me.rowData });
                 let pinnedButtomData = me.generatePinnedButtomData();
                 me.gridApi.setPinnedBottomRowData([pinnedButtomData]);
             }).catch(error=>{
+                this.MantenerFiltros = true;
+                this.listarPlantilla(true);
                 console.log(error)
                 this.AlertMensaje('Ocurrio un error al editar ',3);
             })
@@ -1958,7 +1972,7 @@ export default {
             });
         },
 
-        AlertMensaje(Msg,Tipo = ''){
+        AlertMensaje(Msg,Tipo = '',time=12000){
             let tipom = "";
             if(Tipo ==1){
                 tipom = 'success';
@@ -1972,7 +1986,7 @@ export default {
             let position = 'top-center'
             let color = tipom
             const noti = this.$vs.notification({
-                duration:12000,
+                duration:time,
                 progress: 'auto',
                 flat: true,
                 color,
@@ -2237,9 +2251,8 @@ export default {
                                 cellEditor:'select',
                                 cellEditorParams:{
                                     values:[
-                                        '',
-                                        0,
-                                        1
+                                        '0',
+                                        '1'
                                     ]
                                 },
                                 refData:me.refsOpcion,
@@ -2266,7 +2279,6 @@ export default {
                                 cellEditor:'select',
                                 cellEditorParams:{
                                     values:[
-                                        '',
                                         0,
                                         1
                                     ]
@@ -2319,14 +2331,14 @@ export default {
                                 sortable: true,
                                 filter:filtro, 
                                 hide:colVisible,
-                                editable: params => (me.fillPlantilla.Estado =='DIGITADA' && !params.node.rowPinned) ? Edit :  false, 
+                                editable: params => (me.fillPlantilla.Estado =='DIGITADA' && !params.node.rowPinned && params.data.IdListaCostosDetPlantDet) ? Edit :  false, 
                                 width : 147 ,
                                 cellEditor:'select',
                                 cellEditorParams:{
                                     values:[
                                         '',
-                                        0,
-                                        1
+                                        '0',
+                                        '1'
                                     ]
                                 },
                                 refData:me.refsOpcion,

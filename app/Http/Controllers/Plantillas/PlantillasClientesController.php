@@ -401,6 +401,7 @@ class PlantillasClientesController extends Controller
             DB::commit();
             return [
                 'msg'=>"Los datos del detalle ".$request->params['IdPlantillaDet']." han sido modificados!!",
+                'detalle'=>\Funciones::obtenerDetallePlantilla($request->params['IdPlantillaDet']),
                 'status'=>201
             ];
         }
