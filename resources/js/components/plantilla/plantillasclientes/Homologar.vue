@@ -1,7 +1,7 @@
 <template>
     <div>
     <div class="modal fade" v-if="modalShow = this.visible" :class="{ show: this.visible }" :style=" this.visible ? mostrarModal : ocultarModal" role="dialog" aria-labelledby="myModalLabel"  aria-hidden="true">
-        <div class="modal-dialog modal-primary modal-xl font" role="document">
+        <div class="modal-dialog modal-dialog-scrollable modal-primary modal-xl font" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <el-alert
