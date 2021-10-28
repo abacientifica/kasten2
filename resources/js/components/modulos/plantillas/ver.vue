@@ -1524,46 +1524,57 @@ export default {
 
         EliminarDetallesSel(){
             if(this.ItemsSeleccionados.length >0){
-                this.MantenerFiltros = true;
-                let me = this;
-                let url ="/plantillas/clientes/EliminarDetalles";
-                const loader = this.loaderk();
-                axios.put(url,{
-                    params:{
-                        'arrItemsEliminar':me.ItemsSeleccionados,
-                        'nIdPlantilla':me.$attrs.id
-                    }
-                }).then(response=>{    
-                    let respuesta = response.data;
-                    loader.close();
-                    this.ItemsSeleccionados = [];
+                this.$confirm('Esto eliminará permanentemente '+this.ItemsSeleccionados.length+' items seleccionados . ¿Continuar?', 'Warning', {
+                    confirmButtonText: 'OK',
+                    cancelButtonText: 'Cancelar',
+                    type: 'warning'
+                }).then(() => {
                     this.MantenerFiltros = true;
-                    this.OpcionAccionDets ='elim';
-                    this.listarPlantilla();
-                    me.AlertMensaje(respuesta.msg,1);
-                }).catch(error =>{
-                    loader.close();
-                    this.AlertMensaje(error.data.msg,3);
-                    console.log(error)
-                    if(error.response.status ==401){
-                        me.$router.push({name: 'login'})
-                        location.reload();
-                        sessionStorage.clear();
+                    let me = this;
+                    let url ="/plantillas/clientes/EliminarDetalles";
+                    const loader = this.loaderk();
+                    axios.put(url,{
+                        params:{
+                            'arrItemsEliminar':me.ItemsSeleccionados,
+                            'nIdPlantilla':me.$attrs.id
+                        }
+                    }).then(response=>{    
+                        let respuesta = response.data;
                         loader.close();
-                    }
-                    if(error.response.status == 500 || error.response.status == 501){
+                        this.ItemsSeleccionados = [];
+                        this.MantenerFiltros = true;
+                        this.OpcionAccionDets ='elim';
+                        this.listarPlantilla();
+                        me.AlertMensaje(respuesta.msg,1);
+                    }).catch(error =>{
                         loader.close();
-                        let message = error.response.data.message;
-                        let linea = error.response.data.line;
-                        Swal.fire({
-                            position: 'top-center',
-                            icon: 'error',
-                            title: "Ups.. Ocurrio un error al autorizar el movimiento, intenta nuevamente.",
-                            text :message + 'linea : '+ linea ,
-                            showConfirmButton: true
-                        });
-                    }
-                })
+                        this.AlertMensaje(error.data.msg,3);
+                        console.log(error)
+                        if(error.response.status ==401){
+                            me.$router.push({name: 'login'})
+                            location.reload();
+                            sessionStorage.clear();
+                            loader.close();
+                        }
+                        if(error.response.status == 500 || error.response.status == 501){
+                            loader.close();
+                            let message = error.response.data.message;
+                            let linea = error.response.data.line;
+                            Swal.fire({
+                                position: 'top-center',
+                                icon: 'error',
+                                title: "Ups.. Ocurrio un error al autorizar el movimiento, intenta nuevamente.",
+                                text :message + 'linea : '+ linea ,
+                                showConfirmButton: true
+                            });
+                        }
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: 'Transacción cancelada.'
+                    });          
+                });
             }
             else{
                 this.AlertMensaje("No hay productos seleccionados para eliminar",2);
@@ -1794,7 +1805,7 @@ export default {
             }
             this.DatoEditado = [];
         },
-        
+
         getData(){
             let rowData =[];
             this.gridApi.forEachNodeAfterFilter(node=> rowData.push(node.data));
@@ -1840,6 +1851,8 @@ export default {
             localStorage.setItem('filtros',DatosFiltro);
             this.GuardarFiltros();
             let pinnedButtomData = this.generatePinnedButtomData();
+            this.ItemsSeleccionados.length >0 ? this.ItemsSeleccionados = [] : '';
+            this.gridOptions.api.deselectAll();
             this.gridApi.setPinnedBottomRowData([pinnedButtomData]);
         },
 
