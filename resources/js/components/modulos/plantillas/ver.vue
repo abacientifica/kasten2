@@ -3017,4 +3017,7 @@ window.FormatoMoneda = function FormatoMoneda(params){
     margin-left: 30%;
     color: rgb(199, 178, 153);;
 }
+.ag-theme-alpine .ag-icon-desc:before , .ag-theme-alpine .ag-icon-asc:before, .ag-theme-alpine .ag-icon-menu:before{
+    color:white;
+}
 </style>
