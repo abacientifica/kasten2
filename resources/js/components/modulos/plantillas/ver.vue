@@ -2344,7 +2344,7 @@ export default {
                                 sortable: true,
                                 filter:filtro, 
                                 hide:colVisible,
-                                editable: params => (me.fillPlantilla.Estado =='DIGITADA' && !params.node.rowPinned && params.data.IdListaCostosDetPlantDet) ? Edit :  false, 
+                                editable: params => (me.fillPlantilla.Estado =='DIGITADA' && !params.node.rowPinned && params.data.IdListaCostosDetPlantDet > 0) ? Edit :  false, 
                                 width : 147 ,
                                 cellEditor:'select',
                                 cellEditorParams:{

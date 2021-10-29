@@ -715,56 +715,25 @@ class Funciones{
             $inactivo = false;
             foreach($Criterios as $criterio){
                 $Filtro = str_replace(' ','%',$Filtros[$cont]);
-                if($criterio == 'lista_costos_prov_det.Inactivo'){
-                    $sql.= " and ".$criterio.' = '.$Filtro;
-                    $inactivo = true;
+                if($cont == 0){
+                    $sql = $sql ." and  ( ".$criterio. " LIKE '%". $Filtro ."%' " ;
                 }
-                else if(!$inactivo){
-                    $sql.= " and lista_costos_prov_det.Inactivo = 0 ";
-                    $inactivo = true;
+                else{
+                    $sql = $sql ." or ".$criterio. " LIKE '%". $Filtro ."%' " ;
                 }
-                $sql = $sql ." and  ( ".$criterio. " LIKE '%". $Filtro ."%')" ;
                 $cont++;
+            }
+            if($cont > 0){
+                $sql .= " ) ";
+            }
+            if($inactivo){
+                $sql.= " and lista_costos_prov_det.Inactivo = 1";
+            }
+            else{
+                $sql.= " and lista_costos_prov_det.Inactivo = 0 ";
             }
         }
         $sql.=" limit 100";
-
-        
-
-    
-
-        /*if ($this->ctl0_Main_TxtIdItem->Text != '') {
-            $sql = $sql . " and lista_costos_prov_det.Id_Item=" . $this->ctl0_Main_TxtIdItem->Text;
-        }
-
-        if ($this->TxtRefProveedor->Text != '') {
-            $sql = $sql . " and RefFabricante like '%" . $this->TxtRefProveedor->Text . "%'";
-        }
-
-        if ($this->TxtCodProveedor->Text != '') {
-            $sql = $sql . " and CodProveedor like '%" . $this->TxtCodProveedor->Text . "%'";
-        }
-
-        if ($this->TxtDescripcionProv->Text != '') {
-            $sql = $sql . " and DescripcionProv like '%" . $this->TxtDescripcionProv->Text . "%'";
-        }
-
-        if ($this->TxtDescripcion->Text != '') {
-            $sql = $sql . " and Descripcion like '%" . $this->TxtDescripcion->Text . "%'";
-        }
-
-        if ($this->TxtIdTercero->Text != '') {
-            $sql = $sql . " and lista_costos_prov.IdTercero = " . $this->TxtIdTercero->Text;
-        }
-        
-        if ($this->ChkDisponible->Checked)
-            $sql = $sql . " and (SELECT SUM(Disponible) as Disponible 
-                        FROM lotes LEFT JOIN bodegas ON bodegas.IdBodega = lotes.Bodega 
-                        WHERE bodegas.SumaDisponible=1 
-                        AND lotes.Id_Item=item.Id_Item) > 0";
-
-
-        $sql = $sql . " order by IdListaCostosProvDet limit 1000";*/
 
         return $sql;
     }
