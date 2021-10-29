@@ -132,17 +132,17 @@ class PlantillasClientesController extends Controller
             $IdPlantilla = $request->params['nIdPlantilla'];
             $Cont =0;
             foreach($Datos as $row){
-                if($row['Autorizado'] != 1){
+                if($row['Autorizado'] != 1 && $row['IdListaCostosDetPlantDet'] >0 ){
                     $Det = PlantillasDet::find($row['IdPlantillaDet']);
                     $Det->Autorizado = 1;
                     $Det->save();
                     \Funciones::CrearLogPlantillas(61, $Det->IdPlantilla, $Det->IdPlantillaDet,'',$Det->ItemAba);
+                    $Cont++;
                 }
-                $Cont++;
             }
             DB::commit();
             return [
-                'msg'=>"Los detalles han sido autorizados.",
+                'msg'=>"Se autorizaron ".$Cont." items, si algun detalle en especial no se autorizo valida que este homologado.",
                 'status'=>201,
                 'daa'=>$Datos
             ];
