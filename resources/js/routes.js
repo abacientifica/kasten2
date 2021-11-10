@@ -43,6 +43,9 @@ import AyudasKasten from './components/modulos/ayudas/index.vue';
 import Ayudas from './components/modulos/ayudas/ayudas.vue';
 import AyudasItems from './components/modulos/ayudas/ayudasitem.vue';
 
+//Utilidades
+import Inventario from './components/modulos/utilidades/inventario/index.vue';
+
 //Pagina 404
 import Pagina404 from './components/plantilla/404.vue';
 import TestSistemas from './components/modulos/test/index.vue';
@@ -415,6 +418,18 @@ export default new Router({
                 verificarAcceso(to, from, next);
             }*/
         },
+
+        //UTILIDADES
+        {
+            path: '/utilidades/inventario',
+            component: Inventario,
+            name: 'utilidades.inventario',
+            props: true,
+            /*beforeEnter: (to, from, next) => {
+                verificarAcceso(to, from, next);
+            }*/
+        },
+
     ],
     mode: 'history',
     linkActiveClass: 'active'
