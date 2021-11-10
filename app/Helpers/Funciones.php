@@ -1297,7 +1297,7 @@ class Funciones{
     public static function ObtenerConfiguracionGrilla($IdDoc){
         $ColumnasConf = DB::select("select * from configuraciones_columnas_documentos_det 
                                     LEFT JOIN configuraciones_columnas_documentos on configuraciones_columnas_documentos.IdConfiguracion = configuraciones_columnas_documentos_det.IdConfiguracion
-                                    where (IdDocumento =".$IdDoc." ) order by IdOrden");
+                                    where (IdDocumento =".$IdDoc." ) order by if(IdOrden <> 0,IdOrden,IdConfigDet)");
 
         $Cols=[];
         if(count($ColumnasConf)>0){
@@ -1368,5 +1368,30 @@ class Funciones{
         return $PlantillaDet;
     }
 
+    /**
+     * Obtiene el inventario por estanterias
+     */
+    public static function obtenerInventarioEstanterias($Conteo =1){
+        $strSql = "select ubicaciones.Sector ,NmUbicacion,Seccion,Capturado,Generado,sectores.Capturando,ubicaciones.InvCerrado,ubicaciones.FhHrInicio ,ubicaciones.FhHrFin ,Cerrado,Finalizado,Piso,Bodega,sectores.DigitadoConteo2 as Conteo2   from sectores
+                LEFT JOIN ubicaciones on ubicaciones.Sector = sectores.IdSector
+                GROUP BY Sector,Seccion ORDER BY Sector,Seccion";
+        return DB::select($strSql);
+    }
+
+    public static function obtenerConteosInventario($seccion,$sector,$segundoConteo=false,$tercerConteo =false){
+        $strSql = "select capinventario.*,lista_costos_prov_det.UMC,lista_costos_prov_det.FactorCompra,item.UMM,lista_costos_prov_det.Presentacion,lista_costos_prov_det.Empaque,CONCAT(ubicaciones.NmUbicacion,'- P :',ubicaciones.Piso,' - B:',capinventario.Bodega) as NmUbicacion,Seccion,Sector from capinventario
+            LEFT JOIN item ON item.Id_Item = capinventario.Id_Item
+            LEFT JOIN lista_costos_prov_det on lista_costos_prov_det.IdListaCostosProvDet = item.IdListaCostosDetItem
+            LEFT JOIN ubicaciones on ubicaciones.IdUbicacion = capinventario.IdUbicacion
+            where capinventario.Anulado =0 ";
+            if($seccion && $sector && ( !$segundoConteo && !$tercerConteo )){
+                $strSql.=" and Sector = ".$sector." and Seccion = '".$seccion."'";
+            }
+            else if($sector){
+                $strSql.=" and Sector = ".$sector;
+            }
+        
+        return DB::select($strSql);
+    }
 
 }

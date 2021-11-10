@@ -63,23 +63,23 @@
             </template>-->
             <li class="nav-header">MOVIMIENTOS</li>
             <li class="nav-item has-treeview">
-            <a href="#" class="nav-link" v-if="NumDocs >0">
-              <i class="nav-icon fas fa-copy"></i>
-              <p>
-                Documentos
-                <i class="fas fa-angle-left right"></i>
-                <span class="badge badge-info right">{{NumDocs}}</span>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">
-              <li  v-for="item in tiposDocs" :key="item.IdTpDocumento" class="nav-item" @click="DocSel = item.IdTpDocumento">
-                <router-link  class="nav-link" :to="'/tpdocumento/lista/'+item.IdTpDocumento"   :class="DocSel ==  item.IdTpDocumento? 'nav-link active': ''">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p v-text="item.NmTpDocumento"></p>
-                </router-link>
-              </li>
-            </ul>
-          </li>
+                <a href="#" class="nav-link" v-if="NumDocs >0">
+                <i class="nav-icon fas fa-copy"></i>
+                <p>
+                    Documentos
+                    <i class="fas fa-angle-left right"></i>
+                    <span class="badge badge-info right">{{NumDocs}}</span>
+                </p>
+                </a>
+                <ul class="nav nav-treeview">
+                <li  v-for="item in tiposDocs" :key="item.IdTpDocumento" class="nav-item" @click="DocSel = item.IdTpDocumento">
+                    <router-link  class="nav-link" :to="'/tpdocumento/lista/'+item.IdTpDocumento"   :class="DocSel ==  item.IdTpDocumento? 'nav-link active': ''">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p v-text="item.NmTpDocumento"></p>
+                    </router-link>
+                </li>
+                </ul>
+            </li>
 
             <template v-if="listPermisos.includes('usuarios.index','roles.index','permisos.index')">
                 <li class="nav-header">ADMINISTRACIÓN</li>
@@ -141,6 +141,27 @@
                     </li>
                 </template>
             </template>
+
+            <li class="nav-header">UTILIDADES</li>
+            <li class="nav-item has-treeview">
+                <a href="#" class="nav-link" >
+                <i class="nav-icon fas fa-copy"></i>
+                <p>
+                    Utilidades
+                    <i class="fas fa-angle-left right"></i>
+                    <span class="badge badge-info right">1</span>
+                </p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <router-link  v-if="listPermisos.includes('utilidades.inventario') || listPermisos.includes('administrador.sistema')"  class="nav-link" :to="'/utilidades/inventario'">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p v-text="'Inventario'"></p>
+                        </router-link>
+                    </li>
+                </ul>
+            </li>
+
             <template v-if="listPermisos.includes('chat.index') || listPermisos.includes('administrador.sistema') ">
                 <li class="nav-header">CHAT INTERNO</li>
                 <router-link :to="'/chat'" class="nav-link" @click="DocSel =  null">
