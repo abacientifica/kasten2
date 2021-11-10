@@ -176,6 +176,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('cotizaciones/crear', 'CotizacionesController@CrearCotizacion');
         Route::put('cotizaciones/actualizar', 'CotizacionesController@Actualizar');
     });
+
+    //Utilidades
+    Route::get('/inventario/conteos', 'Utilidades\InventarioController@index');
+    Route::get('/inventario/obtenerConteos', 'Utilidades\InventarioController@obtenerConteos');
     
 });
 
