@@ -580,7 +580,6 @@ export default {
                 text: msg
             });
         },
-        
     },
     mounted() {
         this.obtenerDatos();
