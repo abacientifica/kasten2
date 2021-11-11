@@ -563,6 +563,10 @@ export default {
                 load.close();
             }).catch(error=>{
                 load.close();
+                this.$notify.error({
+                    title: 'Error',
+                    message: 'Ocurrio un error al obtener los datos, intenta de nuevo.'
+                });
                 me.abrirModalConteos = false;
                 console.log(error);
             })

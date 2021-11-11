@@ -20,8 +20,8 @@ class InventarioController extends Controller
         if(!$request->ajax()) return  redirect('/');
         $seccion = $request->seccion;
         $sector = $request->sector;
-        $conteo2 = $request->conteo2 ? true:false;
-        $conteo3 = $request->conteo3 ? true:false;
+        $conteo2 = $request->conteo2 == 'true' ? true:false;
+        $conteo3 = $request->conteo3 == 'true' ? true:false;
         $conteos = \Funciones::obtenerConteosInventario($seccion,$sector,$conteo2,$conteo3);
         return [
             'conteos'=>$conteos,
