@@ -1384,11 +1384,11 @@ class Funciones{
             LEFT JOIN lista_costos_prov_det on lista_costos_prov_det.IdListaCostosProvDet = item.IdListaCostosDetItem
             LEFT JOIN ubicaciones on ubicaciones.IdUbicacion = capinventario.IdUbicacion
             where capinventario.Anulado =0 ";
-            if($seccion && $sector && ( !$segundoConteo && !$tercerConteo )){
-                $strSql.=" and Sector = ".$sector." and Seccion = '".$seccion."'";
-            }
-            else if($sector){
+            if($segundoConteo === true && $tercerConteo === true){
                 $strSql.=" and Sector = ".$sector;
+            }
+            else if($seccion && $sector){
+                $strSql.=" and Sector = ".$sector." and Seccion = '".$seccion."'";
             }
         
         return DB::select($strSql);

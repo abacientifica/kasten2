@@ -52,7 +52,7 @@
 
                     <el-table-column label="A">
                         <template slot-scope="scope" >
-                            <a href="#" v-on:click="verConteos(scope)">
+                            <a v-on:click="verConteos(scope)">
                                 <template  v-if="obtenerEstadoSeccion(scope,'A').estado ==='sin-iniciar'" >
                                     <el-alert  :title="`Sin Ini. ${ obtenerEstadoSeccion(scope,'A').seccion}`"   show-icon :closable="false">
                                     </el-alert>
@@ -78,7 +78,7 @@
 
                     <el-table-column label="B">
                         <template slot-scope="scope" >
-                            <a href="#" v-on:click="verConteos(scope)">
+                            <a  v-on:click="verConteos(scope)">
                                 <template  v-if="obtenerEstadoSeccion(scope,'B').estado ==='sin-iniciar'" >
                                     <el-alert  :title="`Sin Ini. ${ obtenerEstadoSeccion(scope,'B').seccion}`"   show-icon :closable="false">
                                     </el-alert>
@@ -104,7 +104,7 @@
 
                     <el-table-column  label="C">
                         <template slot-scope="scope" >
-                            <a href="#" v-on:click="verConteos(scope)">
+                            <a  v-on:click="verConteos(scope)">
                                 <template  v-if="obtenerEstadoSeccion(scope,'C').estado ==='sin-iniciar'" >
                                     <el-alert  :title="`Sin Ini. ${ obtenerEstadoSeccion(scope,'C').seccion}`"   show-icon :closable="false">
                                     </el-alert>
@@ -130,7 +130,7 @@
 
                     <el-table-column label="D">
                         <template slot-scope="scope" >
-                            <a href="#" v-on:click="verConteos(scope)">
+                            <a  v-on:click="verConteos(scope)">
                                 <template  v-if="obtenerEstadoSeccion(scope,'C').estado ==='sin-iniciar'" >
                                     <el-alert  :title="`Sin Ini. ${ obtenerEstadoSeccion(scope,'C').seccion}`"   show-icon :closable="false">
                                     </el-alert>
@@ -156,7 +156,7 @@
 
                     <el-table-column label="E">
                         <template slot-scope="scope" >
-                            <a href="#" v-on:click="verConteos(scope)">
+                            <a  v-on:click="verConteos(scope)">
                                 <template  v-if="obtenerEstadoSeccion(scope,'E').estado ==='sin-iniciar'" >
                                     <el-alert  :title="`Sin Ini. ${ obtenerEstadoSeccion(scope,'E').seccion}`"   show-icon :closable="false">
                                     </el-alert>
@@ -182,7 +182,7 @@
 
                     <el-table-column label="F">
                         <template slot-scope="scope" >
-                            <a href="#" v-on:click="verConteos(scope)">
+                            <a  v-on:click="verConteos(scope)">
                                 <template  v-if="obtenerEstadoSeccion(scope,'F').estado ==='sin-iniciar'" >
                                     <el-alert  :title="`Sin Ini. ${ obtenerEstadoSeccion(scope,'F').seccion}`"   show-icon :closable="false">
                                     </el-alert>
@@ -208,7 +208,7 @@
 
                     <el-table-column label="G">
                         <template slot-scope="scope" >
-                            <a href="#" v-on:click="verConteos(scope)">
+                            <a  v-on:click="verConteos(scope)">
                                 <template  v-if="obtenerEstadoSeccion(scope,'G').estado ==='sin-iniciar'" >
                                     <el-alert  :title="`Sin Ini. ${ obtenerEstadoSeccion(scope,'G').seccion}`"   show-icon :closable="false">
                                     </el-alert>
@@ -234,7 +234,7 @@
 
                     <el-table-column label="H">
                         <template slot-scope="scope" >
-                            <a href="#" v-on:click="verConteos(scope)">
+                            <a  v-on:click="verConteos(scope)">
                                 <template  v-if="obtenerEstadoSeccion(scope,'H').estado ==='sin-iniciar'" >
                                     <el-alert  :title="`Sin Ini. ${ obtenerEstadoSeccion(scope,'H').seccion}`"   show-icon :closable="false">
                                     </el-alert>
@@ -260,7 +260,7 @@
 
                     <el-table-column label="Conteo 2">
                         <template slot-scope="scope">
-                            <a href="#" v-on:click="verConteos(scope)">
+                            <a  v-on:click="verConteos(scope)">
                                 <template  v-if="obtenerEstadoConteo2(scope.row,'C2') ==='sin-iniciar'" >
                                     <el-alert  title="Sin ini." type="error" effect="dark" show-icon :closable="false">
                                     </el-alert>
@@ -286,7 +286,7 @@
 
                     <el-table-column label="Conteo 3">
                             <template slot-scope="scope" >
-                                <a href="#" v-on:click="verConteos(scope)">
+                                <a  v-on:click="verConteos(scope)">
                                     <template  v-if="obtenerEstadoConteo3(scope.row,'C3') ==='sin-iniciar'" >
                                         <el-alert  title="Sin ini." type="error" effect="dark" show-icon :closable="false">
                                         </el-alert>
@@ -523,6 +523,11 @@ export default {
             let fin = inicio + this.perPage;
             return this.datosConteos ? this.datosConteos.slice(inicio, fin):[];
         },
+
+        limpiarConteos(){
+            this.abrirModalConteos === false ? this.datosConteos = null:'';
+            return true;
+        }
     },
 
     methods: {
@@ -547,7 +552,7 @@ export default {
         },
 
         verConteos(scope){
-            console.log(scope)
+            //console.log(scope)
             const load = this.loader();
             let me=this,seccion=scope.column.label,sector=scope.$index+1,conteo2= scope.column.label.length > 1 ? true :false,conteo3=scope.column.label.length > 1 ? true :false;
             axios.get('/inventario/obtenerConteos',{
@@ -575,7 +580,6 @@ export default {
                 text: msg
             });
         },
-        
     },
     mounted() {
         this.obtenerDatos();
