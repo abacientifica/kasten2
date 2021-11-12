@@ -54,25 +54,26 @@
                         <template slot-scope="scope" >
                             <a v-on:click="verConteos(scope)">
                                 <template  v-if="obtenerEstadoSeccion(scope,'A').estado ==='sin-iniciar'" >
-                                    <el-alert  :title="`Sin Ini. ${ obtenerEstadoSeccion(scope,'A').seccion}`"   show-icon :closable="false">
+                                    <el-alert  :title="`Sin Ini.`"   show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'A').estado ==='finalizado'" >
-                                    <el-alert  :title="`Fin. ${ obtenerEstadoSeccion(scope,'A').seccion}`"  type="success" show-icon :closable="false">
+                                    <el-alert  :title="`Fin.`"  type="success" show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'A').estado ==='capturando'" >
-                                    <el-alert  :title="`Capturando ${ obtenerEstadoSeccion(scope,'A').seccion}`"  type="warning" show-icon :closable="false">
+                                    <el-alert  :title="`Capturando`"  type="warning" show-icon :closable="false">
                                     </el-alert>
                                 </template>
-
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'A').estado ==='no-encontrado'" >
-                                    <el-alert  :title="`No Existe`"  type="info" show-icon :closable="false">
-                                    </el-alert>
+                                    <vs-button shadow disabled>
+                                        No Existe
+                                    </vs-button>
                                 </template>
                             </a>
+                            
                         </template>
                     </el-table-column>
 
@@ -80,23 +81,24 @@
                         <template slot-scope="scope" >
                             <a  v-on:click="verConteos(scope)">
                                 <template  v-if="obtenerEstadoSeccion(scope,'B').estado ==='sin-iniciar'" >
-                                    <el-alert  :title="`Sin Ini. ${ obtenerEstadoSeccion(scope,'B').seccion}`"   show-icon :closable="false">
+                                    <el-alert  :title="`Sin Ini.`"   show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'B').estado ==='finalizado'" >
-                                    <el-alert  :title="`Fin. ${ obtenerEstadoSeccion(scope,'B').seccion}`"  type="success" show-icon :closable="false">
+                                    <el-alert  :title="`Fin.`"  type="success" show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'B').estado ==='capturando'" >
-                                    <el-alert  :title="`Capturando ${ obtenerEstadoSeccion(scope,'B').seccion}`"  type="warning" show-icon :closable="false">
+                                    <el-alert  :title="`Capturando`"  type="warning" show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'B').estado ==='no-encontrado'" >
-                                    <el-alert  :title="`No Existe `"  type="info" show-icon :closable="false">
-                                    </el-alert>
+                                    <vs-button shadow disabled>
+                                        No Existe
+                                    </vs-button>
                                 </template>
                             </a>
                         </template>
@@ -106,23 +108,24 @@
                         <template slot-scope="scope" >
                             <a  v-on:click="verConteos(scope)">
                                 <template  v-if="obtenerEstadoSeccion(scope,'C').estado ==='sin-iniciar'" >
-                                    <el-alert  :title="`Sin Ini. ${ obtenerEstadoSeccion(scope,'C').seccion}`"   show-icon :closable="false">
+                                    <el-alert  :title="`Sin Ini.`"   show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'C').estado ==='finalizado'" >
-                                    <el-alert  :title="`Fin. ${ obtenerEstadoSeccion(scope,'C').seccion}`"  type="success" show-icon :closable="false">
+                                    <el-alert  :title="`Fin.`"  type="success" show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'C').estado ==='capturando'" >
-                                    <el-alert  :title="`Capturando ${ obtenerEstadoSeccion(scope,'C').seccion}`"  type="warning" show-icon :closable="false">
+                                    <el-alert  :title="`Capturando`"  type="warning" show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'C').estado ==='no-encontrado'" >
-                                    <el-alert  :title="`No Existe`"  type="info" show-icon :closable="false">
-                                    </el-alert>
+                                    <vs-button shadow disabled>
+                                        No Existe
+                                    </vs-button>
                                 </template>
                             </a>
                         </template>
@@ -132,23 +135,24 @@
                         <template slot-scope="scope" >
                             <a  v-on:click="verConteos(scope)">
                                 <template  v-if="obtenerEstadoSeccion(scope,'C').estado ==='sin-iniciar'" >
-                                    <el-alert  :title="`Sin Ini. ${ obtenerEstadoSeccion(scope,'C').seccion}`"   show-icon :closable="false">
+                                    <el-alert  :title="`Sin Ini.`"   show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'C').estado ==='finalizado'" >
-                                    <el-alert  :title="`Fin. ${ obtenerEstadoSeccion(scope,'C').seccion}`"  type="success" show-icon :closable="false">
+                                    <el-alert  :title="`Fin.`"  type="success" show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'C').estado ==='capturando'" >
-                                    <el-alert  :title="`Capturando ${ obtenerEstadoSeccion(scope,'C').seccion}`"  type="warning" show-icon :closable="false">
+                                    <el-alert  :title="`Capturando`"  type="warning" show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'C').estado ==='no-encontrado'" >
-                                    <el-alert  :title="`No Existe `"  type="info" show-icon :closable="false">
-                                    </el-alert>
+                                    <vs-button shadow disabled>
+                                        No Existe
+                                    </vs-button>
                                 </template>
                             </a>
                         </template>
@@ -158,23 +162,24 @@
                         <template slot-scope="scope" >
                             <a  v-on:click="verConteos(scope)">
                                 <template  v-if="obtenerEstadoSeccion(scope,'E').estado ==='sin-iniciar'" >
-                                    <el-alert  :title="`Sin Ini. ${ obtenerEstadoSeccion(scope,'E').seccion}`"   show-icon :closable="false">
+                                    <el-alert  :title="`Sin Ini.`"   show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'E').estado ==='finalizado'" >
-                                    <el-alert  :title="`Fin. ${ obtenerEstadoSeccion(scope,'E').seccion}`"  type="success" show-icon :closable="false">
+                                    <el-alert  :title="`Fin.`"  type="success" show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'E').estado ==='capturando'" >
-                                    <el-alert  :title="`Capturando ${ obtenerEstadoSeccion(scope,'E').seccion}`"  type="warning" show-icon :closable="false">
+                                    <el-alert  :title="`Capturando`"  type="warning" show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'E').estado ==='no-encontrado'" >
-                                    <el-alert  :title="`No Existe `"  type="info" show-icon :closable="false">
-                                    </el-alert>
+                                    <vs-button shadow disabled>
+                                        No Existe
+                                    </vs-button>
                                 </template>
                             </a>
                         </template>
@@ -184,23 +189,24 @@
                         <template slot-scope="scope" >
                             <a  v-on:click="verConteos(scope)">
                                 <template  v-if="obtenerEstadoSeccion(scope,'F').estado ==='sin-iniciar'" >
-                                    <el-alert  :title="`Sin Ini. ${ obtenerEstadoSeccion(scope,'F').seccion}`"   show-icon :closable="false">
+                                    <el-alert  :title="`Sin Ini.`"   show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'F').estado ==='finalizado'" >
-                                    <el-alert  :title="`Fin. ${ obtenerEstadoSeccion(scope,'F').seccion}`"  type="success" show-icon :closable="false">
+                                    <el-alert  :title="`Fin.`"  type="success" show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'F').estado ==='capturando'" >
-                                    <el-alert  :title="`Capturando ${ obtenerEstadoSeccion(scope,'F').seccion}`"  type="warning" show-icon :closable="false">
+                                    <el-alert  :title="`Capturando`"  type="warning" show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'F').estado ==='no-encontrado'" >
-                                    <el-alert  :title="`No Existe `"  type="info" show-icon :closable="false">
-                                    </el-alert>
+                                    <vs-button shadow disabled>
+                                        No Existe
+                                    </vs-button>
                                 </template>
                             </a>
                         </template>
@@ -210,23 +216,24 @@
                         <template slot-scope="scope" >
                             <a  v-on:click="verConteos(scope)">
                                 <template  v-if="obtenerEstadoSeccion(scope,'G').estado ==='sin-iniciar'" >
-                                    <el-alert  :title="`Sin Ini. ${ obtenerEstadoSeccion(scope,'G').seccion}`"   show-icon :closable="false">
+                                    <el-alert  :title="`Sin Ini.`"   show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'G').estado ==='finalizado'" >
-                                    <el-alert  :title="`Fin. ${ obtenerEstadoSeccion(scope,'G').seccion}`"  type="success" show-icon :closable="false">
+                                    <el-alert  :title="`Fin.`"  type="success" show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'G').estado ==='capturando'" >
-                                    <el-alert  :title="`Capturando ${ obtenerEstadoSeccion(scope,'G').seccion}`"  type="warning" show-icon :closable="false">
+                                    <el-alert  :title="`Capturando`"  type="warning" show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'G').estado ==='no-encontrado'" >
-                                    <el-alert  :title="`No Existe `"  type="info" show-icon :closable="false">
-                                    </el-alert>
+                                    <vs-button shadow disabled>
+                                        No Existe
+                                    </vs-button>
                                 </template>
                             </a>
                         </template>
@@ -236,23 +243,24 @@
                         <template slot-scope="scope" >
                             <a  v-on:click="verConteos(scope)">
                                 <template  v-if="obtenerEstadoSeccion(scope,'H').estado ==='sin-iniciar'" >
-                                    <el-alert  :title="`Sin Ini. ${ obtenerEstadoSeccion(scope,'H').seccion}`"   show-icon :closable="false">
+                                    <el-alert  :title="`Sin Ini.`"   show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'H').estado ==='finalizado'" >
-                                    <el-alert  :title="`Fin. ${ obtenerEstadoSeccion(scope,'H').seccion}`"  type="success" show-icon :closable="false">
+                                    <el-alert  :title="`Fin.`"  type="success" show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'H').estado ==='capturando'" >
-                                    <el-alert  :title="`Capturando ${ obtenerEstadoSeccion(scope,'H').seccion}`"  type="warning" show-icon :closable="false">
+                                    <el-alert  :title="`Capturando`"  type="warning" show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
                                 <template  v-else-if="obtenerEstadoSeccion(scope,'H').estado ==='no-encontrado'" >
-                                    <el-alert  :title="`No Existe`"  type="info" show-icon :closable="false">
-                                    </el-alert>
+                                    <vs-button shadow disabled>
+                                        No Existe
+                                    </vs-button>
                                 </template>
                             </a>
                         </template>
@@ -445,6 +453,9 @@ export default {
                         else if(!datoFiltrado.FhHrInicio && !datoFiltrado.InvCerrado){
                             estado = 'sin-iniciar'
                         }
+                        if(!estado){
+                            console.log(seccion,datoFiltrado.FhHrInicio ,datoFiltrado.InvCerrado)
+                        }
                     }
                     else{
                         estado = 'no-encontrado'
@@ -534,9 +545,11 @@ export default {
         
         obtenerDatos(){
             let me  = this;
+            me.tableData = [];
             const load = this.loader('Un momento, estamos cargando los datos ... ');
             axios.get('/inventario/conteos').then(response=>{
                 let respuesta = response.data.datos;
+                respuesta.push(response.data.datos[0]);
                 let groupData = groupSecciones(respuesta,'Sector')
                 me.prueba = Object.values(groupData).map(e=>{
                     if(Array.isArray(e)){
@@ -552,7 +565,6 @@ export default {
         },
 
         verConteos(scope){
-            //console.log(scope)
             const load = this.loader();
             let me=this,seccion=scope.column.label,sector=scope.$index+1,conteo2= scope.column.label.length > 1 ? true :false,conteo3=scope.column.label.length > 1 ? true :false;
             axios.get('/inventario/obtenerConteos',{
