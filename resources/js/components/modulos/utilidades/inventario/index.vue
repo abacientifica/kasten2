@@ -29,15 +29,25 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <el-button type="primary" icon="el-icon-refresh" @click.prevent="obtenerDatos()" circle></el-button>
+                    <div class="form-group row">
+                        <div class="col-md-12">
+                            <div class="input-group">
+                                <el-button type="primary" icon="el-icon-refresh" @click.prevent="obtenerDatos()" circle></el-button>
+                                <input type="text" v-model="filtros" @keyup.enter="filtrarDatos()" class="form-control" placeholder="Ingrese valor del criterio">
+                                <button type="submit" @click="filtrarDatos()" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                            </div>
+                        </div>
+                    </div>
+                   
                     <hr>
                     <el-table
                         ref="filterTable"
                         :data="tableData"
                         style="width: 100%"
+                        :max-height="height"
                         border>
 
-                    <el-table-column label="Piso" width="80">
+                    <el-table-column label="Piso" width="80" fixed>
                         <template slot-scope="scope">
                             <label v-text="scope.row[0].Piso" ></label>
                         </template>
@@ -434,8 +444,11 @@ export default {
     
     data() {
         return {
+            height:((window.innerHeight / 2) + 90),
             tableData: [],
+            backData:[],
             prueba:null,
+            filtros:null,
             obtenerEstadoSeccion (scope,letra){
                 let estado = null;
                 let seccion = null;
@@ -556,6 +569,7 @@ export default {
                         me.tableData = [...me.tableData,e]
                     }
                 });
+                me.backData = me.tableData;
                 load.close();
             }).catch(error=>{
                 load.close();
@@ -566,7 +580,7 @@ export default {
 
         verConteos(scope){
             const load = this.loader();
-            let me=this,seccion=scope.column.label,sector=scope.$index+1,conteo2= scope.column.label.length > 1 ? true :false,conteo3=scope.column.label.length > 1 ? true :false;
+            let me=this,seccion=scope.column.label,sector=scope.row[0].Sector,conteo2= scope.column.label.length > 1 ? true :false,conteo3=scope.column.label.length > 1 ? true :false;
             axios.get('/inventario/obtenerConteos',{
                 params:{seccion,sector,conteo2,conteo3
             }}).then(response=>{
@@ -587,6 +601,40 @@ export default {
         selectPage(page) {
             this.pageNumber = page;
         },    
+
+        filtrarDatos(){ 
+            const load = this.loader('Filtrando datos ... ');
+            if(this.filtros){
+                let arrFiltros = this.filtros.split(',');
+                if(arrFiltros.length === 1){
+                    if(!isNaN(arrFiltros)){
+                        this.tableData = this.backData[this.filtros-1] ? [this.backData[this.filtros-1]] :this.tableData;
+                    }
+                }
+                else{
+                    let datoInit = false;
+                    for (let i = 0; i < arrFiltros.length; i++) {
+                        if(!isNaN(arrFiltros[i])){
+                            if(i===0 || !datoInit){
+                                if(this.backData[arrFiltros[i]-1]){
+                                    this.tableData = [this.backData[arrFiltros[i]-1]];
+                                    datoInit = true;
+                                }
+                            }
+                            else{
+                                if(this.backData[arrFiltros[i]-1]){
+                                    this.tableData.push(this.backData[arrFiltros[i]-1]);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else{
+                this.tableData = this.backData;
+            }
+            load.close();
+        },
 
         loader(msg='Cargando...') {
             return this.$vs.loading({
