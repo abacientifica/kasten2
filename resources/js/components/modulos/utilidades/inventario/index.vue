@@ -450,6 +450,7 @@ export default {
             height:((window.innerHeight / 2) + 90),
             tableData: [],
             backData:[],
+            datosInicial:[],
             prueba:null,
             filtros:null,
             obtenerEstadoSeccion (scope,letra){
@@ -580,15 +581,17 @@ export default {
             if(this.backData){
                 let datos = this.backData;
                 let sectoresFin = [];
+                let totalUbicaciones = 0;
                 for (let i = 0; i < datos.length ; i++) {
-                    if(datos[i][0] &&  (datos[i][0].Capturado)){
-                        sectoresFin = [...sectoresFin,datos[i][0]]
+                    let datos2 = datos[i]
+                    for (let e = 0; e < datos2.length; e++) {
+                        if(datos2[e] && datos2[e].InvCerrado){
+                            totalUbicaciones++;
+                        }
                     }
                 }
-                console.log(this.backData.length , sectoresFin.length)
-                let porcentaje = ((this.backData.length - sectoresFin.length) / this.backData.length) *100;
-                let valorFinal = this.backData.length - porcentaje //(this.backData.length - ((this.backData.length - sectoresFin.length ) / this.backData.length))
-                return this.decimalAdjust('round',valorFinal,-1)
+                let valorFinal = (totalUbicaciones / this.datosInicial.length )*100
+                return  this.decimalAdjust('round',valorFinal,-1)
             }
             else{
                 return 0;
@@ -642,6 +645,7 @@ export default {
             const load = this.loader('Un momento, estamos cargando los datos ... ');
             axios.get('/inventario/conteos').then(response=>{
                 let respuesta = response.data.datos;
+                me.datosInicial = respuesta;
                 respuesta.push(response.data.datos[0]);
                 let groupData = groupSecciones(respuesta,'Sector')
                 me.prueba = Object.values(groupData).map(e=>{
