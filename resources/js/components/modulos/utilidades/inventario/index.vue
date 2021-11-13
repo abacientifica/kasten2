@@ -608,8 +608,8 @@ export default {
                     }
                 }
                 console.log(this.backData.length , sectoresFin.length)
-                let porcentaje = ((this.backData.length - sectoresFin.length) / this.backData.length) *100;
-                let valorFinal = this.backData.length - porcentaje //(this.backData.length - ((this.backData.length - sectoresFin.length ) / this.backData.length))
+              
+                let valorFinal = (sectoresFin.length / this.backData.length * 100)
                 return this.decimalAdjust('round',valorFinal,-1)
             }
             else{
@@ -626,9 +626,7 @@ export default {
                         sectoresFin = [...sectoresFin,datos[i][0]]
                     }
                 }
-                console.log(this.backData.length , sectoresFin.length)
-                let porcentaje = ((this.backData.length - sectoresFin.length) / this.backData.length) *100;
-                let valorFinal = this.backData.length - porcentaje //(this.backData.length - ((this.backData.length - sectoresFin.length ) / this.backData.length))
+                let valorFinal = (sectoresFin.length / this.backData.length * 100)
                 return this.decimalAdjust('round',valorFinal,-1)
             }
             else{
