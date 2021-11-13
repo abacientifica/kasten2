@@ -27,6 +27,9 @@
                             </div>
                         </div>
                     </div>
+                    | <b>Porcentaje Conteo1  <b class="alert alert-success">{{ calcularPorcentage }} %</b> </b>
+                    | <b>Porcentaje Conteo2  <b class="alert alert-success">{{ calcularPorcentageC2 }} %</b> </b>
+                    | <b>Porcentaje Conteo3  <b class="alert alert-success">{{ calcularPorcentageC3 }} %</b> </b>
                 </div>
                 <div class="card-body">
                     <div class="form-group row">
@@ -531,6 +534,25 @@ export default {
                 }
                 return estado;
             },
+            decimalAdjust(type, value, exp) {
+                // Si el exp no está definido o es cero...
+                if (typeof exp === 'undefined' || +exp === 0) {
+                return Math[type](value);
+                }
+                value = +value;
+                exp = +exp;
+                // Si el valor no es un número o el exp no es un entero...
+                if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
+                return NaN;
+                }
+                // Shift
+                value = value.toString().split('e');
+                value = Math[type](+(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp)));
+                // Shift back
+                value = value.toString().split('e');
+                return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
+            },
+            
             abrirModalConteos:false,
             datosConteos:null,
 
@@ -552,6 +574,63 @@ export default {
         limpiarConteos(){
             this.abrirModalConteos === false ? this.datosConteos = null:'';
             return true;
+        },
+
+        calcularPorcentage(){
+            if(this.backData){
+                let datos = this.backData;
+                let sectoresFin = [];
+                for (let i = 0; i < datos.length ; i++) {
+                    if(datos[i][0] &&  (datos[i][0].Capturado)){
+                        sectoresFin = [...sectoresFin,datos[i][0]]
+                    }
+                }
+                console.log(this.backData.length , sectoresFin.length)
+                let porcentaje = ((this.backData.length - sectoresFin.length) / this.backData.length) *100;
+                let valorFinal = this.backData.length - porcentaje //(this.backData.length - ((this.backData.length - sectoresFin.length ) / this.backData.length))
+                return this.decimalAdjust('round',valorFinal,-1)
+            }
+            else{
+                return 0;
+            }
+        },
+
+        calcularPorcentageC2(){
+            if(this.backData){
+               let datos = this.backData;
+                let sectoresFin = [];
+                for (let i = 0; i < datos.length ; i++) {
+                    if(datos[i][0] &&  (datos[i][0].Conteo2)){
+                        sectoresFin = [...sectoresFin,datos[i][0]]
+                    }
+                }
+                console.log(this.backData.length , sectoresFin.length)
+                let porcentaje = ((this.backData.length - sectoresFin.length) / this.backData.length) *100;
+                let valorFinal = this.backData.length - porcentaje //(this.backData.length - ((this.backData.length - sectoresFin.length ) / this.backData.length))
+                return this.decimalAdjust('round',valorFinal,-1)
+            }
+            else{
+                return 0;
+            }
+        },
+
+        calcularPorcentageC3(){
+            if(this.backData){
+               let datos = this.backData;
+                let sectoresFin = [];
+                for (let i = 0; i < datos.length ; i++) {
+                    if(datos[i][0] &&  (datos[i][0].Cerrado)){
+                        sectoresFin = [...sectoresFin,datos[i][0]]
+                    }
+                }
+                console.log(this.backData.length , sectoresFin.length)
+                let porcentaje = ((this.backData.length - sectoresFin.length) / this.backData.length) *100;
+                let valorFinal = this.backData.length - porcentaje //(this.backData.length - ((this.backData.length - sectoresFin.length ) / this.backData.length))
+                return this.decimalAdjust('round',valorFinal,-1)
+            }
+            else{
+                return 0;
+            }
         }
     },
 
@@ -648,11 +727,13 @@ export default {
 
         porcentageConteo(){
             let datos = this.backData;
-            for (let i = 0; i < datos.length; i++) {
-                for (let e = 0; e < datos[i].length; e++) {
-                    
+            let sectoresFin = [];
+            for (let i = 0; i < datos.length ; i++) {
+                if(datos[i][0] && datos[i][0].Finalizado){
+                    sectoresFin = [...sectoresFin,datos[i][0]]
                 }
             }
+            console.log(sectoresFin.length);
         }
     },
     mounted() {
