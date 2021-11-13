@@ -486,14 +486,14 @@ export default {
                     let estadoLetra = '';
                     let datoFiltrado = datosRow[0]
                     if(datoFiltrado){
-                        if(!datoFiltrado.Conteo2 && !datoFiltrado.Generado  && !datoFiltrado.Finalizado  && !datoFiltrado.Cerrado ){
+                        if( datoFiltrado.Finalizado || datoFiltrado.Cerrado || datoFiltrado.Conteo2){
+                            estado = 'finalizado'
+                        }
+                        else if(!datoFiltrado.Conteo2 && !datoFiltrado.Generado  && !datoFiltrado.Finalizado  && !datoFiltrado.Cerrado ){
                             estado = 'sin-iniciar'
                         }
                         else if(datoFiltrado.Generado  && !datoFiltrado.Finalizado && !datoFiltrado.Cerrado ){
                             estado = 'generado'
-                        }
-                        else if(datoFiltrado.Conteo2 ||  datoFiltrado.Finalizado ){
-                            estado = 'finalizado'
                         }
                         else{
                             estado = 'sin-conteo'
@@ -511,15 +511,16 @@ export default {
                     let estadoLetra = '';
                     let datoFiltrado = datosRow[0]
                     if(datoFiltrado){
-                        if(datoFiltrado.Generado  && !datoFiltrado.Cerrado && !datoFiltrado.Finalizado){
-                            estado = 'sin-iniciar'
-                        }
-                        else if(datoFiltrado.Cerrado && !datoFiltrado.Finalizado){
-                            estado = 'generado'
-                        }
-                        else if(datoFiltrado.Finalizado ){
+                        if(datoFiltrado.Cerrado || datoFiltrado.Finalizado ){
                             estado = 'finalizado'
                         }
+                        else if(datoFiltrado.Generado  && !datoFiltrado.Cerrado && !datoFiltrado.Finalizado){
+                            estado = 'sin-iniciar'
+                        }
+                        else if(datoFiltrado.UsuarioSector &&  datoFiltrado.Conteo2 &&  !datoFiltrado.Cerrado && !datoFiltrado.Finalizado ){
+                            estado = 'generado'
+                        }
+                        
                         else{
                             estado = 'sin-conteo'
                         }
@@ -644,6 +645,15 @@ export default {
                 text: msg
             });
         },
+
+        porcentageConteo(){
+            let datos = this.backData;
+            for (let i = 0; i < datos.length; i++) {
+                for (let e = 0; e < datos[i].length; e++) {
+                    
+                }
+            }
+        }
     },
     mounted() {
         this.obtenerDatos();

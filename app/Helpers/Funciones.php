@@ -1372,7 +1372,7 @@ class Funciones{
      * Obtiene el inventario por estanterias
      */
     public static function obtenerInventarioEstanterias($Conteo =1){
-        $strSql = "select ubicaciones.Sector ,NmUbicacion,Seccion,Capturado,Generado,sectores.Capturando,ubicaciones.InvCerrado,ubicaciones.FhHrInicio ,ubicaciones.FhHrFin ,Cerrado,Finalizado,Piso,Bodega,sectores.DigitadoConteo2 as Conteo2   from sectores
+        $strSql = "select ubicaciones.Sector ,NmUbicacion,Seccion,Capturado,Generado,sectores.Capturando,ubicaciones.InvCerrado,ubicaciones.FhHrInicio ,ubicaciones.FhHrFin ,Cerrado,Finalizado,Piso,Bodega,sectores.DigitadoConteo2 as Conteo2,UsuarioSector  from sectores
                 LEFT JOIN ubicaciones on ubicaciones.Sector = sectores.IdSector
                 GROUP BY Sector,Seccion ORDER BY Sector,Seccion";
         return DB::select($strSql);
