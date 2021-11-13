@@ -492,7 +492,7 @@ export default {
                         else if(datoFiltrado.Generado  && !datoFiltrado.Finalizado && !datoFiltrado.Cerrado ){
                             estado = 'generado'
                         }
-                        else if(datoFiltrado.Conteo2){
+                        else if(datoFiltrado.Conteo2 ||  datoFiltrado.Finalizado ){
                             estado = 'finalizado'
                         }
                         else{
