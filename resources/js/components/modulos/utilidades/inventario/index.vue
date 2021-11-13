@@ -511,10 +511,10 @@ export default {
                     let estadoLetra = '';
                     let datoFiltrado = datosRow[0]
                     if(datoFiltrado){
-                        if(datoFiltrado.Generado  && !datoFiltrado.Cerrado){
+                        if(datoFiltrado.Generado  && !datoFiltrado.Cerrado && !datoFiltrado.Finalizado){
                             estado = 'sin-iniciar'
                         }
-                        else if(datoFiltrado.Cerrado){
+                        else if(datoFiltrado.Cerrado && !datoFiltrado.Finalizado){
                             estado = 'generado'
                         }
                         else if(datoFiltrado.Finalizado ){
