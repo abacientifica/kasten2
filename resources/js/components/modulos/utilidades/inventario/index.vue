@@ -144,22 +144,22 @@
                     <el-table-column label="D">
                         <template slot-scope="scope" >
                             <a  v-on:click="verConteos(scope)">
-                                <template  v-if="obtenerEstadoSeccion(scope,'C').estado ==='sin-iniciar'" >
+                                <template  v-if="obtenerEstadoSeccion(scope,'D').estado ==='sin-iniciar'" >
                                     <el-alert  :title="`Sin Ini.`"   show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
-                                <template  v-else-if="obtenerEstadoSeccion(scope,'C').estado ==='finalizado'" >
+                                <template  v-else-if="obtenerEstadoSeccion(scope,'D').estado ==='finalizado'" >
                                     <el-alert  :title="`Fin.`"  type="success" show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
-                                <template  v-else-if="obtenerEstadoSeccion(scope,'C').estado ==='capturando'" >
+                                <template  v-else-if="obtenerEstadoSeccion(scope,'D').estado ==='capturando'" >
                                     <el-alert  :title="`Capturando`"  type="warning" show-icon :closable="false">
                                     </el-alert>
                                 </template>
 
-                                <template  v-else-if="obtenerEstadoSeccion(scope,'C').estado ==='no-encontrado'" >
+                                <template  v-else-if="obtenerEstadoSeccion(scope,'D').estado ==='no-encontrado'" >
                                     <vs-button shadow disabled>
                                         No Existe
                                     </vs-button>
