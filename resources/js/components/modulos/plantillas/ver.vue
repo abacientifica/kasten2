@@ -107,8 +107,8 @@
                                 <th scope="row">3</th>
                                 <td>
                                     <vs-tooltip>
-                                        <template #tooltip>Sirve para crear una plantilla con los mismos datos. </template>
-                                        <el-button type="primary" round :disabled="(ValidarPermiso('duplicar')) ? false : true"><i class="fas fa-clone"></i> Duplicar Plantilla</el-button>
+                                        <template #tooltip>Sirve para crear una plantilla con los mismos datos. (La plantilla debe estar autorizada)</template>
+                                        <el-button type="primary" round :disabled="(ValidarPermiso('duplicar')) && fillPlantilla.Estado =='AUTORIZADA' ? false : true"   @click.prevent="duplicarPlantilla()"><i class="fas fa-clone"></i> Duplicar Plantilla</el-button>
                                     </vs-tooltip>
                                 </td>
                                 <td>
@@ -2885,8 +2885,40 @@ export default {
             else{
                 this.AlertMensaje("Debes seleccionar al menos 1 registro",2);
             }
-        }
+        },
 
+        duplicarPlantilla(){
+            this.$prompt('Estas seguro(a) de duplicar esta plantilla. Continuar? Ingresa un comentario ', 'Alerta', {
+                confirmButtonText: 'OK',
+                cancelButtonText: 'Cancelar',
+                type: 'warning'
+            }).then(({value}) => {
+                let me = this;
+                const loader = me.loaderk();
+                me.dialogAcciones = !me.dialogAcciones;
+                axios.put('/plantillas/clientes/duplicar',{
+                    'IdPlantilla':this.$attrs.id,
+                    'comentario': value
+                }).then(response=>{
+                    let respuesta = response.data;
+                    if(respuesta.status === 201){
+                        me.AlertMensaje(`${respuesta.msg}, lo estamos redirigiendo ...`,1);
+                        setTimeout(()=>{
+                            loader.close();
+                            me.$router.push('/plantillas/clientes/ver/'+respuesta.id);
+                            location.reload();
+                        },6000)
+                    }
+                }).catch(error=>{
+                    me.AlertMensaje(`${respuesta.msg},intenta nuevamente ...`,3);
+                })
+            }).catch(()=>{
+                this.$message({
+                    type: 'info',
+                    message: 'Transacción cancelada'
+                });  
+            })
+        }
     },
 
     
