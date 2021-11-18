@@ -512,6 +512,13 @@ class PlantillasClientesController extends Controller
                 if (isset($data[10]) && is_numeric($data[10])) {
                     $CodigoG->PrecioTecho = $data[10];
                 }
+                if (isset($data[11]) && is_numeric($data[11])) {
+                    $item = DB::select("select * from item where Id_Item = ".$data[11]." and Inactivo =0");
+                    if($item){
+                        $CodigoG->IdListaCostosDetPlantDet = $item[0]->IdListaCostosDetItem;
+                    }
+                    $CodigoG->PrecioTecho = $data[10];
+                }
                 if (is_numeric($CodigoG->CantidadConsumo)  && is_numeric($Plantilla->CantidadConsumoMes) > 0) {
                     $CodigoG->CantConsumoMesDet = ($CodigoG->CantidadConsumo / $Plantilla->CantidadConsumoMes);
                 }
@@ -1225,5 +1232,53 @@ class PlantillasClientesController extends Controller
             'msg'=>" Se aplico la opcion a ".$ItemsAplicados.", excepto los items autorizados.",
             'status'=>201,
         ];
+    }
+
+    public function duplicarPlantilla(Request $request){
+        if(!$request->ajax()) return  redirect('/');
+        try{
+            DB::beginTransaction();
+            $plantilla = Plantillas::with('plantillasdet')->find($request->IdPlantilla);
+            $plantillaNueva = new Plantillas();
+            $plantillaNueva->IdTerceroPlant = $plantilla->IdTerceroPlant;
+            $plantillaNueva->IdDireccionPlant = $plantilla->IdDireccionPlant;
+            $plantillaNueva->NmPlantilla = $plantilla->NmPlantilla;
+            $plantillaNueva->FhEntregaPropuesta = $plantilla->FhEntregaPropuesta;
+            $plantillaNueva->Periodo =  $plantilla->Periodo;
+            $plantillaNueva->Estado = 'DIGITADA';
+            $plantillaNueva->Usuario = \Auth::user()->Usuario;
+            $plantillaNueva->Comentarios = $request->comentario ? $request->comentario." duplicada de la plantilla ID # ".$plantilla->IdPlantilla : $plantilla->Comentarios." , duplicada de la plantilla ID # ".$plantilla->IdPlantilla;
+            $plantillaNueva->CantidadConsumoMes = $plantilla->CantidadConsumoMes;
+            $plantillaNueva->FhPlantilla = date('Y-m-d H:i:s');
+            $plantillaNueva->VigDesde = $plantilla->VigDesde;
+            $plantillaNueva->VigHasta = $plantilla->VigHasta;
+            $plantillaNueva->Tipo =0;
+            $plantillaNueva->save();
+            foreach ($plantilla->plantillasdet as  $det) {
+                $plantillaDetNueva = new PlantillasDet();
+                $plantillaDetNueva = $det->replicate();
+                $plantillaDetNueva->IdPlantilla = $plantillaNueva->IdPlantilla;
+                $plantillaDetNueva->EnlaceCot = 0;
+                $plantillaDetNueva->Revisado = 0;
+                $plantillaDetNueva->Autorizado = 0;
+                $plantillaDetNueva->push();
+            }
+           
+            DB::commit();
+            \Funciones::CrearLogPlantillas(8, $plantillaNueva->IdPlantilla);
+            return [
+                'msg'=>'La plantilla ha sido duplicada correctamente con el id '.$plantillaNueva->IdPlantilla,
+                'status'=>201,
+                'id'=>$plantillaNueva->IdPlantilla
+            ];
+
+        }
+        catch(Exception $e){
+            DB::rollBack();
+            return [
+                'msg'=>'Ocurrio un error al crear la plantilla '.$e->getMessage(),
+                'status'=>501,
+            ];
+        }
     }
 }
