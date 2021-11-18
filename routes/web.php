@@ -88,6 +88,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::put('/plantillas/clientes/AgregarNoHomologados','Plantillas\PlantillasClientesController@AgregarItemsNoHomologados');
     Route::put('/plantillas/clientes/Actualizar','Plantillas\PlantillasClientesController@Actualizar');
     Route::put('/plantillas/clientes/AplicarOpcionLicitacion','Plantillas\PlantillasClientesController@AplicarOpcionLicitacion');
+    Route::put('/plantillas/clientes/duplicar','Plantillas\PlantillasClientesController@duplicarPlantilla');
 
 
 
