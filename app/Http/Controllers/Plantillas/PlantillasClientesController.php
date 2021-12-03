@@ -345,7 +345,8 @@ class PlantillasClientesController extends Controller
             \Funciones::ActualizarDatosPlantillaClientes($PlantDet->IdPlantilla,$PlantDet->IdPlantillaDet);
             return[
                 'status'=>201,
-                'msg'=>"El detalle ha sido homologado"
+                'msg'=>"El detalle ha sido homologado",
+                'detalle'=>(\Funciones::obtenerDetallePlantilla($PlantDet->IdPlantillaDet)[0])
             ];
         }
         else{
@@ -370,7 +371,7 @@ class PlantillasClientesController extends Controller
             return[
                 'status'=>201,
                 'msg'=>"El detalle ha sido des-homologado",
-                'detalle'=>$PlantillaDet[0]
+                'detalle'=>(\Funciones::obtenerDetallePlantilla($PlantDet->IdPlantillaDet)[0]),
             ];
         }
         else{

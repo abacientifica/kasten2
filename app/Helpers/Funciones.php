@@ -703,7 +703,7 @@ class Funciones{
               left join lista_costos_prov on lista_costos_prov_det.IdListaCostosProv=lista_costos_prov.IdListaCostosProv 
               left join item on lista_costos_prov_det.IdListaCostosProvDet=item.IdListaCostosDetItem
               left join marcas on lista_costos_prov_det.IdMarca=marcas.IdMarca 
-              WHERE lista_costos_prov.Inactivo=0 AND lista_costos_prov_det.Id_Item >0 ";
+              WHERE lista_costos_prov_det.Id_Item >0 ";
        
 
         if ($IdTercero) {

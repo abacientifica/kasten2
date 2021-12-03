@@ -423,7 +423,10 @@ export default {
                     showConfirmButton: false,
                     timer: 1300
                 });
+                let id = me.ItemSel.IdPlantillaDet;
+                EventBus.$emit('ItemHomologado',{index:this.indexItem,id,'data':respuesta.detalle});
                 this.listarDatos();
+                
             }).catch(error=>{
                 console.log(error)
                 load.close();
@@ -456,6 +459,8 @@ export default {
                     showConfirmButton: false,
                     timer: 1300
                 });
+                let id = me.ItemSel.IdPlantillaDet;
+                EventBus.$emit('ItemDesHomologado',{index:this.indexItem,id,'data':respuesta.detalle});
                 this.listarDatos();
             }).catch(error=>{
                 console.log(error)
