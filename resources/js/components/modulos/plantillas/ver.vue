@@ -1813,6 +1813,7 @@ export default {
         },
 
         setItemGrilla(index,data){
+            console.log(index,data)
             let rowData =[];
             this.gridApi.forEachNodeAfterFilter(node=> {
                 if(node.rowIndex == index){
@@ -2028,7 +2029,7 @@ export default {
         OcultarModalHM(){
             this.MantenerFiltros = true;
             this.showHomologar = false;
-            this.listarPlantilla(true);
+            //this.listarPlantilla(true);
         },
 
         MarcarItemsVendidos(){
@@ -2947,6 +2948,24 @@ export default {
     },
     mounted() {
         //this.ObtenerPlantilla(this.$attrs.id);
+        EventBus.$on('ItemHomologado',data=>{
+            //console.log("Item Homologado",data)
+            this.setItemGrilla(data.index , data.data);
+            this.rowData = this.getData();
+            this.gridApi.applyTransaction({ update: this.rowData });
+            let pinnedButtomData = this.generatePinnedButtomData();
+            this.gridApi.setPinnedBottomRowData([pinnedButtomData]);
+        });
+
+        EventBus.$on('ItemDesHomologado',data=>{
+            //console.log("Item Des Homologado",data)
+            this.setItemGrilla(data.index , data.data);
+            this.rowData = this.getData();
+            this.gridApi.applyTransaction({ update: this.rowData });
+            let pinnedButtomData = this.generatePinnedButtomData();
+            this.gridApi.setPinnedBottomRowData([pinnedButtomData]);
+        })
+
         try{
             this.PermisosUser = localStorage.getItem('listPermisosFilterByRolUser');
             this.gridApi = this.gridOptions.api;
@@ -2963,6 +2982,7 @@ export default {
                 this.TituloModalNovedad = 'Novedades Item',
                 this.Novedades = data;
             });
+            
         }
         catch(error){
             let msgerror = error.message.split(" ");
