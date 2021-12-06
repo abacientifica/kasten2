@@ -1808,16 +1808,18 @@ export default {
 
         getData(){
             let rowData =[];
-            this.gridApi.forEachNodeAfterFilter(node=> rowData.push(node.data));
+            this.gridApi.forEachNodeAfterFilterAndSort(node=> rowData.push(node.data));
+            console.log(rowData)
             return rowData;
         },
 
         setItemGrilla(index,data){
             console.log(index,data)
             let rowData =[];
-            this.gridApi.forEachNodeAfterFilter(node=> {
+            this.gridApi.forEachNode(node=> {
                 if(node.rowIndex == index){
                     node.data = data;
+                    rowData = node.data;
                 }
             });
             return rowData;
@@ -1833,9 +1835,9 @@ export default {
             }).then((response)=>{
                 let respuesta = response.data;
                 this.AlertMensaje(respuesta.msg,1,1200);
-                me.setItemGrilla(Datos[0].index , respuesta.detalle[0]);
-                me.rowData = me.getData();
-                this.gridApi.applyTransaction({ update: me.rowData });
+                let rowDataUpdate = [];
+                rowDataUpdate.push(me.setItemGrilla(Datos[0].index , respuesta.detalle[0]));
+                this.gridApi.applyTransaction({ update: rowDataUpdate });
                 let pinnedButtomData = me.generatePinnedButtomData();
                 me.gridApi.setPinnedBottomRowData([pinnedButtomData]);
             }).catch(error=>{
@@ -2982,7 +2984,7 @@ export default {
                 this.TituloModalNovedad = 'Novedades Item',
                 this.Novedades = data;
             });
-            
+            this.gridOptions.setFocusedCell(0);
         }
         catch(error){
             let msgerror = error.message.split(" ");

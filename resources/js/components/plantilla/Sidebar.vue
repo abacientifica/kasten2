@@ -142,8 +142,8 @@
                 </template>
             </template>
 
-            <li class="nav-header">UTILIDADES</li>
-            <li class="nav-item has-treeview">
+            <li class="nav-header" v-if="listPermisos.includes('administrador.sistema')" >UTILIDADES</li>
+            <li class="nav-item has-treeview" v-if="listPermisos.includes('administrador.sistema')" >
                 <a href="#" class="nav-link" >
                 <i class="nav-icon fas fa-copy"></i>
                 <p>
@@ -154,7 +154,7 @@
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-                        <router-link  v-if="listPermisos.includes('utilidades.inventario') || listPermisos.includes('administrador.sistema')"  class="nav-link" :to="'/utilidades/inventario'">
+                        <router-link  v-if="listPermisos.includes('administrador.sistema')"  class="nav-link" :to="'/utilidades/inventario'">
                             <i class="far fa-circle nav-icon"></i>
                             <p v-text="'Inventario'"></p>
                         </router-link>
