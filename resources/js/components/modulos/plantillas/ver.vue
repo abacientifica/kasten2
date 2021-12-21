@@ -829,6 +829,7 @@ export default {
                 onColumnVisible:this.ColumnasVisibles,
                 onSortChanged:this.GuardarOrdenColumnas,
                 onColumnPinned:this.GuardarOrdenColumnas,
+                onPaginationChanged:this.cambioPagina
             },
             gridApi: null,
             columnApi: null,
@@ -1067,6 +1068,7 @@ export default {
             //
             AbrirModalOpciones:false,
             opcionLicitaction:null,
+            pageActual:this.gridOptions
         }
     },
     watch:{
@@ -1170,6 +1172,13 @@ export default {
                 Meses.push(i);
             }
             return Meses;
+        },
+        cambioPage(){
+            if(this.pageActual){
+                console.log(this.gridOptions.api.paginationGetCurrentPage(),localStorage.getItem('paginaActual'))
+                console.log("Cambio")
+            }
+            return true;
         }
     },
     methods: {
@@ -1762,6 +1771,8 @@ export default {
             let Columnas = JSON.parse(localStorage.getItem('columnas'));
             this.gridApi.setFilterModel(Filtros);
             this.gridOptions.columnApi.setColumnState(Columnas)
+            this.pageActual = this.gridOptions.api.paginationGetCurrentPage();
+            this.gridOptions.api.paginationGoToPage(parseInt(localStorage.getItem('paginaActual')));
         },
 
         AbrirHomologacion(params){
@@ -2921,6 +2932,10 @@ export default {
                     message: 'Transacción cancelada'
                 });  
             })
+        },
+
+        cambioPagina(params){
+            params.newPage ? localStorage.setItem('paginaActual',this.gridApi.paginationGetCurrentPage()) : '';
         }
     },
 
@@ -2968,6 +2983,12 @@ export default {
             this.gridApi.setPinnedBottomRowData([pinnedButtomData]);
         })
 
+        EventBus.$on('cambioPageHomologar',data=>{
+            let page = data.index <=99 ? 0 : Math.floor((data.index) / 100)
+            localStorage.setItem('paginaActual',page);
+            this.gridOptions.api.paginationGoToPage(page);
+        })
+
         try{
             this.PermisosUser = localStorage.getItem('listPermisosFilterByRolUser');
             this.gridApi = this.gridOptions.api;
@@ -2978,7 +2999,6 @@ export default {
                 this.OcultarPanel = PanelOculto
             }
             this.ObtenerFiltros();
-
             EventBus.$on('arrNovedades',data =>{
                 this.dialogNovedades = !this.dialogNovedades
                 this.TituloModalNovedad = 'Novedades Item',
