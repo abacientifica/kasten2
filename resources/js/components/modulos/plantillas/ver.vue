@@ -1773,6 +1773,14 @@ export default {
             this.gridOptions.columnApi.setColumnState(Columnas)
             this.pageActual = this.gridOptions.api.paginationGetCurrentPage();
             this.gridOptions.api.paginationGoToPage(parseInt(localStorage.getItem('paginaActual')));
+            if(localStorage.getItem('itemHmActual')){
+                let index = parseInt(localStorage.getItem('itemHmActual'))
+                this.gridOptions.api.forEachNode(node=>{
+                    if(node.rowIndex === index)  node.setSelected(true)
+                })
+                this.gridOptions.api.setFocusedCell(index,'Opciones');
+                localStorage.removeItem('itemHmActual')
+            }
         },
 
         AbrirHomologacion(params){
@@ -1781,6 +1789,7 @@ export default {
             this.gridApi.forEachNodeAfterFilterAndSort(function(node,index){
                 me.datosfiltrados.push(node);
             });
+            localStorage.setItem('itemHmActual',params.rowIndex);
             this.DatosHomologar = params.node;
             console.log(params.column.colId);
             this.showHomologar = true;
@@ -1866,7 +1875,7 @@ export default {
             this.GuardarFiltros();
             let pinnedButtomData = this.generatePinnedButtomData();
             this.ItemsSeleccionados.length >0 ? this.ItemsSeleccionados = [] : '';
-            this.gridOptions.api.deselectAll();
+            if(!localStorage.getItem('itemHmActual')) this.gridOptions.api.deselectAll();
             this.gridApi.setPinnedBottomRowData([pinnedButtomData]);
         },
 
@@ -2986,6 +2995,11 @@ export default {
         EventBus.$on('cambioPageHomologar',data=>{
             let page = data.index <=99 ? 0 : Math.floor((data.index) / 100)
             localStorage.setItem('paginaActual',page);
+            localStorage.setItem('itemHmActual',data.index);
+            this.gridOptions.api.deselectAll();
+            this.gridOptions.api.forEachNode(node=>{
+                if(node.rowIndex === data.index) node.setSelected(true)
+            })
             this.gridOptions.api.paginationGoToPage(page);
         })
 
@@ -3004,7 +3018,6 @@ export default {
                 this.TituloModalNovedad = 'Novedades Item',
                 this.Novedades = data;
             });
-            this.gridOptions.setFocusedCell(0);
         }
         catch(error){
             let msgerror = error.message.split(" ");
@@ -3024,6 +3037,11 @@ var validarClaseCelda = {
     'rag-green': function (params) {
         return params.value == 1 ;
     },
+
+    'item-act-hm':(params)=>{
+        if(localStorage.getItem('itemHmActual')) return params.rowIndex === localStorage.getItem('itemHmActual')
+    }
+
 }
 var validarClaseCeldaItemNovedad = {
     'item-novedad': function (params) {
@@ -3059,6 +3077,9 @@ window.FormatoMoneda = function FormatoMoneda(params){
 }
 </script>
 <style>
+.item-act-hm{
+    background-color: lightgreen;
+}
 .rag-green {
     background-color: lightgreen;
 }

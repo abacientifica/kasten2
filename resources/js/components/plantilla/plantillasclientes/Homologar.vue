@@ -308,7 +308,6 @@ export default {
                     'Criterios':this.value
                 }
             }).then((response)=>{
-                console.log(response.data.listas_det)
                 me.arrayArticulos = response.data.listas_det;
                 this.inicializarPagination();
             }).catch(error=>{
