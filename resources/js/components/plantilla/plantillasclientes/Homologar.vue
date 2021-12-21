@@ -321,6 +321,7 @@ export default {
         },
         nextPage() {
             this.pageNumber++;
+            console.log(this.ItemSel)
         },
         pagePrev() {
             this.pageNumber--;
@@ -391,11 +392,13 @@ export default {
             if(op=='sig'){
                 this.indexItem = this.indexItem + 1;
                 this.ItemSel = this.datos[this.indexItem].data;
+                EventBus.$emit('cambioPageHomologar',{index:this.indexItem});
                 this.listarDatos();
             }
             else{
                 this.indexItem = this.indexItem - 1;
                 this.ItemSel = this.datos[this.indexItem].data;
+                EventBus.$emit('cambioPageHomologar',{index:this.indexItem});
                 this.listarDatos();
             }
         },
