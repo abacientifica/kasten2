@@ -3,9 +3,9 @@
         <div class="form-group row border">
             <div class="col-md-9">
                 <div class="form-group">
-                    <label>Artículo <span style="color:red" v-show="fillArticulosMov.nIdItem ==0">(Seleccione *)</span></label>
+                    <label>Artículo <span style="color:red" v-show="fillArticulosMov.nIdItem ==0">(Seleccione  y presione Enter)</span></label>
                     <div class="form-inline">
-                            <input type="text" class="form-control" v-model="fillProdNuevo.nIdItem" @keyup.enter="buscarArticuloIndividual()" placeholder="Ingrese Des,Cod,Ref...">
+                            <input type="text" class="form-control" v-model="fillProdNuevo.nIdItem" @keyup.enter="buscarArticuloIndividual()"  placeholder="Ingrese Des,Cod,Ref... presione enter">
                             <button class="btn btn-primary" @click="AbrirModal()" value="">...</button>
                             <input type="text" readonly="" class="form-control col-md-8" v-model="fillProdNuevo.cDescripcion">
                     </div>                                    
@@ -24,7 +24,7 @@
                 </div>
             </div>
             <div class="col-md-1">
-                <div class="form-group">
+                <div class="form-group" v-if="fillProdNuevo.encontrado">
                     <label>Agregar</label>
                     <button @click="agregarDetalle()" class="btn btn-success form-control"><i class="fas fa-plus-square"></i></button>
                 </div>
@@ -237,6 +237,7 @@ export default {
             },
             arraryDetallesMovimiento:[],
             fillProdNuevo:{
+                encontrado:false,
                 nIdItem:null,
                 cDescripcion:'',
                 cCodTercero:'',
@@ -314,6 +315,7 @@ export default {
             }}).then(function (response) {
                 let respuesta = response.data.productos[0];
                 if(response.data.productos.length >0){
+                    me.fillProdNuevo.encontrado = true;
                     me.fillProdNuevo.nIdItem = respuesta.Item;
                     me.fillProdNuevo.cDescripcion = respuesta.Descripcion;
                     me.fillProdNuevo.cCodTercero = respuesta.CodTercero;
@@ -335,7 +337,6 @@ export default {
                         title: 'Producto no encontrado',
                         text: 'No se encontro ningun producto relacionado con : <strong>'+me.fillProdNuevo.nIdItem+"</strong>, intenta ingresar una descripción diferente."
                     });
-                    //alert("No se encontro ningun dato con "+me.fillProdNuevo.nIdItem)
                 }
             })
             .catch(function (error) {
@@ -519,6 +520,7 @@ export default {
                 });
 
                 let prodNuevo = this.fillProdNuevo;
+                prodNuevo.encontrado = false;
                 prodNuevo.nIdItem=null;
                 prodNuevo.cDescripcion='';
                 prodNuevo.cCodTercero='';
