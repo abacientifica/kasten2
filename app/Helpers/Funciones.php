@@ -719,18 +719,18 @@ class Funciones{
                     $sql = $sql ." and  ( ".$criterio. " LIKE '%". $Filtro ."%' " ;
                 }
                 else{
-                    $sql = $sql ." or ".$criterio. " LIKE '%". $Filtro ."%' " ;
+                    $sql = $sql ." and ".$criterio. " LIKE '%". $Filtro ."%' " ;
                 }
+                
+                if($criterio == 'lista_costos_prov_det.Inactivo') $inactivo = true;
+                
                 $cont++;
+            }
+            if(!$inactivo){
+                $sql .= " and lista_costos_prov_det.Inactivo = 0 ";
             }
             if($cont > 0){
                 $sql .= " ) ";
-            }
-            if($inactivo){
-                $sql.= " and lista_costos_prov_det.Inactivo = 1";
-            }
-            else{
-                $sql.= " and lista_costos_prov_det.Inactivo = 0 ";
             }
         }
         $sql.=" limit 100";
@@ -1312,7 +1312,10 @@ class Funciones{
                     'visible'=>$conf->visible,
                     'filtro'=>$conf->filtro,
                     'permiso'=>$conf->PermisoEditar,
-                    'permiso_ver'=>$conf->PermisoVer
+                    'permiso_ver'=>$conf->PermisoVer,
+                    'float'=>$conf->Float,
+                    'tipoEdicion'=>$conf->TipoEdicion,
+                    'tipoFiltro'=>$conf->TipoFiltro
                 ];
             }
             $Cols[] = ['columna'=>'Opciones' ,'alias'=>'HM','pinned'=>'right','edit'=>'false'];
@@ -1325,7 +1328,7 @@ class Funciones{
      */
     public static function ObtenerConfiguracionesGrilla($IdDocumento,$Agrupar=false){
         try{
-            $Sql = "select configuraciones_columnas_documentos_det.*,configuraciones_especiales_documentos_det.Orden as IdOrden,configuraciones_especiales_documentos.Descripcion,configuraciones_especiales_documentos.id  from configuraciones_especiales_documentos_det 
+            $Sql = "select configuraciones_columnas_documentos_det.*,configuraciones_especiales_documentos_det.Orden as IdOrden,configuraciones_especiales_documentos.Descripcion,configuraciones_especiales_documentos.id,configuraciones_especiales_documentos_det.Visible  from configuraciones_especiales_documentos_det 
                     LEFT JOIN configuraciones_especiales_documentos on configuraciones_especiales_documentos.id = configuraciones_especiales_documentos_det.IdConfiguracion
                     LEFT JOIN configuraciones_columnas_documentos_det on configuraciones_columnas_documentos_det.IdConfigDet = configuraciones_especiales_documentos_det.IdConfiguracionDet
                     LEFT JOIN configuraciones_columnas_documentos on configuraciones_columnas_documentos.IdConfiguracion  = configuraciones_columnas_documentos_det.IdConfiguracion

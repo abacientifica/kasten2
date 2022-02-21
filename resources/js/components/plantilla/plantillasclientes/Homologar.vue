@@ -61,6 +61,8 @@
                                     <th class="texto-centrado">FC</th>
                                     <th class="texto-centrado">CP</th>
                                     <th class="texto-centrado">Hab. Cotizar</th>
+                                    <th class="texto-centrado">Inact</th>
+                                    <th class="texto-centrado">Disp</th>
                                     <th class="texto-centrado">Costo UMM</th>
                                     <th class="texto-centrado" v-if="ItemSel != null && ItemSel.Autorizado != 1" >Opción</th>
                                 </tr>
@@ -80,6 +82,8 @@
                                     <td v-text="articulo.FactorCompra"></td>
                                     <td v-text="articulo.CategoriaPortafolio"></td>
                                     <td v-text="articulo.HabCotizar == 1 ? 'SI':'NO'"></td>
+                                    <td v-text="articulo.Inactivo== 1 ? 'SI':'NO'"></td>
+                                    <td v-text="articulo.Disponible ? articulo.Disponible : 0"></td>
                                     <td class="texto-derecha" v-text="FormatoMoneda(articulo.CostoUMM,2)"></td>
                                     <!--<td class="texto-derecha" :class="{'prod-vencido' : articulo.FhHasta < moment().format('YYYY-MM-DD')}" v-text="FormatoMoneda(articulo.Precio,2)">
                                     </td>-->
@@ -101,7 +105,7 @@
                             </tbody>
                             <tbody v-else>
                                 <tr>
-                                    <td colspan="14">
+                                    <td colspan="16">
                                         <vs-alert v-if="ItemSel && ItemSel.Autorizado != 1">
                                             <template #title>
                                                 Alerta !!
@@ -278,6 +282,7 @@ export default {
         listarDatos(filtro=false){
             let me = this;
             let url = '/plantillas/ObtenerDatosHomolgar';
+            const loader = this.loaderk();
             if(!filtro){
                 //console.log(this.datos[this.datosItem.])
                 if(this.ItemSel.IdListaCostosDetPlantDet >0){
@@ -299,6 +304,7 @@ export default {
             }
             this.ValidarFiltro();
             if(this.MensajeError.length >0){
+                loader.close();
                 return false;
             }
             axios.get(url,{
@@ -310,8 +316,10 @@ export default {
             }).then((response)=>{
                 me.arrayArticulos = response.data.listas_det;
                 this.inicializarPagination();
+                loader.close();
             }).catch(error=>{
                 console.log(error)
+                loader.close();
             })
         },
         /*Inicio Metodos Paguinacion*/
