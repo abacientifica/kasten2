@@ -198,17 +198,28 @@ export default {
             }, {
                 value: 'lista_costos_prov_det.CodProveedor',
                 label: 'Cod. Prov'
-            },{
+            }, {
                 value: 'lista_costos_prov_det.DescripcionProv',
-                label: 'Descripcion'
+                label: 'Descripcion Proveedor'
             },
+
+            {
+                value: 'marcas.NmMarca',
+                label: 'Marca'
+            },
+
             {
                 value: 'NmListaCostos',
                 label: 'Lista Costos'
             },
+
             {
                 value: 'lista_costos_prov_det.Inactivo',
                 label: 'Inactivo'
+            },
+            {
+                value: 'lista_costos_prov_det.CategoriaPortafolio',
+                label: 'Categoria Portafolio'
             },
             {
                 value: 'lista_costos_prov_det.HabCotizar',
