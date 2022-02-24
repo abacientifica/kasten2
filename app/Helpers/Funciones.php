@@ -603,7 +603,7 @@ class Funciones{
                 plantillas_det.ComentariosCliente
                 ,plantillas_det.PrecioTecho,plantillas_det.PrecioSugerido,plantillas_det.MesesConsumo,plantillas_det.CantConsumoMesDet,IF(plantillas_det.AceptaAlternativa = 1,'1','0') AS  AceptaAlternativa ,
                 plantillas_det.MarcaAsesor, IF(plantillas_det.ReqMuestras = 1,1,0) as ReqMuestras, plantillas_det.CantMuestras ,ComentariosMuestras ,
-                terceros.NombreCorto as Prov,item.Id_Item as ItemAba,item.Descripcion as DescripcionAba,lista_costos_prov.NmListaCostos, lista_costos_prov_det.CategoriaPortafolio,NmMarca,lista_costos_prov_det.CodProveedor,lista_costos_prov_det.RefFabricante,
+                terceros.NombreCorto as Prov,item.Id_Item as ItemAba,CONVERT(CAST(CONVERT(item.Descripcion USING	LATIN1 ) AS BINARY) USING UTF8) as DescripcionAba,lista_costos_prov.NmListaCostos, lista_costos_prov_det.CategoriaPortafolio,NmMarca,lista_costos_prov_det.CodProveedor,lista_costos_prov_det.RefFabricante,
                 lista_costos_prov_det.Presentacion,lista_costos_prov_det.UMC,lista_costos_prov_det.UMV,plantillas_det.FactorCliente as FactorCliente,plantillas_det.CantUMMAbaMes,lista_costos_prov_det.CostoUMM,plantillas_det.PrecioTechoUMM,plantillas_det.SubTotal,
                 if(plantillas_det.PrecioTecho >0 , plantillas_det.CantConsumoMesDet * plantillas_det.PrecioTecho, plantillas_det.CantidadConsumo * lista_costos_prov_det.CostoUMM) as SubTotalVenta,format((plantillas_det.PrecioTecho - lista_costos_prov_det.CostoUMM ) /lista_costos_prov_det.CostoUMM , 2) as UtilVsTecho,'' as FhUltimaFact,'' as ItemContrato,IF(Revisado = 1, 1,0)  as Revisado,
                 IF(lista_costos_prov_det.HabCotizar =1 ,'SI','NO') as HabCotizar,if(Autorizado is null,'',if(Autorizado =1,1,if(Autorizado is null,null,0))) as Autorizado,plantillas_det.ComentariosHM,EnlaceCot,IdListaCostosDetPlantDet,VendidoAnterioridad,plantillas_det.Opcion
@@ -703,7 +703,7 @@ class Funciones{
               left join lista_costos_prov on lista_costos_prov_det.IdListaCostosProv=lista_costos_prov.IdListaCostosProv 
               left join item on lista_costos_prov_det.IdListaCostosProvDet=item.IdListaCostosDetItem
               left join marcas on lista_costos_prov_det.IdMarca=marcas.IdMarca 
-              WHERE lista_costos_prov_det.Id_Item >0 ";
+              WHERE 1   ";
        
 
         if ($IdTercero) {
@@ -716,7 +716,7 @@ class Funciones{
             foreach($Criterios as $criterio){
                 $Filtro = str_replace(' ','%',$Filtros[$cont]);
                 if($cont == 0){
-                    $sql = $sql ." and  ( ".$criterio. " LIKE '%". $Filtro ."%' " ;
+                   $sql = $sql ." and  ( ".$criterio. " LIKE '%". $Filtro ."%' " ;
                 }
                 else{
                     $sql = $sql ." and ".$criterio. " LIKE '%". $Filtro ."%' " ;
