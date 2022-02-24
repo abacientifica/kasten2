@@ -457,6 +457,7 @@ class PlantillasClientesController extends Controller
 
     public function ImportarArchivo(Request $request){
        // if(!$request->ajax()) return  redirect('/');
+        mb_internal_encoding("UTF-8");
         $File = $request->file('file');
         $fp = fopen($File, "r");
         $IdPlantilla = $request->Id;
@@ -485,7 +486,7 @@ class PlantillasClientesController extends Controller
                 $CodigoG->Grupo = isset($data[1]) ? $data[1] :'';
                 $CodigoG->IdItemCliente = isset($data[2]) ? $data[2]:'';
                 if (isset($data[3]) && $data[3] != '') {
-                    $CodigoG->DescripcionCliente = $data[3];
+                    $CodigoG->DescripcionCliente = utf8_encode($data[3]);
                 } else {
                     $CodigoG->DescripcionCliente = '';
                 }
