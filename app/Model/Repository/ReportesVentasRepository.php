@@ -13,7 +13,7 @@ class ReportesVentasRepository extends BaseRepository
     }
 
     public function getVentasReporte(){
-        return $this->dbSelect("SELECT * FROM temp_ventas_general WHERE IdUsuario ='kasten' and FechaMvto >= DATE_SUB(NOW(), interval 3 YEAR)");
+        return $this->dbSelect("SELECT * FROM temp_ventas_general WHERE IdUsuario ='kasten' and FechaMvto >= DATE_SUB(NOW(), interval 28 month)");
     }
 
 }
