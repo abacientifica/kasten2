@@ -1,57 +1,10 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 Vue.use(Router);
-import Home from './components/modulos/home/index.vue';
-import Usuarios from './components/modulos/usuarios/index.vue';
 import Login from './components/modulos/authenticated/login.vue';
-import UsuariosPerfil from './components/modulos/usuarios/profile.vue';
-import UsuarioPermiso from './components/modulos/usuarios/permission.vue';
-import Roles from './components/modulos/roles/index.vue';
-import RolesCrear from './components/modulos/roles/create.vue';
-import RolesEditar from './components/modulos/roles/edit.vue';
-import Permisos from './components/modulos/permisos/index.vue';
-import PermisosCrear from './components/modulos/permisos/create.vue';
-import PermisosEditar from './components/modulos/permisos/edit.vue';
-import PedidosDocumentos from './components/modulos/movimientos/pedidos/lista.vue';
-import PedidosIndex from './components/modulos/movimientos/pedidos/index.vue';
-import PedidosVer from './components/modulos/movimientos/pedidos/ver.vue';
-import PedidosCrear from './components/modulos/movimientos/pedidos/create.vue';
-import RepVentas from './components/modulos/reportes/ventas.vue';
-import RepVentasGrilla from './components/modulos/reportes/ventasgeneral.vue';
-import Chat from './components/modulos/chat/chat.vue';
-import EditarCamposDocumentos from './components/modulos/configuraciones/vercamposdocumentos.vue';
-import ListaDocTpDocumentos from './components/modulos/tiposdocumentos/index.vue';
-
-//Plantillas Clientes
-import PlantillasClientes from './components/modulos/plantillas/index.vue';
-import PlantillasClientesCrear from './components/modulos/plantillas/create.vue';
-import PlantillasClientesVer from './components/modulos/plantillas/ver.vue';
-
-//Cotizaciones
-import CotizacionesVer from './components/modulos/cotizaciones/ver.vue'
-import CotizacionesCrear from './components/modulos/cotizaciones/create.vue'
-
-//Cotizaciones
-import Cotizaciones from './components/modulos/cotizaciones/index.vue';
-
-
-//rutas configuracion documentos
-import ConfigurarDocumentos from './components/modulos/configuraciones/configdocumentos.vue';
-
-//Ayudas Kasten
-import AyudasKasten from './components/modulos/ayudas/index.vue';
-import Ayudas from './components/modulos/ayudas/ayudas.vue';
-import AyudasItems from './components/modulos/ayudas/ayudasitem.vue';
-
-//Utilidades
-import Inventario from './components/modulos/utilidades/inventario/index.vue';
-
-//Pagina 404
-import Pagina404 from './components/plantilla/404.vue';
-import TestSistemas from './components/modulos/test/index.vue';
 
 function verificarAcceso(to, from, next) {
-    let authUser = JSON.parse(localStorage.getItem('authUser'));
+    let authUser = JSON.parse(localStorage.getItem('authUser')) || null;
     if (authUser) {
         let listaPermisosByUser = JSON.parse(localStorage.getItem('listPermisosFilterByRolUser'));
         if (listaPermisosByUser.includes(to.name) || listaPermisosByUser.includes('administrador.sistema') || to.name == 'home.index') {
@@ -75,24 +28,6 @@ function verificarAcceso(to, from, next) {
     }
 }
 
-function validUsuario() {
-    let user = true;
-    axios.get('/authenticated/getRefrescarUsaurioAutentificado').then(function(response) {
-        if (response.data.length > 0) {
-            user = true;
-        }
-    }).catch((error) => {
-        let msgerror = error.message.split(" ");
-        let coderror = msgerror.find(error => error == '401') ? msgerror.find(error => error == '401') : msgerror.find(error => error == '419');
-        if (coderror == 401 || coderror == 419) {
-            sessionStorage.clear();
-            localStorage.clear();
-        }
-        user = false;
-    });
-    return user;
-}
-
 export default new Router({
     routes: [{
             path: '/login',
@@ -110,7 +45,8 @@ export default new Router({
 
         {
             path: '/',
-            component: Home,
+            component: () =>
+                import ( /*webpackChunkName:"Home"*/ './components/modulos/home/index.vue'),
             name: 'home.index',
             beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);
@@ -119,7 +55,8 @@ export default new Router({
 
         {
             path: '/test',
-            component: TestSistemas,
+            component: () =>
+                import ( /*webpackChunkName:"Test"*/ './components/modulos/test/index.vue'),
             name: 'test.index',
             beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);
@@ -128,7 +65,8 @@ export default new Router({
 
         {
             path: '/usuarios',
-            component: Usuarios,
+            component: () =>
+                import ( /*webpackChunkName:"Usuarios"*/ './components/modulos/usuarios/index.vue'),
             name: 'usuarios.index',
             props: true,
             beforeEnter: (to, from, next) => {
@@ -138,7 +76,8 @@ export default new Router({
 
         {
             path: '/usuario/permisos',
-            component: UsuarioPermiso,
+            component: () =>
+                import ( /*webpackChunkName:"UsuariosPermisos"*/ './components/modulos/usuarios/permission.vue'),
             name: 'usuario.permisos',
             beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);
@@ -147,7 +86,8 @@ export default new Router({
 
         {
             path: '/usuario/permiso/:id',
-            component: UsuarioPermiso,
+            component: () =>
+                import ( /*webpackChunkName:"UsuariosPermisosID"*/ './components/modulos/usuarios/permission.vue'),
             name: 'usuario.permiso',
             props: true,
             beforeEnter: (to, from, next) => {
@@ -157,7 +97,8 @@ export default new Router({
 
         {
             path: '/usuario/perfil/:id',
-            component: UsuariosPerfil,
+            component: () =>
+                import ( /*webpackChunkName:"UsuarioPerfil"*/ './components/modulos/usuarios/profile.vue'),
             name: 'usuario.perfil',
             props: true,
             /*beforeEnter: (to, from, next) => {
@@ -166,7 +107,8 @@ export default new Router({
         },
         {
             path: '/roles',
-            component: Roles,
+            component: () =>
+                import ( /*webpackChunkName:"Roles"*/ './components/modulos/roles/index.vue'),
             name: 'roles.index',
             beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);
@@ -174,7 +116,8 @@ export default new Router({
         },
         {
             path: '/roles/crear',
-            component: RolesCrear,
+            component: () =>
+                import ( /*webpackChunkName:"CrearRol"*/ './components/modulos/roles/create.vue'),
             name: 'roles.crear',
             beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);
@@ -182,7 +125,8 @@ export default new Router({
         },
         {
             path: '/roles/editar/:id',
-            component: RolesEditar,
+            component: () =>
+                import ( /*webpackChunkName:"EditarRol"*/ './components/modulos/roles/edit.vue'),
             name: 'roles.editar',
             props: true,
             beforeEnter: (to, from, next) => {
@@ -191,7 +135,8 @@ export default new Router({
         },
         {
             path: '/permisos',
-            component: Permisos,
+            component: () =>
+                import ( /*webpackChunkName:"Permisos"*/ './components/modulos/permisos/index.vue'),
             name: 'permisos.index',
             beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);
@@ -199,7 +144,8 @@ export default new Router({
         },
         {
             path: '/permiso/crear',
-            component: PermisosCrear,
+            component: () =>
+                import ( /*webpackChunkName:"CrearPermiso"*/ './components/modulos/permisos/create.vue'),
             name: 'permiso.crear',
             beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);
@@ -207,7 +153,8 @@ export default new Router({
         },
         {
             path: '/permiso/editar/:id',
-            component: PermisosEditar,
+            component: () =>
+                import ( /*webpackChunkName:"EditarPermiso"*/ './components/modulos/permisos/edit.vue'),
             name: 'permiso.editar',
             props: true,
             beforeEnter: (to, from, next) => {
@@ -218,14 +165,16 @@ export default new Router({
         /** RUTAS MOVIMIENTOS **/
         {
             path: '/tpdocumento/lista/:IdTp',
-            component: ListaDocTpDocumentos,
+            component: () =>
+                import ( /*webpackChunkName:"ListaTpDocs"*/ './components/modulos/tiposdocumentos/index.vue'),
             name: 'tpdocumentos.documento',
             props: true,
         },
 
         {
             path: '/pedidos/documentos/:tp',
-            component: PedidosDocumentos,
+            component: () =>
+                import ( /*webpackChunkName:"PedidosDocumentos"*/ './components/modulos/movimientos/pedidos/lista.vue'),
             name: 'pedidos.documentos',
             props: true,
             beforeEnter: (to, from, next) => {
@@ -235,7 +184,8 @@ export default new Router({
 
         {
             path: '/pedidos/index',
-            component: PedidosIndex,
+            component: () =>
+                import ( /*webpackChunkName:"PedidosIndex"*/ './components/modulos/movimientos/pedidos/index.vue'),
             name: 'pedidos.index',
             props: true,
             beforeEnter: (to, from, next) => {
@@ -245,7 +195,8 @@ export default new Router({
 
         {
             path: '/pedidos/ver/:iddoc/:id',
-            component: PedidosVer,
+            component: () =>
+                import ( /*webpackChunkName:"PedidosVer"*/ './components/modulos/movimientos/pedidos/ver.vue'),
             name: 'pedidos.ver',
             props: true,
             beforeEnter: (to, from, next) => {
@@ -255,7 +206,8 @@ export default new Router({
 
         {
             path: '/pedidos/crear/:iddoc',
-            component: PedidosCrear,
+            component: () =>
+                import ( /*webpackChunkName:"PedidosCrear"*/ './components/modulos/movimientos/pedidos/create.vue'),
             name: 'pedidos.crear',
             props: true,
             beforeEnter: (to, from, next) => {
@@ -267,7 +219,8 @@ export default new Router({
 
         {
             path: '/plantillas/clientes/index',
-            component: PlantillasClientes,
+            component: () =>
+                import ( /*webpackChunkName:"PlantillasClientes"*/ './components/modulos/plantillas/index.vue'),
             name: 'plantillas_clientes.index',
             props: true,
             beforeEnter: (to, from, next) => {
@@ -277,7 +230,8 @@ export default new Router({
 
         {
             path: '/plantillas/clientes/crear',
-            component: PlantillasClientesCrear,
+            component: () =>
+                import ( /*webpackChunkName:"PlantillasClientesCrear"*/ './components/modulos/plantillas/create.vue'),
             name: 'plantillas_clientes.crear',
             props: true,
             beforeEnter: (to, from, next) => {
@@ -287,7 +241,8 @@ export default new Router({
 
         {
             path: '/plantillas/clientes/ver/:id',
-            component: PlantillasClientesVer,
+            component: () =>
+                import ( /*webpackChunkName:"PlantillasClientesVer"*/ './components/modulos/plantillas/ver.vue'),
             name: 'plantillas_clientes.ver',
             props: true,
             beforeEnter: (to, from, next) => {
@@ -298,7 +253,8 @@ export default new Router({
         //RUTAS COTIZACIONES
         {
             path: '/cotizaciones/index',
-            component: Cotizaciones,
+            component: () =>
+                import ( /*webpackChunkName:"Cotizaciones"*/ './components/modulos/cotizaciones/index.vue'),
             name: 'cotizaciones.index',
             props: true,
             beforeEnter: (to, from, next) => {
@@ -308,7 +264,8 @@ export default new Router({
 
         {
             path: '/cotizaciones/ver/:id',
-            component: CotizacionesVer,
+            component: () =>
+                import ( /*webpackChunkName:"CotizacionesVer"*/ './components/modulos/cotizaciones/ver.vue'),
             name: 'cotizaciones.ver',
             props: true,
             beforeEnter: (to, from, next) => {
@@ -318,7 +275,8 @@ export default new Router({
 
         {
             path: '/cotizaciones/crear',
-            component: CotizacionesCrear,
+            component: () =>
+                import ( /*webpackChunkName:"CotizacionesCrear"*/ './components/modulos/cotizaciones/create.vue'),
             name: 'cotizaciones.crear',
             props: true,
             beforeEnter: (to, from, next) => {
@@ -332,7 +290,8 @@ export default new Router({
         //CONFIGURACION DOCUMENTOS
         {
             path: '/configuracion/documentos',
-            component: ConfigurarDocumentos,
+            component: () =>
+                import ( /*webpackChunkName:"ConfigurarDocumentos"*/ './components/modulos/configuraciones/configdocumentos.vue'),
             name: 'configuraciondoc.index',
             props: true,
             beforeEnter: (to, from, next) => {
@@ -341,7 +300,8 @@ export default new Router({
         },
         {
             path: '/configuracion/documentos/edit/:iddoc',
-            component: EditarCamposDocumentos,
+            component: () =>
+                import ( /*webpackChunkName:"EditarCamposDocumentos"*/ './components/modulos/configuraciones/vercamposdocumentos.vue'),
             name: 'camposdocumentos.index',
             props: true,
             /*beforeEnter: (to, from, next) => {
@@ -353,13 +313,15 @@ export default new Router({
 
         {
             path: '*',
-            component: Pagina404,
+            component: () =>
+                import ( /*webpackChunkName:"Pagina404"*/ './components/plantilla/404.vue'),
             name: '404.index'
         },
 
         {
             path: '/reportes/ventas',
-            component: RepVentas,
+            component: () =>
+                import ( /*webpackChunkName:"RepVentas"*/ './components/modulos/reportes/pages/VentasPage.vue'),
             name: 'reporte.ventas.index',
             props: true,
             beforeEnter: (to, from, next) => {
@@ -368,7 +330,8 @@ export default new Router({
         },
         {
             path: '/reportes/ventas/grilla',
-            component: RepVentasGrilla,
+            component: () =>
+                import ( /*webpackChunkName:"RepVentasGrilla"*/ './components/modulos/reportes/pages/VentasGeneralPage.vue'),
             name: 'reporte.ventas.grilla.index',
             props: true,
             /*beforeEnter: (to, from, next) => {
@@ -379,7 +342,8 @@ export default new Router({
         /**Ruta del chat */
         {
             path: '/chat',
-            component: Chat,
+            component: () =>
+                import ( /*webpackChunkName:"Chat"*/ './components/modulos/chat/chat.vue'),
             name: 'chat.index',
             props: true,
             /*beforeEnter: (to, from, next) => {
@@ -391,7 +355,8 @@ export default new Router({
         /**Ruta del chat */
         {
             path: '/ayudas/index',
-            component: AyudasKasten,
+            component: () =>
+                import ( /*webpackChunkName:"AyudasKasten"*/ './components/modulos/ayudas/index.vue'),
             name: 'ayudas.index',
             props: true,
             beforeEnter: (to, from, next) => {
@@ -401,7 +366,8 @@ export default new Router({
 
         {
             path: '/ayudas/kasten/:id',
-            component: Ayudas,
+            component: () =>
+                import ( /*webpackChunkName:"Ayudas"*/ './components/modulos/ayudas/ayudas.vue'),
             name: 'ayudas.kasten',
             props: true,
             /*beforeEnter: (to, from, next) => {
@@ -411,7 +377,8 @@ export default new Router({
 
         {
             path: '/ayuda/detalles/:id',
-            component: AyudasItems,
+            component: () =>
+                import ( /*webpackChunkName:"AyudasItems"*/ './components/modulos/ayudas/ayudasitem.vue'),
             name: 'ayuda.detalles',
             props: true,
             /*beforeEnter: (to, from, next) => {
@@ -422,8 +389,20 @@ export default new Router({
         //UTILIDADES
         {
             path: '/utilidades/inventario',
-            component: Inventario,
+            component: () =>
+                import ( /*webpackChunkName:"Inventario"*/ './components/modulos/utilidades/inventario/index.vue'),
             name: 'utilidades.inventario',
+            props: true,
+            /*beforeEnter: (to, from, next) => {
+                verificarAcceso(to, from, next);
+            }*/
+        },
+
+        {
+            path: '/pruebas/testVue',
+            component: () =>
+                import ( /*webpackChunkName:"Pruebas"*/ './components/modulos/test/vuetest.vue'),
+            name: 'pruebas.vue',
             props: true,
             /*beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);
