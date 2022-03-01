@@ -1,3 +1,5 @@
+import { Result } from "element-ui";
+
 export default class ServicesApp {
 
     ObtenerDatosGrillaAgGrid(datos) {
@@ -33,9 +35,9 @@ export default class ServicesApp {
             notEqual: 'No Igual',
 
             // for number filter
-            lessThan: 'Menos que',
+            lessThan: 'Menor que',
             greaterThan: 'Mayor que',
-            lessThanOrEqual: 'Menos o igual que',
+            lessThanOrEqual: 'Menor o igual que',
             greaterThanOrEqual: 'Mayor o igual que',
             inRange: 'En rango de',
 
@@ -142,4 +144,60 @@ export default class ServicesApp {
         return sign ? '-' + amount_parts.join('.') : amount_parts.join('.');
     }
 
+    validarStatus(me, status, statusText) {
+        if (status === 200) {
+            return true
+        } else if (status === 401 || status === 419) {
+            me.$router.push({ name: 'login' })
+            location.reload();
+            localStorage.clear();
+            sessionStorage.clear();
+            return false
+        } else if (status === 500) {
+            this.alertMessage(me, `Ocurrio un error : ${status } ${statusText}`, 'danger')
+            return false
+        } else {
+            return false
+        }
+    }
+
+    alertMessage(me, message, tipo = '', time = 1800) {
+        me.$vs.notification({
+            duration: time,
+            progress: 'auto',
+            flat: true,
+            color: tipo,
+            position: 'top-center',
+            title: null,
+            text: message
+        })
+    }
+
+    generatePinnedButtomData(me, apiColumns, arrColumnsCalculated) {
+        let result = {};
+        apiColumns.getAllGridColumns().forEach(item => {
+            result[item.colId] = null;
+
+        });
+        return this.calculatedPinnedButtomData(result, me, arrColumnsCalculated);
+    }
+
+    calculatedPinnedButtomData(target, me, arrColumnsCalculated) {
+        let columnWithAggregation = arrColumnsCalculated,
+            count = 0;
+        columnWithAggregation.forEach(element => {
+            if (count > 0) {
+                me.gridApi.api.forEachNodeAfterFilter(function(rowNode) {
+                    target[element] += Number(typeof rowNode.data[element] == 'number' && rowNode.data[element].toFixed(2));
+                });
+                if (target[element]) {
+                    target[element] = `${target[element].toFixed(2)}`;
+                }
+            } else {
+                target[element] = 'Totales :'
+            }
+            count++
+        })
+        return target;
+    }
 }
