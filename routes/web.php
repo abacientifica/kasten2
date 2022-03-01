@@ -136,7 +136,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/reporte/ventas', 'Administracion\ReportesController@ReporteVentas');
 
     //Reporte de ventas grilla
-    Route::get('/ventasGrilla', 'AdministracionReportesController@index');
+    Route::get('/ventasGrilla', 'Administracion\Reportes\ReporteVentasController');
 
     //Ruta Direcciones
     Route::get('/direcciones/obtenerDireccion', 'ControladorGeneral@ObtenerDireccion');
@@ -169,20 +169,26 @@ Route::group(['middleware' => ['auth']], function () {
     Route::group(['namespace' => 'Cotizaciones'], function() {
         Route::get('cotizacion/{IdCotizacion}','CotizacionesController@ObtenerCotizacion');
         Route::get('cotizaciones/filtros/usuario', 'CotizacionesController@FiltrosUsuarioLista');
-        Route::post('cotizaciones/lista', 'CotizacionesController@ListaCotizaciones');
+        Route::post('cotizaciones/lista', 'CotizacionesController@listaCotizaciones');
         Route::post('cotizaciones/index/filtros', 'CotizacionesController@GuardarFiltroIndex');
-        Route::post('cotizaciones/lista', 'CotizacionesController@ListaCotizaciones');
+        Route::post('cotizaciones/detalles/filtros', 'CotizacionesController@cambioFiltros');
         Route::get('cotizaciones/ObtenerCotizacion/{ IdCotizacion ?}', 'CotizacionesController@ObtenerCotizacion');
         Route::get('cotizaciones/getTiposCotizaciones', 'TiposController@getTiposCotizaciones');
         Route::post('cotizaciones/crear', 'CotizacionesController@CrearCotizacion');
         Route::put('cotizaciones/actualizar', 'CotizacionesController@Actualizar');
+        Route::get('cotizaciones/ObtenerFiltro','CotizacionesController@ObtenerFiltro');
     });
 
     //Utilidades
     Route::get('/inventario/conteos', 'Utilidades\InventarioController@index');
     Route::get('/inventario/obtenerConteos', 'Utilidades\InventarioController@obtenerConteos');
+
+    //Datos Trabajo : filtros de grillas y campos en documentos
+   
     
 });
+
+Route::resource('filtros', 'Administracion\DatosTrabajoController');
 
 Route::get('/{optional?}', function () {
     return view('app');
