@@ -1347,6 +1347,24 @@ class Funciones{
         }
     }
 
+    public static function getConfiguracionGrillaDet($idDoc=0)
+    {
+        try{
+            $strSql = "select * from configuraciones_columnas_documentos_det 
+                        LEFT JOIN configuraciones_columnas_documentos on configuraciones_columnas_documentos.IdConfiguracion = configuraciones_columnas_documentos_det.IdConfiguracion
+                        where (IdDocumento =".$idDoc." ) and visible = 'true' order by if(IdOrden >= 0,IdOrden,IdConfigDet)";
+            return $ColumnasConf = DB::select($strSql);
+        }
+        catch(Exception $e){
+            return null;
+        }
+        catch(QueryException $y){
+            return null;
+        }
+    }
+
+
+
     public static function obtenerDetallePlantilla($IdPlantillaDet){
         $Sql = "select IdPlantillaDet,plantillas_det.CodCliente,plantillas_det.Grupo,plantillas_det.IdItemCliente,replace(plantillas_det.DescripcionCliente,',','') as DescripcionCliente,plantillas_det.MarcaSugerida,plantillas_det.UMCliente,plantillas_det.CantidadConsumo,
                 plantillas_det.ComentariosCliente
