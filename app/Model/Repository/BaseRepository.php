@@ -61,6 +61,10 @@ class BaseRepository
         return DB::select($select);
     }
 
+    public function raw($select){
+        return DB::raw($select);
+    }
+
     public function where($column, $id, $first = false)
     {
         $query = $this->getQuery()->where($column, $id);

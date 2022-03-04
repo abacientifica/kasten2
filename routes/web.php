@@ -17,8 +17,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/authenticated/getRefrescarUsaurioAutentificado',function(){
         return \Auth::user();
     });
-
-
+    
     //Lista rutas usuarios
     Route::get('/usuarios/lista','Administracion\UsuariosController@index');
     Route::get('/usuarios/getUsuario/{id?}','Administracion\UsuariosController@getUsuario');
@@ -125,6 +124,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     //Listado de rutas asesores
     Route::get('/asesores/lista', 'ControladorGeneral@ObtenerAsesores')->name('asesores.lista');
+    
 
     //Listado de rutas Lista precios
     Route::get('/listaprecios/lista', 'Administracion\ListaPreciosController@index')->name('listaprecios.lista');
@@ -133,7 +133,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/dashboard', 'ControladorGeneral@DashboardHome')->name('dashboard');
 
     //Rutas Reportes
-    Route::get('/reporte/ventas', 'Administracion\ReportesController@ReporteVentas');
+    Route::get('/reporte/ventas', 'Administracion\ReportesController@reporteVentas');
 
     //Reporte de ventas grilla
     Route::get('/ventasGrilla', 'Administracion\Reportes\ReporteVentasController');
@@ -183,12 +183,18 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/inventario/conteos', 'Utilidades\InventarioController@index');
     Route::get('/inventario/obtenerConteos', 'Utilidades\InventarioController@obtenerConteos');
 
+    //Utilidades Lineas,grupos,subgrupos
+    Route::get('lineas', 'ControladorGeneral@getLineasGrupos');
+    Route::get('subgrupos', 'ControladorGeneral@getSubGruposGrupos');
+    
+   
+
     //Datos Trabajo : filtros de grillas y campos en documentos
+    Route::resource('filtros', 'Administracion\DatosTrabajoController');
    
     
 });
 
-Route::resource('filtros', 'Administracion\DatosTrabajoController');
 
 Route::get('/{optional?}', function () {
     return view('app');

@@ -321,7 +321,7 @@ export default new Router({
         {
             path: '/reportes/ventas',
             component: () =>
-                import ( /*webpackChunkName:"RepVentas"*/ './components/modulos/reportes/pages/VentasPage.vue'),
+                import ( /*webpackChunkName:"RepVentas"*/ './components/modulos/reportes/pages/VentasGraficaPage.vue'),
             name: 'reporte.ventas.index',
             props: true,
             beforeEnter: (to, from, next) => {
@@ -329,14 +329,14 @@ export default new Router({
             }
         },
         {
-            path: '/reportes/ventas/grilla',
+            path: '/reportes/grilla',
             component: () =>
                 import ( /*webpackChunkName:"RepVentasGrilla"*/ './components/modulos/reportes/pages/VentasGeneralPage.vue'),
             name: 'reporte.ventas.grilla.index',
             props: true,
-            /*beforeEnter: (to, from, next) => {
+            beforeEnter: (to, from, next) => {
                 verificarAcceso(to, from, next);
-            }*/
+            }
         },
 
         /**Ruta del chat */

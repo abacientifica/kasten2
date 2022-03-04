@@ -27,6 +27,7 @@ Vue.component('homologar-plantillas', require('./components/plantilla/plantillas
 //Cotizaciones
 Vue.component('nuevacotizacion', require('./components/modulos/cotizaciones/create.vue').default);
 Vue.component('editarcotizacion', require('./components/modulos/cotizaciones/editar.vue').default);
+Vue.component('cot-homologar', require('./components/modulos/cotizaciones/opciones/homologar.vue').default);
 
 
 import locale from 'element-ui/lib/locale/lang/es';
@@ -35,13 +36,23 @@ import router from './routes';
 import ElementUI from 'element-ui';
 
 window.Vue.use(ElementUI, { locale }); //Con esta declaracion lo utilizamos en todo el sitio
+
+import Vuetify from 'vuetify'
+//import "vuetify/dist/vuetify.min.css";
+import 'material-design-icons-iconfont/dist/material-design-icons.css'
+
+
+Vue.use(Vuetify)
+
 import 'element-ui/lib/theme-chalk/index.css';
 import vSelect from "vue-select";
 
 import Vuex, { mapActions, mapGetters } from 'vuex'
+Vue.use(Vuex);
 
 import Vuesax from 'vuesax'
 import 'vuesax/dist/vuesax.css' //Vuesax styles
+
 Vue.use(Vuesax, {
     // options here
 })
@@ -64,8 +75,15 @@ Vue.use(VueSessionStorage)
 
 import store from './store'
 
+import VueMeta from 'vue-meta'
+
+Vue.use(VueMeta)
+import servicesApp from '../../resources/js/ServicesApp'
+const SERVICES_APP = new servicesApp();
+
 const app = new Vue({
     el: '#app',
+    vuetify: new Vuetify(),
     router,
     store,
     data: {
@@ -75,8 +93,15 @@ const app = new Vue({
         logoutTimer: null, //El tiempo que va esperar si no confirma el cierre de session 
         warningZone: false, // se puede utilizar para mostrar un mensaje de alerta.
         usuario: [],
+        permisos: [],
         listaPermisosByUser: [],
         listPermisosFilter: []
+    },
+    metaInfo: {
+        meta: [
+            { charset: 'utf-8' },
+            { name: 'viewport', content: 'width=device-width, initial-scale=1' }
+        ]
     },
 
     destroyed() {
@@ -146,28 +171,12 @@ const app = new Vue({
         },
 
         logout() {
-            this.fullscreenLoading = true;
             var url = '/authenticated/logout'
             axios.post(url).then(response => {
                 this.$router.push({ name: 'login' })
                 location.reload();
                 sessionStorage.clear();
                 localStorage.clear();
-                this.fullscreenLoading = false;
-            }).catch(error => {
-                if (error.response.status == 401) {
-                    this.$router.push({ name: 'login' })
-                    location.reload();
-                    localStorage.clear();
-                    sessionStorage.clear();
-                    this.fullscreenLoading = false;
-                } else {
-                    this.$router.push({ name: 'login' })
-                    location.reload();
-                    localStorage.clear();
-                    sessionStorage.clear();
-                    this.fullscreenLoading = false;
-                }
             })
         },
 
@@ -207,7 +216,7 @@ const app = new Vue({
             EventBus.$emit("permisosActualizados", JSON.stringify(listaPermisos));
             //EventBus.$emit("notififyRolPermisosByUser", sessionStorage.getItem('listPermisosFilterByRolUser'));
         },
-
+        ...mapActions('Usuario', ['SET_USUARIO']),
         ...mapActions('PermisosUsuario', ['SET_PERMISOS']),
     },
 
@@ -216,16 +225,14 @@ const app = new Vue({
         this.events.forEach(function(event) {
             window.addEventListener(event, this.resetTimer);
         }, this);
-        this.usuario = JSON.parse(sessionStorage.getItem('authUser')) ? JSON.parse(sessionStorage.getItem('authUser')) : JSON.parse(localStorage.getItem('authUser'));
+        const user = sessionStorage.getItem('authUser'),
+            permisos = sessionStorage.getItem('listPermisosFilterByRolUser')
+        this.usuario = user ? JSON.parse(user) : null;
+        this.permisos = permisos ? JSON.parse(permisos) : null
         if (this.usuario) {
-            this.SET_PERMISOS(this.usuario.Usuario);
-        } else {
-            this.SET_PERMISOS(null);
-            localStorage.clear();
-            sessionStorage.clear();
-        }
+            this.SET_PERMISOS(this.permisos);
+            this.SET_USUARIO(this.usuario)
 
-        if (this.usuario) {
             Echo.private(`logout.${this.usuario.Usuario}`).listen('LogoutUser', (e) => {
                 console.log(e.usuario.mensaje)
                 let mensaje = e.usuario.mensaje;
@@ -245,11 +252,17 @@ const app = new Vue({
                 })
             });
 
-
             Echo.private(`cambiorol.${this.usuario.Usuario}`).listen('CambioRol', (e) => {
                 this.RefrescarPermisos();
             });
 
+        } else {
+            if (this.$router.history.current.path !== '/login') {
+                SERVICES_APP.validateSession(this);
+            }
+        }
+        if (this.$router.history.current.path === '/login' && this.usuario) {
+            this.$router.push({ name: 'home.index' })
         }
     },
 

@@ -1,6 +1,6 @@
 <template>
     <div class="login-page">
-        <div class="row justify-content-center">
+        <div><!--class="row justify-content-center"-->
             <div class="col-md-12">
                 <div class="card-group mb-0">
                     <div class="card p-4">
@@ -12,17 +12,17 @@
                             </center>
                         <div class="form-group mb-3">
                             <span class="input-group-addon"><i class="fas fa-user-tie"></i></span>
-                            <input type="text"  name="usuario"  class="form-control" @keyup.enter="login()" v-model="fillLogin.cUsuario" placeholder="Usuario">
+                            <input type="text"  name="usuario"  class="form-control"  v-model="fillLogin.cUsuario" placeholder="Usuario">
                             
                         </div>
                         <div class="form-group mb-4">
                             <span class="input-group-addon"><i class="fas fa-key"></i></span>
-                            <input type="password" name="password" id="password" @keyup.enter="login()" class="form-control" v-model="fillLogin.cContrasena" placeholder="Password" required>
+                            <input type="password" name="password" id="password"  class="form-control" v-model="fillLogin.cContrasena" placeholder="Password" required>
                             
                         </div>
                         <div class="row">
                             <div class="col-6">
-                            <button class="btn btn-primary px-4" @click.prevent="login()" v-loading.fullscreen.lock="fullscreenloading" :disabled="!fillLogin.cUsuario || !fillLogin.cContrasena ? true:false">Acceder</button><hr>
+                            <button class="btn btn-primary px-4" @click.prevent="login()" :disabled="!fillLogin.cUsuario || !fillLogin.cContrasena ? true:false">Acceder</button><hr>
                             Recuerdame <input type="checkbox" name="recuerda" id="recuerda">
                             </div>
                         </div>
@@ -44,57 +44,37 @@
     </div>
 </template>
 <script>
+import servicesApp  from '../../../../js/ServicesApp'
+const SERVICES_APP = new servicesApp();
+import { mapActions, mapGetters } from 'vuex'
 export default {
     data() {
         return {
             csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            error:0,
             mensajeError:[],
             fillLogin:{
                 cUsuario:'',
                 cContrasena:''
             },
-            fullscreenloading:false,
-            listaPermisosByUser:[],
-            listPermisosFilterByRolUser:[],
         }
     },
     methods: {
-        login(){
+        async login(){
             sessionStorage.clear();
             localStorage.clear();
-            const loader = this.loaderk();
+            const loader = SERVICES_APP.loader(this,`Hola estamos ${ this.fillLogin.cUsuario } cargando la información ...`)
             if(this.validarLogin()){
                 return;
                 loader.close();
             }
-            var url ="/authenticated/login";
-            axios.post(url,{
-                'cUsuario':this.fillLogin.cUsuario,
-                'cContrasena':this.fillLogin.cContrasena
-            }).then(response=>{
-                if(response.data.status == 200){
-                    this.getListarRolPermisosByUser(response.data.authUser);
-                    //this.filterListRolPermisosByUsuario();
-                    sessionStorage.setItem('authUser',JSON.stringify(response.data.authUser));
-                    //this.loginSucces();
-                    loader.close();
-                }
-                if(response.data.status == 401){
-                    this.loginFailed();
-                }
-            }).catch((error)=>{
-                let msgerror = error.message.split(" ");
-                let coderror = msgerror.find(error => error == '401') ?  msgerror.find(error => error == '401') :  msgerror.find(error => error == '419');
-                coderror =='' ? msgerror.find(error => error == '401') :msgerror.find(error => error == '419');
-                if(coderror == 401 || coderror == 419){
-                    sessionStorage.clear();
-                    localStorage.clear();
-                    location.reload();
-                    this.$router.push({name: 'login'})
-                }
-            })
+            const  { authUser , status, statusText} = await SERVICES_APP.login(this.fillLogin.cUsuario,this.fillLogin.cContrasena)
+            const { permisos } = await SERVICES_APP.getListarRolPermisosByUser(authUser)
+            if(!SERVICES_APP.validarStatusLogin(this,status,statusText)){ loader.close(); return  }
+
+            this.$router.push({name:'home.index'});
+            console.log({ authUser , permisos, status, statusText})
             loader.close();
+            location.reload();
         },
 
         validarLogin(){
@@ -111,68 +91,6 @@ export default {
             }
             return this.error;
         },
-
-        loginFailed(){
-            this.error =0;
-            this.mensajeError = [];
-            this.mensajeError.push("Estas credenciales no coinciden con nuestros registros");
-            this.fillLogin.cContrasena ='';
-            if(this.mensajeError.length){
-                this.error =1;
-            }
-            Swal.fire({
-                position: 'top-center',
-                icon: 'error',
-                title: "Estas credenciales no coinciden con nuestros registros,intenta de nuevo",
-                showConfirmButton: false,
-                timer: 1800
-            });
-            return this.error;
-        },
-        loginSucces(){
-            const loader = this.loaderk();
-            this.$router.push({name:'home.index'});
-            location.reload();
-            loader.close();
-        },
-
-        getListarRolPermisosByUser(authUser){
-            let url = "/permiso/ObtenerPermisosUsuario";
-            axios.get(url,{params:{
-                'cUsuario':authUser.Usuario,
-                'nIdRol':authUser.IdRol
-            }}).then((response)=>{
-                let Datos = response.data;
-                this.listaPermisosByUser = Datos.permisos;
-                this.filterListRolPermisosByUsuario(authUser);
-            })
-        },
-
-        filterListRolPermisosByUsuario(authUser){
-            let me = this;
-            me.listaPermisosByUser.map(function(x,y){
-                if(x.slug != null){
-                    me.listPermisosFilterByRolUser.push(x.slug);
-                }
-            })
-            //console.log(me.listPermisosFilterByRolUser)
-            //json.STRINGIFY convierte una cadena de string en un json para dalr esu uso
-            localStorage.setItem('listPermisosFilterByRolUser',JSON.stringify(this.listPermisosFilterByRolUser));
-            localStorage.setItem('authUser',JSON.stringify(authUser));
-
-            sessionStorage.setItem('listPermisosFilterByRolUser',JSON.stringify(this.listPermisosFilterByRolUser));
-            sessionStorage.setItem('authUser',JSON.stringify(authUser));
-            this.loginSucces();
-        },
-
-        loaderk() {
-            return this.$vs.loading({
-                type : 'square',
-                background: '#babaea',
-                color: '#fff',
-                text:'Cargando...'
-            });
-        }
 
     },
 

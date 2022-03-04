@@ -1,4 +1,5 @@
 import { Result } from "element-ui";
+import { mapActions, mapGetters } from 'vuex'
 
 export default class ServicesApp {
 
@@ -148,13 +149,31 @@ export default class ServicesApp {
         if (status === 200) {
             return true
         } else if (status === 401 || status === 419) {
-            me.$router.push({ name: 'login' })
-            location.reload();
+            if (me.$router.history.current.path !== '/login') {
+                me.$router.push({ name: 'login' })
+                location.reload();
+                localStorage.clear();
+                sessionStorage.clear();
+            }
+            return false
+        } else if (status === 500) {
+            this.alertMessage(me, `Ocurrio un error : ${status } ${statusText}`, 'danger')
+            return false
+        } else {
+            return false
+        }
+    }
+
+    validarStatusLogin(me, status, statusText) {
+        if (status === 200) {
+            return true
+        } else if (status === 401 || status === 419) {
+            this.alertMessage(me, `Ocurrio un error : ${status } El usuario o la contraseña con incorrectos, intenta nuevamente`, 'danger', 4000)
             localStorage.clear();
             sessionStorage.clear();
             return false
         } else if (status === 500) {
-            this.alertMessage(me, `Ocurrio un error : ${status } ${statusText}`, 'danger')
+            this.alertMessage(me, `Ocurrio un error : ${status } ${statusText}`, 'danger', 4000)
             return false
         } else {
             return false
@@ -200,4 +219,59 @@ export default class ServicesApp {
         })
         return target;
     }
+
+    loader(me, msg = 'Cargando...') {
+        return me.$vs.loading({
+            type: 'square',
+            background: '#babaea',
+            color: '#fff',
+            text: msg
+        });
+    }
+
+    async login(user, password) {
+        const response = await axios.post("/authenticated/login", {
+            'cUsuario': user,
+            'cContrasena': password,
+        }).then(res => {
+            let { authUser, status, statusText } = res.data;
+            localStorage.setItem('authUser', JSON.stringify(authUser));
+            sessionStorage.setItem('authUser', JSON.stringify(authUser));
+            return { authUser, status, statusText }
+        }).catch(err => {
+            let { statusText, status } = err.response
+            return { statusText, status }
+        })
+        return response
+    }
+
+    async getListarRolPermisosByUser(authUser) {
+        try {
+            const response = await axios.get("/permiso/ObtenerPermisosUsuario", { params: { 'cUsuario': authUser.Usuario, 'nIdRol': authUser.IdRol } })
+            const permisions = response.data.permisos.filter(filt => filt.slug).map(perm => { return perm.slug })
+            localStorage.setItem('listPermisosFilterByRolUser', JSON.stringify(permisions));
+            sessionStorage.setItem('listPermisosFilterByRolUser', JSON.stringify(permisions));
+            return { permisos: permisions }
+        } catch (error) {
+            return { permisos: null }
+        }
+    }
+
+    validateSession(me) {
+        axios.get('/authenticated/getRefrescarUsaurioAutentificado').then(resp => {
+            sessionStorage.setItem('authUser', JSON.stringify(resp.data));
+            localStorage.setItem('authUser', JSON.stringify(resp.data));
+            axios.get("/permiso/ObtenerPermisosUsuario", { params: { 'cUsuario': resp.Usuario, 'nIdRol': resp.IdRol } }).then(resp => {
+                const permisions = resp.data.permisos.filter(filt => filt.slug);
+                localStorage.setItem('listPermisosFilterByRolUser', JSON.stringify(permisions));
+                sessionStorage.setItem('listPermisosFilterByRolUser', JSON.stringify(permisions));
+            })
+
+        }).catch(err => {
+            console.log(err)
+            let { statusText, status } = err.response
+            this.validarStatus(me, status, statusText)
+        });
+    }
+
 }
