@@ -156,7 +156,7 @@
                 </el-form-item>
 
                 <el-form-item>
-                    <el-button type="primary" @click="getVentas()">Filtrar</el-button>
+                    <el-button type="primary" @click="getVentas(),dialogFiltros=false">Filtrar</el-button>
                     <el-button @click.prevent="dialogFiltros=false">Cancelar</el-button>
                 </el-form-item>
             </el-form>
@@ -226,6 +226,7 @@ export default {
         limpiarFiltros() {
             let formName ='formFiltros';
             this.$refs[formName].resetFields();
+            this.getVentas();
         },
 
         async getVentas() {
