@@ -75,9 +75,6 @@ Vue.use(VueSessionStorage)
 
 import store from './store'
 
-import VueMeta from 'vue-meta'
-
-Vue.use(VueMeta)
 import servicesApp from '../../resources/js/ServicesApp'
 const SERVICES_APP = new servicesApp();
 
@@ -96,12 +93,6 @@ const app = new Vue({
         permisos: [],
         listaPermisosByUser: [],
         listPermisosFilter: []
-    },
-    metaInfo: {
-        meta: [
-            { charset: 'utf-8' },
-            { name: 'viewport', content: 'width=device-width, initial-scale=1' }
-        ]
     },
 
     destroyed() {

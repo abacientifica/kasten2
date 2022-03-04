@@ -124,22 +124,21 @@
                     </li>
                 </template>
             </template>
-            <template v-if="listPermisos.includes('reporte.ventas.index') || listPermisos.includes('administrador.sistema') ">
-                <li class="nav-header">REPORTES</li>
-                <template v-if="listPermisos.includes('reporte.ventas.index') || listPermisos.includes('administrador.sistema')">
-                    <li class="nav-item" @click="DocSel =  null">
-                        <router-link :to="'/reportes/ventas'" class="nav-link">
-                            <i class="nav-icon fas fa-chart-bar"></i>
-                            <p>Reporte Ventas Grafico</p>
-                        </router-link>
-                    </li>
-                    <li class="nav-item" @click="DocSel =  null">
-                        <router-link :to="'/reportes/ventas/grilla'" class="nav-link">
-                            <i class="nav-icon fas fa-table"></i>
-                            <p>Reporte Ventas Tabla</p>
-                        </router-link>
-                    </li>
-                </template>
+
+            <template v-if="listPermisos.includes('reporte.ventas.index') || listPermisos.includes('administrador.sistema')  || 1 ">
+            <li class="nav-header">REPORTES</li>
+                <li class="nav-item" @click="DocSel =  null" v-if="listPermisos.includes('reporte.ventas.grafico') || listPermisos.includes('administrador.sistema') || 1">
+                    <router-link :to="'/reportes/ventas'" class="nav-link">
+                        <i class="nav-icon fas fa-chart-bar"></i>
+                        <p>Reporte Ventas Grafico</p>
+                    </router-link>
+                </li>
+                <li class="nav-item" @click="DocSel =  null" v-if="listPermisos.includes('reporte.ventas.grilla') || listPermisos.includes('administrador.sistema')">
+                    <router-link :to="'/reportes/grilla'" class="nav-link">
+                        <i class="nav-icon fas fa-table"></i>
+                        <p>Reporte Ventas Tabla</p>
+                    </router-link>
+                </li>
             </template>
 
             <li class="nav-header" v-if="listPermisos.includes('administrador.sistema')" >UTILIDADES</li>
@@ -191,22 +190,11 @@ export default {
     },
     methods: {
         logout(){
-            this.fullscreenLoading = true;
             var url = '/authenticated/logout'
             axios.post(url).then(response => {
-                if (response.data.code == 204) {
-                    this.$router.push({name: 'login'})
-                    location.reload();
-                    sessionStorage.clear();
-                    this.fullscreenLoading = false;
-                }
-            }).catch(error => {
-                if (error.response.status == 401) {
-                    this.$router.push({name: 'login'})
-                    location.reload();
-                    sessionStorage.clear();
-                    this.fullscreenLoading = false;
-                }
+                this.$router.push({name: 'login'})
+                location.reload();
+                sessionStorage.clear();
             })
         },
 
