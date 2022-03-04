@@ -125,9 +125,9 @@
                 </template>
             </template>
 
-            <template v-if="listPermisos.includes('reporte.ventas.index') || listPermisos.includes('administrador.sistema')  || 1 ">
+            <template v-if="listPermisos.includes('reporte.ventas.index') || listPermisos.includes('administrador.sistema')">
             <li class="nav-header">REPORTES</li>
-                <li class="nav-item" @click="DocSel =  null" v-if="listPermisos.includes('reporte.ventas.grafico') || listPermisos.includes('administrador.sistema') || 1">
+                <li class="nav-item" @click="DocSel =  null" v-if="listPermisos.includes('reporte.ventas.grafico') || listPermisos.includes('administrador.sistema')">
                     <router-link :to="'/reportes/ventas'" class="nav-link">
                         <i class="nav-icon fas fa-chart-bar"></i>
                         <p>Reporte Ventas Grafico</p>
