@@ -6,7 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Model\Conceptos;
 use App\Model\Direcciones;
-class ControladorGeneral extends Controller
+use App\Model\Lineas;
+use App\Model\SubGrupos;
+use App\Model\Asesores;
+class ControladorGeneral extends Controller 
 {
     public function __construct()
     {
@@ -19,9 +22,15 @@ class ControladorGeneral extends Controller
     public function ObtenerAsesores(Request $request)
     {
         if(!$request->ajax())  return  redirect('/'); 
-        $Asesores = DB::select("select * from asesores where Inactivo =0");
+        $usuario = $request->usuario;
+        $builder = Asesores::query();
+        $builder->where('Inactivo',0)
+        ->when($usuario,function($builder,$usuario){
+            return $builder->where('UsuarioAsesor',$usuario);
+        })->orderBy('Nombre');
+        $asesores = $builder->get();
         return [
-            'asesores'=>$Asesores
+            'asesores'=> $asesores
         ];
     }
 
@@ -132,4 +141,33 @@ class ControladorGeneral extends Controller
             'campos'=>$Datos
         ];
     }
+
+    public function getLineasGrupos(Request $request)
+    {
+       $idLinea = $request->idLinea;
+       $builder = Lineas::with('grupos');
+       $builder->when($idLinea,function($builder,$idLinea){
+            return $builder->where('IdLinea',$idLinea);
+       });
+       return $builder->orderBy('NmLinea')->get();
+    }
+
+    public function getSubGruposGrupos(Request $request)
+    {
+        $request->validate([
+            'idLinea'=>'required',
+            'idGrupo'=>'required',
+        ]);
+        $idLinea = $request->idLinea;
+        $idGrupo = $request->idGrupo;
+        $builder = SubGrupos::query();
+        $builder->when($idLinea,function($builder,$idLinea){
+            return $builder->where('IdLinea',$idLinea);
+        })->when($idGrupo,function($builder,$idGrupo){
+            return $builder->where('IdGrupo',$idGrupo);
+        });
+        return $builder->orderBy('NmSubGrupo')->get();
+    }
+
+
 }
