@@ -37,13 +37,6 @@ import ElementUI from 'element-ui';
 
 window.Vue.use(ElementUI, { locale }); //Con esta declaracion lo utilizamos en todo el sitio
 
-import Vuetify from 'vuetify'
-//import "vuetify/dist/vuetify.min.css";
-import 'material-design-icons-iconfont/dist/material-design-icons.css'
-
-
-Vue.use(Vuetify)
-
 import 'element-ui/lib/theme-chalk/index.css';
 import vSelect from "vue-select";
 
@@ -80,7 +73,6 @@ const SERVICES_APP = new servicesApp();
 
 const app = new Vue({
     el: '#app',
-    vuetify: new Vuetify(),
     router,
     store,
     data: {
