@@ -61,7 +61,7 @@ class ReportesVentasRepository extends BaseRepository
             return $builder->where('IdAsesorComision',$idAsesor);
         })
         ->when($descripcion,function($builder,$descripcion){
-            return $builder->where('Descripcion',$descripcion);
+            return $builder->where('Descripcion','like','%'.$descripcion.'%');
         })
         ->when($idItem,function($builder,$idItem){
             return $builder->where('Id_Item',$idItem);
