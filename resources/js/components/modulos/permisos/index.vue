@@ -239,7 +239,7 @@ export default {
 
     mounted() {
         this.getListarPermisos();
-        this.listPermisosFilterByRolUser = sessionStorage.getItem('listPermisosFilterByRolUser');
+        this.listPermisosFilterByRolUser = localStorage.getItem('listPermisosFilterByRolUser');
     },
 }
 </script>
