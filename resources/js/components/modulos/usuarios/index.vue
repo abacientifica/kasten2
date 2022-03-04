@@ -730,7 +730,7 @@ export default {
     },
     mounted() {
         this.listarUsuarios();
-        this.listPermisosFilterByRolUser = sessionStorage.getItem('listPermisosFilterByRolUser');
+        this.listPermisosFilterByRolUser = localStorage.getItem('listPermisosFilterByRolUser');
     },
 
 }

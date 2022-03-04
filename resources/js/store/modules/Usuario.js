@@ -5,18 +5,12 @@ export default {
     },
     actions: {
         async SET_USUARIO({ commit }, usuarioAuth) {
-            if (!usuarioAuth) {
-                const res = await axios.get('/authenticated/getRefrescarUsaurioAutentificado');
-                sessionStorage.setItem('authUser', JSON.stringify(res.data));
-                commit('setUsuario', res.data)
-            } else {
-                commit('setUsuario', usuarioAuth);
-            }
+            commit('setUsuario', usuarioAuth);
         }
     },
 
     getters: {
-        obtUsuario: (state) => {
+        getUsuario: (state) => {
             return state.usuario;
         }
     },

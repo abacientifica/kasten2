@@ -5,6 +5,7 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine.css";
 import 'ag-grid-enterprise';
 import servicesAppKasten from '../../../../ServicesApp'
+
 const servicesApp = new servicesAppKasten();
 
 function clousureServices() {
@@ -46,6 +47,16 @@ function clousureServices() {
                 return { statusText, status }
             })
             return response
+        },
+
+        ventasGrafica: async(params) => {
+            const values = Object.values(params)[0]
+            const arrVentasPromise = [
+                axios.get(`/reporte/ventas`, { params: {...values } }),
+                axios.get(`/reporte/ventas`, { params: {...values, anioInicial: values.anioAnterior } }),
+            ]
+            const [ventasAnioAct, ventasAnioAnt] = await Promise.all(arrVentasPromise)
+            return [ventasAnioAct.data.ventas, ventasAnioAnt.data.ventas]
         },
 
         loader: (me, msg = 'Cargando...') => {
@@ -152,6 +163,32 @@ function clousureServices() {
                 },
             }
         },
+
+        getTercerosFilter: async(search) => {
+            const { data } = await axios.get('/terceros/lista', { params: { 'filtro': search } })
+            return data
+        },
+
+        getLineasGrupos: async(idLinea) => {
+            const { data } = await axios.get('/lineas', { params: { 'idLinea': idLinea } })
+            return data
+        },
+
+        getSubGrupos: async(idLinea, idGrupo) => {
+            const { data } = await axios.get('/subgrupos', { params: { 'idLinea': idLinea, 'idGrupo': idGrupo } })
+            return data
+        },
+
+        getAsesores: async() => {
+            const { data } = await axios.get('/asesores/lista')
+            return data.asesores
+        },
+
+        getAsesor: async() => {
+            let user = JSON.parse(sessionStorage.getItem('authUser'));
+            const { data } = await axios.get('/asesores/lista', { params: { usuario: user.Usuario } })
+            return data.asesores[0]
+        }
     }
 }
 

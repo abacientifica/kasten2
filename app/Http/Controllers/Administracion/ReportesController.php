@@ -5,27 +5,36 @@ namespace App\Http\Controllers\Administracion;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use App\Model\Repository\ReportesVentasRepository;
 
 class ReportesController extends Controller
 {
-    public function ReporteVentas(Request $request)
+    public $rep;
+    public function __construct(ReportesVentasRepository $repository){
+        $this->rep = $repository;
+    }
+
+    public function reporteVentas(Request $request)
     {
-        $Anio = $request->anio;
-        $Idtercero = $request->Idtercero;
-        if($Anio <=0){
-            $Anio = date("Y");
-        }
-        if($Idtercero <=0){
-            $Idtercero = \Auth::user()->IdTercero;
-        }
-        $Ventas = DB::table("sql_ventas_general")->select(
-                    DB::raw('MONTHNAME(FchAut) as Mes'),
-                    DB::raw('YEAR(FchAut) as Anio'),
-                    DB::raw('SUM(SubTotal) as Total'),
-                    DB::raw('MONTH(FchAut) as Mes2')
-        )->whereYear('FchAut',$Anio)->where('NitCte',$Idtercero)->groupBy(DB::raw('MONTHNAME(FchAut)'),DB::raw('YEAR(FchAut)'),DB::raw('MONTH(FchAut)'))->OrderBy(DB::raw('MONTH(FchAut)'))->get();
+        $request->validate([
+            'anioInicial'=>'required | numeric'
+        ]);
+
+        $filtros = ([
+            "anioInicial" => $anio,
+            "nitCliente"=>$nitCliente,
+            "idterceroProv"=>$idterceroProv,
+            "nmMarca"=>$nmMarca,
+            "idLinea"=>$idLinea,
+            "idGrupo"=>$idGrupo,
+            "idSubGrupo"=>$idSubGrupo,
+            "idAsesor"=>$idAsesor,
+            "descripcion"=>$descripcion,
+            "idItem"=>$idItem
+        ] = $request->all());
+
         return[
-            'ventas'=>$Ventas
+            'ventas'=>$this->rep->getVentasByFilters($filtros)
         ];
     }
 }
