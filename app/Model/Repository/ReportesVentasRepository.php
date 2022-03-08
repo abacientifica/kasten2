@@ -34,7 +34,7 @@ class ReportesVentasRepository extends BaseRepository
         ] = $filtros);
 
         $builder = $this->getQuery()
-        ->select(DB::raw('MONTHNAME(FechaMvto) as Mes'), DB::raw('YEAR(FechaMvto) as Anio'),DB::raw('SUM(SubTotal) as Total'),DB::raw('MONTH(FechaMvto) as Mes2'))
+        ->select(DB::raw("CONCAT(DATE_FORMAT(FechaMvto,'%b'),'- $',format(SUM(SubTotal),2))as Mes"), DB::raw('YEAR(FechaMvto) as Anio'),DB::raw('SUM(SubTotal) as Total'),DB::raw('MONTH(FechaMvto) as Mes2'))
         ->where('IdUsuario','kasten')
         ->when($anio,function($builder,$anio){
             return $builder->where(DB::raw('year(`FechaMvto`)'),$anio);
