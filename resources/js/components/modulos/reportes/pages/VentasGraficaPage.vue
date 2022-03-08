@@ -2,10 +2,10 @@
     <main class="main">
         <ol class="breadcrumb">
         </ol>
-        <div class="container-fluid">
+        <div class="container-fluid"> 
         <div class="card">
             <div class="card-header">
-                Reportes
+                Reportes <span style="color:red;text-aling:center" v-if="getLabelFilters">Filtros Avanzados {{getLabelFilters}}</span>
             </div>
                 <div class="card-body">
                     <div class="col-md-12">
@@ -141,7 +141,7 @@
                     </el-select>
                 </el-form-item>
 
-                <el-form-item label="Asesor">
+                <el-form-item label="Asesor" :prop="!isAsesor?'idAsesor':''">
                     <el-select v-model="filtros.idAsesor" size="small" placeholder="Seleccione un asesor" clearable :disabled="!isAsesor ? false :true">
                         <el-option  v-for="(asesor) in arrAsesores" :key="asesor.IdAsesor" :label="asesor.Nombre" :value="asesor.IdAsesor"></el-option>
                     </el-select>
@@ -201,14 +201,14 @@ export default {
             arrSubGrupos:[],
             arrAsesores:[],
             filtros:{
-                idterceroProv:'',
-                nmMarca:'',
-                idLinea:'',
-                idGrupo:'',
-                idSubGrupo:'',
-                idAsesor:'',
-                descripcion:'',
-                idItem:''
+                idterceroProv : '',
+                nmMarca : '',
+                idLinea : '',
+                idGrupo : '',
+                idSubGrupo : '',
+                idAsesor : '',
+                descripcion : '',
+                idItem : '',
             }
         }
     },
@@ -432,6 +432,7 @@ export default {
                 filt.idLinea ||
                 filt.idGrupo ||
                 filt.idSubGrupo ||
+                filt.idAsesor ||
                 filt.descripcion ||
                 filt.idItem
             )
@@ -494,6 +495,21 @@ export default {
             this.anio_filtro = AnioAct
             return years
         },
+
+        getLabelFilters(){
+            let labelFilter = ''
+            if(this.filtros){
+                this.filtros.idterceroProv ? labelFilter = labelFilter + `[ Proveedor: ${this.filtros.idterceroProv}] ` : ''
+                this.filtros.nmMarca ? labelFilter = labelFilter + `[ Marca: ${this.filtros.nmMarca}]` : ''
+                this.filtros.idLinea ? labelFilter = labelFilter + `[ Linea: ${this.filtros.idLinea}]` : ''
+                this.filtros.idGrupo ? labelFilter = labelFilter + `[ Grupo: ${this.filtros.idGrupo}]` : ''
+                this.filtros.idSubGrupo ? labelFilter = labelFilter + `[ Sub Grupo: ${this.filtros.idSubGrupo}]` : ''
+                this.filtros.idAsesor ? labelFilter = labelFilter + `[ Asesor: ${this.filtros.idAsesor}]` : ''
+                this.filtros.descripcion ? labelFilter = labelFilter + `[ Descripcion: ${this.filtros.descripcion}]` : ''
+                this.filtros.idItem ? labelFilter = labelFilter + `[ Item: ${this.filtros.idItem}]` : ''
+            }
+            return labelFilter
+        }
     },
 
 
