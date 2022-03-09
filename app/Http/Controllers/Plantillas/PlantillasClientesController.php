@@ -521,7 +521,7 @@ class PlantillasClientesController extends Controller
                     }
                     $CodigoG->PrecioTecho = $data[10];
                 }
-                if (is_numeric($CodigoG->CantidadConsumo)  && is_numeric($Plantilla->CantidadConsumoMes) > 0) {
+                if (is_numeric($CodigoG->CantidadConsumo)  && is_numeric($Plantilla->CantidadConsumoMes) && $Plantilla->CantidadConsumoMes >0) {
                     $CodigoG->CantConsumoMesDet = ($CodigoG->CantidadConsumo / $Plantilla->CantidadConsumoMes);
                 }
                 $CodigoG->save();
