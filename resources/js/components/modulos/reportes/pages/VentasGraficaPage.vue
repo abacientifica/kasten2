@@ -66,8 +66,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="card card-chart">
+                        <div class="col-md-6" >
+                            <div class="card card-chart" >
                                 <div class="card-header">
                                     <h4> Año {{anio_filtro}}</h4>
                                 </div>
@@ -75,6 +75,25 @@
                                     <div class="ct-chart">
                                         <div class="chart-container">
                                             <canvas id="ventas">                                                
+                                            </canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <p>Ventas {{anio_filtro}}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="card card-chart">
+                                <div class="card-header">
+                                    <h4> Año Anterior vs Actual</h4>
+                                </div>
+                                <div class="card-content">
+                                    <div class="ct-chart">
+                                        <div class="chart-container">
+                                            <canvas id="ventasvs">                                                
                                             </canvas>
                                         </div>
                                     </div>
@@ -193,6 +212,7 @@ export default {
             anio_filtro:null,
             myChart:'',
             myChartAnt:'',
+            myChartVsAnios:'',
             isLoading:false,
             dialogFiltros:false,
             isAsesor:false,
@@ -209,7 +229,23 @@ export default {
                 idAsesor : '',
                 descripcion : '',
                 idItem : '',
-            }
+            },
+            ventasVsAnios:null,
+            arrVentasVs:[
+                {
+                    label:'Jan-2021',
+                    data:[4564565855456],
+                    borderColor: 'rgba(255, 99, 132, 0.2)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)'
+                },
+                {
+                    label:'Jan-2022',
+                    data:[4564565855456],
+                    borderColor: 'rgba(255, 99, 132, 0.2)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)'
+                }
+            ]
+            
         }
     },
     methods: {
@@ -221,6 +257,7 @@ export default {
             me.VarTotales=[]
             me.arrMesesAnioAnt = []
             me.totalAnioAnt=[]
+            me.ventasVsAnios=[]
         },
 
         limpiarFiltros() {
@@ -234,8 +271,9 @@ export default {
             let me = this,anioInicial = this.anio_filtro, anioAnterior = anioInicial -1,nitCliente = this.idtercero;
             const params = {anioInicial,anioAnterior,nitCliente , ...this.filtros}
             me.limpiarDatos();
-            const [ventasAnioAct,ventasAnioAnt] = []
-            [ventasAnioAct,ventasAnioAnt] = await servicesVentas.ventasGrafica([params])
+            const [ventasAnioAct,ventasAnioAnt,ventasVsAnios] = []
+            [ventasAnioAct,ventasAnioAnt,ventasVsAnios] = await servicesVentas.ventasGrafica([params])
+            me.ventasVsAnios = ventasVsAnios
             ventasAnioAct.map((el)=>{
                 me.VarMeses.push(el.Mes);
                 me.VarTotales.push(el.Total);
@@ -248,6 +286,8 @@ export default {
                 me.totalAnioAnt.push(el.Total);
             })
             this.loadVentasAnt();
+
+            this.loadVsVentas();
             loader.close();
         },
 
@@ -423,6 +463,88 @@ export default {
                 }
             });
         },
+
+        loadVsVentas(){
+            let me=this;
+            if(me.myChartVsAnios  instanceof Chart){
+                me.myChartVsAnios.destroy();
+            }
+            
+            let monthsAnioAct = me.ventasVsAnios.filter(el=> el.Anio == this.anio_filtro ),arrVentas =[]
+            monthsAnioAct.forEach(el=>{
+                me.ventasVsAnios.map(fil => {
+                    if(fil.Mes === el.Mes) return arrVentas.push(fil)
+                })
+            })
+            me.ventasVsAnios = arrVentas;
+            const colors = ()=>{
+                let objColors = []
+                this.ventasVsAnios.map(el=>{
+                    if((el.Anio % 2) === 0 ){
+                        objColors.push('rgba(255, 99, 132, 0.5)')
+                    }
+                    else{
+                        objColors.push('rgba(54, 162, 235, 0.5)')
+                    }
+                })
+                return objColors
+            }
+            let graficsVentas = document.getElementById('ventasvs').getContext('2d');
+            let delayed;
+            this.myChartVsAnios = new Chart(graficsVentas, {
+                type: 'bar',
+                data: {
+                    labels:[...me.ventasVsAnios.map(el=>{return `${el.Mes}-${el.Anio}`})],
+                    datasets:[{
+                        label:'Comparativo',
+                        data: [...me.ventasVsAnios.map(el=>{return el.Total})],
+                        backgroundColor:colors,
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                callback: function(value, index, values) {
+                                    if(value > 1000){
+                                        return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                    } else {
+                                        return '$' + value.toFixed(2);
+                                    }
+                                }
+                            }
+                        }]
+                    },
+                    tooltips: {
+                        callbacks: {
+                            label: function(tooltipItem, data) {
+                                var valor = tooltipItem.yLabel
+                                valor = new Intl.NumberFormat('es-CO', {
+                                    style: 'currency',
+                                    currency: 'COP',
+                                }).format(valor)
+
+                                return data.datasets[tooltipItem.datasetIndex].label+": "+ valor;
+                            }
+                        }
+                    },
+                    animation: {
+                        onComplete: () => {
+                            delayed = true;
+                        },
+                        delay: (context) => {
+                            let delay = 0;
+                            if (context.type === 'data' && context.mode === 'default' && !delayed) {
+                            delay = context.dataIndex * 300 + context.datasetIndex * 100;
+                            }
+                            return delay;
+                    },
+    },
+                }
+            })
+        },
+
 
         validarFiltros(){
             let filt = this.filtros

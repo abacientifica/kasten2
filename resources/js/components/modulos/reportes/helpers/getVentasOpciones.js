@@ -54,9 +54,10 @@ function clousureServices() {
             const arrVentasPromise = [
                 axios.get(`/reporte/ventas`, { params: {...values } }),
                 axios.get(`/reporte/ventas`, { params: {...values, anioInicial: values.anioAnterior } }),
+                axios.get(`/reporte/ventas/vsAnios`, { params: {...values } }),
             ]
-            const [ventasAnioAct, ventasAnioAnt] = await Promise.all(arrVentasPromise)
-            return [ventasAnioAct.data.ventas, ventasAnioAnt.data.ventas]
+            const [ventasAnioAct, ventasAnioAnt, ventasVsAnios] = await Promise.all(arrVentasPromise)
+            return [ventasAnioAct.data.ventas, ventasAnioAnt.data.ventas, ventasVsAnios.data.ventasvs]
         },
 
         loader: (me, msg = 'Cargando...') => {
