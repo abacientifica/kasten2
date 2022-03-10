@@ -34,7 +34,31 @@ class ReportesController extends Controller
         ] = $request->all());
 
         return[
-            'ventas'=>$this->rep->getVentasByFilters($filtros)
+            'ventas'=>$this->rep->getVentasByFilters($filtros),
+        ];
+    }
+
+    public function reporteVentasVsAnios(Request $request)
+    {
+        $request->validate([
+            'anioInicial'=>'required | numeric'
+        ]);
+
+        $filtros = ([
+            "anioInicial" => $anio,
+            "nitCliente"=>$nitCliente,
+            "idterceroProv"=>$idterceroProv,
+            "nmMarca"=>$nmMarca,
+            "idLinea"=>$idLinea,
+            "idGrupo"=>$idGrupo,
+            "idSubGrupo"=>$idSubGrupo,
+            "idAsesor"=>$idAsesor,
+            "descripcion"=>$descripcion,
+            "idItem"=>$idItem
+        ] = $request->all());
+
+        return[
+            'ventasvs'=>$this->rep->getVentasVsAnioAnterior($filtros)
         ];
     }
 }

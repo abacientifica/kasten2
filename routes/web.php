@@ -17,7 +17,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/authenticated/getRefrescarUsaurioAutentificado',function(){
         return \Auth::user();
     });
-    
+
     //Lista rutas usuarios
     Route::get('/usuarios/lista','Administracion\UsuariosController@index');
     Route::get('/usuarios/getUsuario/{id?}','Administracion\UsuariosController@getUsuario');
@@ -134,6 +134,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     //Rutas Reportes
     Route::get('/reporte/ventas', 'Administracion\ReportesController@reporteVentas');
+    Route::get('/reporte/ventas/vsAnios', 'Administracion\ReportesController@reporteVentasVsAnios');
 
     //Reporte de ventas grilla
     Route::get('/ventasGrilla', 'Administracion\Reportes\ReporteVentasController');
