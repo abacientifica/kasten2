@@ -111,11 +111,11 @@
         <el-dialog
             title="Busqueda Avanzada"
             :visible.sync="dialogFiltros"
-            width="30%"
+            width="50%"
             center>
             
-            <el-form ref="formFiltros" :model="filtros" label-width="120px">
-                <el-form-item label="Proveedor" prop="idterceroProv">
+            <el-form ref="formFiltros" :model="filtros" label-width="100px">
+                <el-form-item label="Proveedor" prop="idterceroProv" >
                     <el-select
                         v-model="filtros.idterceroProv"
                         filterable
