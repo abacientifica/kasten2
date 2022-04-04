@@ -32,7 +32,18 @@ export default {
         VueAdsPageButton,
     },
 
-    props:['totalItems','itemPorPagina'],
+    props:{
+        totalItems:{
+            type:Number,
+            required:true,
+            default:0
+        },
+        itemPorPagina:{
+            type:Number,
+            required:true,
+            default:0
+        }
+    },
 
     components: {
        VueAdsPagination,
@@ -47,6 +58,12 @@ export default {
             start: 0,
             end: 0,
             loading: false,
+        }
+    },
+
+    watch:{
+        totalItems(newVal){
+            this.totalData = newVal
         }
     },
     
@@ -64,7 +81,7 @@ export default {
     },
 
     mounted() {
-        //console.log(this.totalData)
+        console.log(this.totalData)
     },
 }
 </script>

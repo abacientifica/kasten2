@@ -24,7 +24,7 @@
                         <div class="row">
                             <div class="col-md-5">
                                 <div class="card card-info">
-                                    <div class="card-header">
+                                    <div class="card-header bg-info">
                                         <h3 class="card-title">Formulario Editar Rol</h3>
                                     </div>
                                     <div class="card-body">
@@ -59,30 +59,35 @@
                             </div>
                             <div class="col-md-7">
                                 <div class="card card-info">
-                                    <div class="card-header">
-                                        <h3 class="card-title">Listar Permisos <input class="form-control form-control-navbar" type="search" v-model="filtroPermiso" @keyup.enter="getListarPermisosByRol()" placeholder="Buscar " aria-label="Search"></h3>
+                                    <div class="card-header bg-info">
+                                        <h3 class="card-title">Listar Permisos 
+                                        </h3>
+                                        <form class="form-inline ml-3 float-right">
+                                            <div class="input-group input-group-sm">
+                                                <el-input placeholder="Buscar" prefix-icon="el-icon-search"  size="mini" v-model="search" ></el-input>
+                                            </div>
+                                        </form>
                                     </div>
                                     <div class="card-body table-responsive">
-                                        <template v-if="listPermisosFilter.length">
-                                            <div>
+                                        <template v-if="listarPermisosPaginate.length">
+                                            <!--<div>
                                                 <b v-text="opsel"></b><input type="checkbox" v-model="sel" @click.prevent="SeleccionarPermisos()">
-                                            </div>
+                                            </div>-->
                                             <div class="scrollTable">
                                                 <table class="table table-hover table-head-fixed text-nowrap projects">
                                                     <thead>
                                                         <tr>
-                                                            <th>Acción</th>
+                                                            <th><el-checkbox  v-model="checkAll"></el-checkbox> Acción </th>
                                                             <th>Nombre</th>
                                                             <th>Url Amigable</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr v-for="(item, index) in listPermisosFilter" :key="index" @click.prevent="marcarFila(index)">
+                                                        <tr v-for="(item, index) in listarPermisosPaginate" :key="index" @click.prevent="marcarFila(index)">
                                                             <td>
-                                                                <!-- Ira el Checkbox para seleccionar los permisos que se le asignaran al rol -->
-                                                                <el-checkbox v-model="item.checked"></el-checkbox>
+                                                                <el-checkbox v-model="item.checked" :checked="item.checked ? true :false" @click.prevent="marcarFila(index)" ></el-checkbox>
                                                             </td>
-                                                            <td v-text="item.name"></td>
+                                                            <td v-text="item.nombre"></td>
                                                             <td v-text="item.slug"></td>
                                                         </tr>
                                                     </tbody>
@@ -108,7 +113,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Sistema Laravel y Vue</h5>
-                        <button class="close" @click="abrirModal"></button>
+                        <button class="close" @click="abrirModal"></button>index
                     </div>
                     <div class="modal-body">
                         <div class="callout callout-danger" style="padding: 5px" v-for="(item, index) in mensajeError" :key="index" v-text="item"></div>
@@ -153,9 +158,51 @@ import Swal from 'sweetalert2'
                 listaPermisosByUser:[],
                 listPermisosUserFilter:[],
                 oUsuarioAct:[],
+                permisosCheck:[],
+                search:null,
+                backFilter:[],
             }
         },
         computed: {
+            //Obtener Registros paginados el valor de 5 se puede cambiar por el deseado
+            listarPermisosPaginate() {
+                return this.listPermisos;
+            },
+            pagesList() {
+                let a = this.listPermisosFilter.length;
+                let b = this.perPage;
+                let PageCoun = Math.ceil(a / b);
+                let count = 0;
+                let PagesArray = [];
+                while (count < PageCoun) {
+                    PagesArray.push(count);
+                    count++;
+                }
+                return PagesArray;
+            },
+        },
+
+        watch:{
+            search(newVal,oldVal){
+                if(!oldVal)this.backFilter = this.listPermisos
+                if(!newVal){
+                    this.listPermisos = []
+                    this.listPermisos  = this.backFilter
+                }
+                else{
+                    this.listPermisos = this.listPermisos.filter(filt => filt.nombre.toLowerCase().includes(newVal.toLowerCase())).sort((a,b)=> { 
+                        if(a.checked < b.checked){
+                            return 1
+                        }
+                        if(a.checked > b.checked){
+                            return -1
+                        }
+                        return 0
+                    })
+                }
+                
+                this.validCheck();
+            },
         },
         mounted() {
             this.getListarRoles();
@@ -182,7 +229,6 @@ import Swal from 'sweetalert2'
                     this.fillEditarRol.cNombre  =   response.data.roles[0].nombre;
                     this.fillEditarRol.cUrl    =   response.data.roles[0].slug;
                     this.fullscreenLoading = false;
-                    console.log(response.data);
                 }).catch(error => {
                     if (error.response.status == 401) {
                         this.$router.push({name: 'login'})
@@ -203,7 +249,7 @@ import Swal from 'sweetalert2'
                 }).then( response => {
                     this.listPermisos = [];
                     this.listPermisos = response.data.permisosbyrol;
-                    this.filterPermisosByRol();
+                    this.permisosCheck = this.listPermisos.filter(filt => filt.checked)
                 }).catch(error => {
                     if (error.response.status == 401) {
                         this.$router.push({name: 'login'})
@@ -212,21 +258,6 @@ import Swal from 'sweetalert2'
                         this.fullscreenLoading = false;
                     }
                 })
-            },
-            filterPermisosByRol() {
-                let me = this;
-                me.listPermisosFilter =[];
-                me.listPermisos.map(function(x, y){
-                    me.listPermisosFilter.push({
-                        'id'        :   x.id,
-                        'name'      :   x.name,
-                        'slug'      :   x.slug,
-                        'checked'   :   (x.checked == 1) ? true : false
-                    })
-                })
-            },
-            marcarFila(index){
-                this.listPermisosFilter[index].checked  =   !this.listPermisosFilter[index].checked;
             },
             setEditarRolPermisos(){
                 if (this.validarEditarRolPermisos()) {
@@ -240,7 +271,7 @@ import Swal from 'sweetalert2'
                     'IdRol'                :   this.fillEditarRol.nIdRol,
                     'cNombre'               :   this.fillEditarRol.cNombre,
                     'cUrl'                 :   this.fillEditarRol.cUrl,
-                    'listPermisosFilter'    :   this.listPermisosFilter
+                    'listPermisosFilter'    :   this.permisosCheck
                 }).then(response => {
                     this.getListarRolPermisosByUser();
                     this.getListarRolPermisosByUsuario();
@@ -268,7 +299,7 @@ import Swal from 'sweetalert2'
                         contador++;
                     }
                 })
-                if (contador == 0) {
+                if (this.permisosCheck.length<=0) {
                     this.mensajeError.push("Debe seleccionar al menos un permiso");
                 }
 
@@ -311,12 +342,32 @@ import Swal from 'sweetalert2'
                 this.fullscreenLoading = false;
             },
 
-            SeleccionarPermisos(){
-                let op = this.sel;
-                this.listPermisosFilter.map(function(x,y){
-                    x.checked = op;
-                });
-                this.sel = !this.sel;
+            marcarFila(index){
+                this.listPermisos[index].checked = !this.listPermisos[index].checked ? true:false;
+                this.validarCheck(this.listPermisos[index],index)
+            },
+
+            validarCheck(permiso,index){
+                const permisosExist = this.permisosCheck.filter(filt => filt.id === permiso.id);
+                if(!permiso.checked && permisosExist.length >0){
+                    this.permisosCheck.splice((index),1)
+                }
+                else if (permiso.checked && permisosExist.length <=0){
+                    this.permisosCheck.push(permiso)
+                }
+            },
+
+            validCheck(){
+                this.listarPermisosPaginate.map(el=> {
+                    if(this.permisosCheck.filter(filt=> filt.id === el.id).length){
+                        el.checked = true
+                    }
+                })
+            },
+
+
+            checkAll(newVal){
+                this.listPermisosFilter.map(el=> el.checked = newVal) 
             }
         },
     }
