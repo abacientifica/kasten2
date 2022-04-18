@@ -798,7 +798,7 @@
     </div>
     
 </template>
-<script>
+<script charset="utf-8">
 import Swal from 'sweetalert2'
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine.css";
@@ -810,6 +810,12 @@ import "vue-select/dist/vue-select.css";
 import { AgGridVue } from "ag-grid-vue";
 import Novedades from '../../plantilla/plantillasclientes/Novedades.vue';
 export default {
+    metaInfo: {
+        meta: [
+            { charset: 'utf-8' },
+            { name: 'viewport', content: 'width=device-width, initial-scale=1' }
+        ]
+    },
     components: {
         AgGridVue,
         "v-select": vSelect,
@@ -1761,7 +1767,7 @@ export default {
         onGridReady(params) {
             let Filtros = JSON.parse(localStorage.getItem('filtros'));
             let Columnas = JSON.parse(localStorage.getItem('columnas'));
-            this.gridApi.setFilterModel(Filtros);
+            this.gridOptions.api.setFilterModel(Filtros);
             this.gridOptions.columnApi.setColumnState(Columnas)
             this.listarPlantilla();
         },
@@ -2173,6 +2179,42 @@ export default {
             let me = this;
             let url ="/plantillas/clientes/ProcesarHomologacion";
             const loader = this.loaderk();
+            if(!me.fillHm.NroCot && !me.fillHm.IdPlantilla){
+                loader.close()
+                this.$confirm('Para procesar la homologación debes ingresar el # Cot o Id Plantilla, o pon un 0 si deseas buscar en todos los registros de la opción seleccionada.', 'Warning', {
+                    confirmButtonText: 'OK',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    
+                });
+                return
+            }
+            
+            if(me.oFechasCot.length <=0){
+                loader.close()
+                this.$confirm('Debes Seleccionar un rango de fechas', 'Warning', {
+                    confirmButtonText: 'OK',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    
+                });
+                return
+            }
+
+            if(!me.opDetallesHm){
+                loader.close()
+                this.$confirm('Debes Seleccionar si todos los items o los seleccionados', 'Warning', {
+                    confirmButtonText: 'OK',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    
+                });
+                return
+            }
+            
             axios.put(url,{
                 params:{
                     'IdPlantilla':me.$attrs.id,
