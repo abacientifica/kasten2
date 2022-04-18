@@ -605,7 +605,7 @@ class PlantillasClientesController extends Controller
             if ($Opcion == 1) {
                 $PlantillaDet = PlantillasDet::where('IdPlantilla',$IdPlantilla)->get();
                 foreach ($PlantillaDet as $Detalle) {
-                    if ($Detalle->IdListaCostosDetPlantDet == null) {
+                    if (!$Detalle->IdListaCostosDetPlantDet) {
                         if ($NroCot == '0' || $NroCot !='') {
                             $strSql = "SELECT
                                 cotizaciones.IdCotizacion,
@@ -622,7 +622,7 @@ class PlantillasClientesController extends Controller
                                 WHERE
                                 cotizaciones_det.IdListaCostosDetCot IS NOT NULL";
 
-                            if ($NroCot !='0' && $nro) {
+                            if ($NroCot !='0' && $NroCot) {
                                 $strSql = $strSql . " AND cotizaciones.NroCotizacion = " . $NroCot;
                             }
                             if ($Grupo !='') {
@@ -691,7 +691,7 @@ class PlantillasClientesController extends Controller
             }
             else if ($Opcion ==2){
                 foreach ($DetallesSel as $Detalle) {
-                    if ($Detalle->IdListaCostosDetPlantDet == null) {
+                    if (!$Detalle->IdListaCostosDetPlantDet) {
 
                         if ($NroCot !='' || $NroCot == '0') {
                             $strSql = "SELECT
