@@ -431,7 +431,8 @@
                                         range-separator="A"
                                         start-placeholder="Desde"
                                         end-placeholder="Hasta"
-                                        value-format="yyyy-MM-dd">
+                                        value-format="yyyy-MM-dd"
+                                        :picker-options="pickerOptionsYears">
                                     </el-date-picker>
                                     <label>Opción</label><br>
                                     <el-radio v-model="opDetallesHm" label="1">Todos</el-radio>
@@ -896,7 +897,6 @@ export default {
                         const end = new Date();
                         const start = new Date();
                         start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-                        console.log(start)
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
@@ -913,6 +913,33 @@ export default {
                         const end = new Date();
                         const start = new Date();
                         start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }]
+            },
+            pickerOptionsYears: {
+                shortcuts: [{
+                    text: 'Ult. Año',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 365);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: 'Ult. 2 Años',
+                        onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 730);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: 'Ult. 3 Años',
+                        onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 1095);
                         picker.$emit('pick', [start, end]);
                     }
                 }]
@@ -979,7 +1006,7 @@ export default {
                 '1':'SI',
                 '0':'NO'
             },
-            OcultarPanel:false,
+            OcultarPanel:true,
             MantenerFiltros:false,
             OpcionAccionDets:null,
             //Items vendidos
@@ -2190,7 +2217,7 @@ export default {
                 });
                 return
             }
-            
+
             if(me.oFechasCot.length <=0){
                 loader.close()
                 this.$confirm('Debes Seleccionar un rango de fechas', 'Warning', {
