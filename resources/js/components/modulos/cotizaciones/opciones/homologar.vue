@@ -235,12 +235,14 @@ export default {
     },
     watch:{
         modalShow(val){
-            this.indexItem = this.opcionDialog.itemSel.rowIndex;
-            this.indexFin = this.opcionDialog.itemsActual.length;
-            this.ItemSel = this.opcionDialog.itemSel.data;
-            this.datos = this.opcionDialog.itemsActual;
             if(val){
-                this.listarDatos();
+                this.indexItem = this.opcionDialog.itemSel.rowIndex;
+                this.indexFin = this.opcionDialog.itemsActual.length;
+                this.ItemSel = this.opcionDialog.itemSel.data;
+                this.datos = this.opcionDialog.itemsActual;
+                if(val){
+                    this.listarDatos();
+                }
             }
         }
     },

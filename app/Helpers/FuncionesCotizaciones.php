@@ -61,9 +61,9 @@ class FuncionesCotizaciones {
 
     public static function ObtenerCotizacionDet($IdCot){
         try{
-            $Sql = "SELECT  cotizaciones_det.IdCotizacionDet, cotizaciones_det.CodCliente,cotizaciones_det.GrupoPlantilla,cotizaciones_det.ItemCliente,cotizaciones_det.DescripcionCliente, cotizaciones_det.MarcaSugerida, cotizaciones_det.UmCompraCliente,
+            $Sql = "SELECT  cotizaciones_det.IdCotizacionDet, cotizaciones_det.CodCliente,cotizaciones_det.UMCliente,cotizaciones_det.GrupoPlantilla,cotizaciones_det.ItemCliente,cotizaciones_det.DescripcionCliente, cotizaciones_det.MarcaSugerida, cotizaciones_det.UmCompraCliente,
                     cotizaciones_det.Consumo,cotizaciones_det.MesesConsumo,(cotizaciones_det.Consumo / cotizaciones_det.MesesConsumo ) as ConsumoMes,cotizaciones_det.FactorCliente,cotizaciones_det.PrecioTecho,(cotizaciones_det.PrecioCotizacion / cotizaciones_det.FactorCliente) as PrecioOfertaUmCli,
-                    cotizaciones_det.ReqMuestras,cotizaciones_det.ReqMuestras,cotizaciones_det.CantMuestras,cotizaciones_det.ComentariosMuestras,'' as ComentariosHm,cotizaciones_det.Alternativa,'' as DctoFinCliente,'' as ClteAplicaFro,cotizaciones_det.Opcion,
+                    if(cotizaciones_det.ReqMuestras,1,0) ReqMuestras,cotizaciones_det.CantMuestras,cotizaciones_det.ComentariosMuestras,'' as ComentariosHm,cotizaciones_det.Alternativa,'' as DctoFinCliente,'' as ClteAplicaFro,cotizaciones_det.Opcion,
                     terceros.NombreCorto as NmProveedor,lineas.NmLinea,grupos.NmGrupo,subgrupos.NmSubGrupo,cotizaciones_det.DescuentoFcieroCot,(CCGenon.CantMinimaCompra * CCGenon.CostoUMM) as MontoMinOCProv,item.Id_Item,marcas.NmMarca,item.Descripcion,
                     ListaDet.CodProveedor,ListaDet.IvaLC,ListaDet.RefFabricante,if(item.Contrato = 1,'SI','NO') as Contrato,'' as VigContrato,if(ListaDet.HabCotizar = 1,'SI','NO') as HabCotizar,ListaDet.CategoriaPortafolio,tiposcompras.Alias as TipoCompra,
                     lista_costos_prov_det.Presentacion,lista_costos_prov_det.UMC,lista_costos_prov_det.FactorCompra,item.UMM,lista_costos_prov_det.CantMinimaVenta,'' as VentaPromMesCliente,'' as VentaProMesAba,item.Disponible,item.Reserva,item.CantOC,item.CantPedido,cotizaciones_det.CantidadCotizacion,
