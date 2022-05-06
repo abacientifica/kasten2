@@ -10,9 +10,16 @@ use App\Model\CotizacionesDet;
 use App\Model\FiltrosCotizaciones;
 use App\Events\NuevaCotizacion;
 use App\Events\EditarCotizacion;
+use App\Model\Repository\CotizacionesRepository;
 
 class CotizacionesController extends Controller 
 {
+    protected $rep;
+
+    public function __constructor(CotizacionesRepository $repository){
+        $this->rep = $repository;
+    }
+
     public function CrearCotizacion(Request $request){
         if(!$request->ajax()) return  redirect('/');
         $DatosForm = \Funciones::ArraryToObject($request->params['formNewCot']);
@@ -117,7 +124,8 @@ class CotizacionesController extends Controller
             ];
         }
     }
-    public function ListaCotizaciones(Request $request){
+
+    public function listaCotizaciones(Request $request){
         if(!$request->ajax()) return  redirect('/');
         try{
             $filtros = isset($request->params['filtros']) ? $request->params['filtros'] : null;
@@ -163,11 +171,19 @@ class CotizacionesController extends Controller
         if(!$request->ajax()) return  redirect('/');
         try{
             $Cotizacion = \FuncionesCotizaciones::ObtenerCotizacion($request->IdCotizacion);
+            $CotizacionesDet = \FuncionesCotizaciones::ObtenerCotizacionDet($request->IdCotizacion);
             $DctosFinancieros = \Funciones::DevDctosFinancierosTercero($Cotizacion->IdTerceroCotizacion);
+            $ConfigInicial = \Funciones::ObtenerConfiguracionGrilla(2);
+            $ConfigEspeciales = \Funciones::ObtenerConfiguracionesGrilla(2);
+            $ConfigEspecialesAgrupadas = \Funciones::ObtenerConfiguracionesGrilla(2,true);
             return[
                 'cotizacion'=>$Cotizacion,
                 'dctos_fin'=>$DctosFinancieros,
-                'cotizaciones_det'=> []
+                'cotizaciones_det'=> $CotizacionesDet,
+                'config_predeterminada' => $ConfigInicial,
+                'config_especiales' => $ConfigEspeciales,
+                'config_especiales_agrupadas' => $ConfigEspecialesAgrupadas,
+
             ];
         }
         catch(Exception $e){
@@ -195,6 +211,30 @@ class CotizacionesController extends Controller
         }
     }
 
+    public function cambioFiltros(Request $request){
+        if(!$request->ajax()) return  redirect('/');
+        try {
+            $FiltrosK = $request->params['filtros'];
+            $ColumnasK = $request->params['columnas'];
+            $FiltrosAct = DB::select("select * from datos_trabajo where IdUsuario = '".\Auth::user()->Usuario."'");
+            if($FiltrosAct){
+                DB::select("update  datos_trabajo set FiltrosDetCotK2 = '".$FiltrosK."', ColumnasDetK2 = '".$ColumnasK."'  where IdUsuario = '".\Auth::user()->Usuario."'");
+            }
+            else{
+                DB::select("insert  datos_trabajo  (IdUsuario,FiltrosDetCotK2,ColumnasDetK2) values  ('".\Auth::user()->Usuario."','".$FiltrosK."','".$ColumnasK."'");
+            }
+
+            return [
+                'filtros'=> $FiltrosK,
+                'columnas'=> $ColumnasK
+            ];
+        }
+        catch(Exception $e){
+
+        }
+        
+    }
+
     public function GuardarFiltroIndex(Request $request){
         if(!$request->ajax()) return  redirect('/');
         try {
@@ -212,6 +252,28 @@ class CotizacionesController extends Controller
                 'filtros'=> $FiltrosK,
                 'columnas'=> $ColumnasK
             ];
+        }
+        catch(Exception $e){
+
+        }
+    }
+
+    public function ObtenerFiltro(Request $request){
+        if(!$request->ajax()) return  redirect('/');
+        try {
+            $Filtros = DB::select("select FiltrosDetCotK2,ColumnasDetK2 from datos_trabajo where IdUsuario = '".\Auth::user()->Usuario."'");
+            if($Filtros){
+                return [
+                    'filtros'=>$Filtros[0]->FiltrosDetCotK2,
+                    'columnas'=> $Filtros[0]->ColumnasDetK2
+                ];
+            }
+            else{
+                return [
+                    'filtros'=>null,
+                    'columnas'=> null
+                ];
+            }
         }
         catch(Exception $e){
 
