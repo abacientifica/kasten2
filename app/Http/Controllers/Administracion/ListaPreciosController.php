@@ -12,7 +12,6 @@ class ListaPreciosController extends Controller
 {
     public function index(Request $request){
         if(!$request->ajax()) return  redirect('/');
-
         $filtro = $request->filtro;
         $filtro = str_replace(' ','%',$filtro);
         if(isset($request->IdDireccion) && $request->IdDireccion >0){

@@ -146,7 +146,7 @@
                                     </thead>
 
                                     <tbody>
-                                        <tr v-for="articulo in listarArticulosPaginate" :key="articulo.id"  >
+                                        <tr v-for="articulo in listarArticulosPaginate" :key="articulo.id">
                                             <td v-text="articulo.CodTercero"></td>
                                             <td class="texto-derecha" v-text="articulo.Item"></td>
                                             <td v-text="articulo.Descripcion"></td>
@@ -242,7 +242,6 @@ export default {
                 encontrado:false,
                 nIdItem:null,
                 cDescripcion:'',
-                cDescripcionTercero:'',
                 cCodTercero:'',
                 cNmMarca:'',
                 nPrecio:0,
