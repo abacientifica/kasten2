@@ -47,7 +47,7 @@
                             <th class="texto-centrado">Opción</th>
                             <th class="texto-centrado">Codigo Aba</th>
                             <th class="texto-centrado">Codigo Cliente</th>
-                            <th class="texto-centrado">Descripción</th>
+                            <th class="texto-centrado">Descripción Aba</th>
                             <th class="texto-centrado">Marca</th>
                             <th class="texto-centrado">Referencia</th>
                             <th class="texto-centrado">UMV</th>
@@ -134,7 +134,8 @@
                                         <tr>
                                             <th class="texto-centrado">Código Cliente</th>
                                             <th class="texto-centrado">Código Aba</th>
-                                            <th class="texto-centrado">Descripción</th>
+                                            <th class="texto-centrado">Descripción Aba</th>
+                                            <th class="texto-centrado">Descripción Cliente</th>
                                             <th class="texto-centrado">Referencia</th>
                                             <th class="texto-centrado">Marca</th>
                                             <th class="texto-centrado">UMV</th>
@@ -145,10 +146,11 @@
                                     </thead>
 
                                     <tbody>
-                                        <tr v-for="articulo in listarArticulosPaginate" :key="articulo.id"  >
+                                        <tr v-for="articulo in listarArticulosPaginate" :key="articulo.id">
                                             <td v-text="articulo.CodTercero"></td>
                                             <td class="texto-derecha" v-text="articulo.Item"></td>
                                             <td v-text="articulo.Descripcion"></td>
+                                            <td v-text="articulo.DescripcionTercero"></td>
                                             <td v-text="articulo.RefFabricante"></td>
                                             <td v-text="articulo.NmMarca"></td>
                                             <td v-text="articulo.UMM"></td>
