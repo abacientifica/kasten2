@@ -249,19 +249,22 @@ class MovimientosController extends Controller
         try{
             $MovAutorizado = \Funciones::AutorizarMovimiento($request->params['nIdMovimiento']);
             $arMovimiento = Movimientos::with('tercero','tercero.asesorservcliente')->find($request->params['nIdMovimiento']);
-            $EmailAsesor = $arMovimiento->tercero->asesorservcliente->Email;
-            $EmailAsesor = !filter_var($EmailAsesor,FILTER_VALIDATE_EMAIL) ? 'auxsistemas@aba.com.co' : $EmailAsesor;
+            $EmailAsesorSAC = $arMovimiento->tercero->asesorservcliente->Email;
+            $EmailAsesor = $arMovimiento->tercero->asesor->Email;
+            $EmailAsesorSAC = !filter_var($EmailAsesorSAC,FILTER_VALIDATE_EMAIL) ? 'sistemas@aba.com.co' : $EmailAsesorSAC;
+            $EmailAsesor = !filter_var($EmailAsesor,FILTER_VALIDATE_EMAIL) ? 'sistemas@aba.com.co' : $EmailAsesor;
             if($MovAutorizado == true){
                 \Funciones::Consecutivo($request->params['nIdMovimiento']);
                 $Mov =Movimientos::with('documento')->find($request->params['nIdMovimiento']);
-                //Enviamos el Email de alerta a el asesor
+                //Enviamos el Email de alerta al asesor
                 $DatosCliente = \Funciones::ObtenerTercero($arMovimiento->IdTercero);
-                $strMensaje = "El usuario  " . \Auth::user()->Nombres . " " . \Auth::user()->Apellidos . " de la institución " . $DatosCliente[0]->NombreCorto . " acaba de autorizar el pedido externo " . $Mov->NroDocumento;
+                $strMensaje = "El usuario  " . \Auth::user()->Nombres . " " . \Auth::user()->Apellidos . " de la institución " . $DatosCliente[0]->NombreCorto . " acaba de autorizar el pedido externo con Nro: " . $Mov->NroDocumento;
                 //Se comenta el envio de email
                 return[
                     'msg'=>"El movimiento ha sido autorizado con exito !!",
                     'status'=>201,
-                    'Email'=>\Funciones::EnviarEmail('Autorización Pedido Externo',$EmailAsesor,$strMensaje)
+                    'Email'=>\Funciones::EnviarEmail('Autorización Pedido Externo',$EmailAsesorSAC,$strMensaje),
+                    'Email2'=>\Funciones::EnviarEmail('Autorización Pedido Externo',$EmailAsesor,$strMensaje)
                 ];
             }
             else{
@@ -273,7 +276,7 @@ class MovimientosController extends Controller
         }
         catch(Exception $e){
             return[
-                'msg'=>"Ups.. ocurrio un error al autorizr el movimiento :".$e->getMessage(),
+                'msg'=>"Ups.. ocurrio un error al autorizar el movimiento :".$e->getMessage(),
                 'status'=>501
             ];
         }
@@ -314,10 +317,16 @@ class MovimientosController extends Controller
     public function NotificarMovimiento(Request $request){
         if(!$request->ajax()) return redirect("/");
         try{
-            $arMovimiento = Movimientos::find($request->params['nIdMovimiento']);
-            $DatosCliente = \Funciones::ObtenerTercero($arMovimiento->IdTercero);
-            $strMensaje = "El usuario  " . \Auth::user()->Nombres . " " . \Auth::user()->Apellidos . " de la institución " . $DatosCliente[0]->NombreCorto . " acaba de autorizar el pedido externo " . $arMovimiento->IdMovimiento;
-            $Mensaje = \Funciones::EnviarEmail('Autorización Pedido Externo','auxsistemas@aba.com.co',$strMensaje);
+          
+            $arMovimiento = Movimientos::with('tercero','tercero.asesorservcliente')->find($request->params['nIdMovimiento']);
+            $EmailAsesorSAC = $arMovimiento->tercero->asesorservcliente->Email;
+            $EmailAsesor = $arMovimiento->tercero->asesor->Email;
+            $EmailAsesorSAC = !filter_var($EmailAsesorSAC,FILTER_VALIDATE_EMAIL) ? 'sistemas@aba.com.co' : $EmailAsesorSAC;
+            $EmailAsesor = !filter_var($EmailAsesor,FILTER_VALIDATE_EMAIL) ? 'sistemas@aba.com.co' : $EmailAsesor;
+
+            $strMensaje = "El usuario  " . \Auth::user()->Nombres . " " . \Auth::user()->Apellidos . " de la institución " . $arMovimiento->tercero->NombreCorto . " acaba de enviar esta notificación para alertar que genero el pedido externo con IdMovimiento: " . $arMovimiento->IdMovimiento;
+            $Mensaje = \Funciones::EnviarEmail('Notificación de Pedido Externo',$EmailAsesorSAC,$strMensaje);
+            $Mensaje = \Funciones::EnviarEmail('Notificación de Pedido Externo',$EmailAsesor,$strMensaje);
             return[
                 'msg'=>"Ups, el area de servicio al cliente fue notificada con exito ",
                 'status'=>201,
@@ -461,7 +470,7 @@ class MovimientosController extends Controller
             'movimientos_det'=>$MovimientosDet
         ]);
         \Funciones::CrearLog(7, $Movimiento[0]->IdMovimiento, \Auth::user()->Usuario);
-        return $pdf->download('invoice.pdf');
+        return $pdf->download('PedidoAba.pdf');
         /*return [
             'pdf'=>$request->nIdMovimiento
         ];*/
