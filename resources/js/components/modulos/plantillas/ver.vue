@@ -415,10 +415,16 @@
                             
                             <div class="col-md-12">
                                 <div class="form-group">
+                                    <label>Homologar por</label><br>
+
+                                    <label>Opciones</label><br>
+                                    <el-radio v-model="opTipoHm" label="C">Codigo</el-radio>
+                                    <el-radio v-model="opTipoHm" label="D">Descripcion</el-radio>
+                                    <br>
                                     <label>Cotización</label>
-                                    <input type="number" :disabled="fillHm.IdPlantilla != '' ? true:false" v-model="fillHm.NroCot" class="form-control" placeholder="# Cot"> 
+                                    <input type="number" :disabled="fillHm.IdPlantilla != '' ? true:false" v-model="fillHm.NroCot" class="form-control" placeholder="# Cotizacion"> 
                                     <label>Plantilla</label>
-                                    <input type="number" :disabled="fillHm.NroCot != '' ? true:false" v-model="fillHm.IdPlantilla" class="form-control" placeholder="# Plantilla"> 
+                                    <input type="number" :disabled="fillHm.NroCot != '' ? true:false" v-model="fillHm.IdPlantilla" class="form-control" placeholder="# Id Plantilla"> 
                                     <label>Grupo</label>
                                     <input type="text" v-model="fillHm.Grupo" class="form-control" placeholder="Nm Grupo"> 
                                     <label>Fechas Cotizacion</label>
@@ -434,6 +440,7 @@
                                         value-format="yyyy-MM-dd"
                                         :picker-options="pickerOptionsYears">
                                     </el-date-picker>
+                                    <br>
                                     <label>Opción</label><br>
                                     <el-radio v-model="opDetallesHm" label="1">Todos</el-radio>
                                     <el-radio v-model="opDetallesHm" label="2">Seleccionados</el-radio>
@@ -488,7 +495,7 @@
                                     <el-radio v-model="fillCorrerFactores.OpFactores" :label="null">N/A</el-radio><br>
 
                                     <label>Id Plantilla</label>
-                                    <input type="number" :disabled="fillCorrerFactores.OpFactores  ? true:false" v-model="fillCorrerFactores.nIdPlantilla" class="form-control" placeholder="# Plantilla"><br>
+                                    <input type="number" :disabled="fillCorrerFactores.OpFactores  ? true:false" v-model="fillCorrerFactores.nIdPlantilla" class="form-control" placeholder="# Id Plantilla"><br>
 
                                     <label>Opciones Items</label><br>
                                     <el-radio v-model="fillCorrerFactores.OpItems" :label="1">Todos</el-radio>
@@ -1025,6 +1032,7 @@ export default {
             //Variables Homologar
             AbrirModalHomologar:false,
             opDetallesHm:null,
+            opTipoHm:null,
             oFechasCot:[],
             fillHm:{
                 NroCot:'',
@@ -2241,11 +2249,24 @@ export default {
                 });
                 return
             }
+
+            if(!me.opTipoHm){
+                loader.close()
+                this.$confirm('Debes Seleccionar por que dato se va a realizar la Homologacion', 'Warning', {
+                    confirmButtonText: 'OK',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    
+                });
+                return
+            }
             
             axios.put(url,{
                 params:{
                     'IdPlantilla':me.$attrs.id,
                     'opDetalles':me.opDetallesHm,
+                    'opTipo':me.opTipoHm,
                     'nNroCot':me.fillHm.NroCot,
                     'nIdPlantilla':me.fillHm.IdPlantilla,
                     'cGrupo':me.fillHm.Grupo,

@@ -63,7 +63,7 @@
                                     <th class="texto-centrado">Hab. Cotizar</th>
                                     <th class="texto-centrado">Inact</th>
                                     <th class="texto-centrado">Disp</th>
-                                    <th class="texto-centrado">Costo UMM</th>
+                                    <!--<th class="texto-centrado">Costo UMM</th>-->
                                     <th class="texto-centrado" v-if="ItemSel != null && ItemSel.Autorizado != 1" >Opción</th>
                                 </tr>
                             </thead>
@@ -84,9 +84,8 @@
                                     <td v-text="articulo.HabCotizar == 1 ? 'SI':'NO'"></td>
                                     <td v-text="articulo.Inactivo== 1 ? 'SI':'NO'"></td>
                                     <td v-text="articulo.Disponible ? articulo.Disponible : 0"></td>
-                                    <td class="texto-derecha" v-text="FormatoMoneda(articulo.CostoUMM,2)"></td>
-                                    <!--<td class="texto-derecha" :class="{'prod-vencido' : articulo.FhHasta < moment().format('YYYY-MM-DD')}" v-text="FormatoMoneda(articulo.Precio,2)">
-                                    </td>-->
+                                    <!--<td class="texto-derecha" v-text="FormatoMoneda(articulo.CostoUMM,2)"></td>-->
+                                    <!--<td class="texto-derecha" :class="{'prod-vencido' : articulo.FhHasta < moment().format('YYYY-MM-DD')}" v-text="FormatoMoneda(articulo.Precio,2)"></td>-->
                                     <td v-if="ItemSel != null && ItemSel.Autorizado != 1">
                                         <button type="button"  @click="enlazarLista(index)"  class="btn btn-success btn-sm" flat >
                                             <i class="fas fa-check"></i>
