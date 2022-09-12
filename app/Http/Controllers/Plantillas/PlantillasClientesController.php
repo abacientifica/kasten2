@@ -593,11 +593,13 @@ class PlantillasClientesController extends Controller
             DB::beginTransaction();
             $IdPlantilla = $request->params['IdPlantilla'];
             $Opcion = $request->params['opDetalles'];
+            $Tipo = $request->params['opTipo'];
             $NroCot = $request->params['nNroCot'];
             $IdPlant = $request->params['nIdPlantilla'];
             $Grupo = $request->params['cGrupo'];
             $oFechasCot = $request->params['oFechasCot'];
             $DetallesSel = $request->params['arrDetallesSel'];
+
             
             $Plantilla = new Plantillas();
             $Plantilla = Plantillas::find($IdPlantilla);
@@ -631,11 +633,21 @@ class PlantillasClientesController extends Controller
                             if ($oFechasCot) {
                                 $strSql = $strSql . " AND cotizaciones.FechaCotizacion >= '" . $oFechasCot[0] . "' AND cotizaciones.FechaCotizacion <= '" . $oFechasCot[1] . "' AND cotizaciones.IdTerceroCotizacion = " . $Plantilla->IdTerceroPlant;
                             }
-                            if ($Detalle->CodCliente != '' || $Detalle->DescripcionCliente != '') {
+                            if($Tipo == 'C'){
                                 if ($Detalle->CodCliente != '') {
-                                    $strSql = $strSql . " AND (cotizaciones_det.CodCliente = '" . $Detalle->CodCliente . "' OR cotizaciones_det.DescripcionCliente = '" . $Detalle->DescripcionCliente . "')" . "AND cotizaciones.IdTerceroCotizacion = " . $Plantilla->IdTerceroPlant;
+                                    if ($Detalle->CodCliente != '') {
+                                        $strSql = $strSql . " AND (cotizaciones_det.CodCliente = '" . $Detalle->CodCliente . "')" . "AND cotizaciones.IdTerceroCotizacion = " . $Plantilla->IdTerceroPlant;
+                                    }
+                                } 
+                            }
+                            if($Tipo == 'D'){
+                                if ($Detalle->DescripcionCliente != '') {
+                                    if ($Detalle->DescripcionCliente != '') {
+                                        $strSql = $strSql . " AND (cotizaciones_det.DescripcionCliente = '" . $Detalle->DescripcionCliente . "')" . "AND cotizaciones.IdTerceroCotizacion = " . $Plantilla->IdTerceroPlant;
+                                    }
                                 }
                             }
+                            
                             $strSql = $strSql . " ORDER BY cotizaciones.NroCotizacion DESC LIMIT 1";
                             $arBuscarDet = DB::select($strSql);
                         } else if ($IdPlant == '0' || $IdPlant !='') {
@@ -665,9 +677,19 @@ class PlantillasClientesController extends Controller
                                 $strSql = $strSql . " AND FhPlantilla >= '" . $oFechasCot[0] . "' AND FhPlantilla <= '" . $oFechasCot[1] . "' AND  plantillas.IdTerceroPlant = " . $Plantilla->IdTerceroPlant;
                             }
 
-                            
-                            if ($Detalle->CodCliente != '') {
-                                $strSql = $strSql . " AND (plantillas_det.CodCliente = '" . $Detalle->CodCliente . "' OR plantillas_det.DescripcionCliente = '" . $Detalle->DescripcionCliente . "')" . "AND plantillas.IdTerceroPlant  = " . $Plantilla->IdTerceroPlant;                         
+                            if($Tipo == 'C'){
+                                if ($Detalle->CodCliente != '') {
+                                    if ($Detalle->CodCliente != '') {
+                                        $strSql = $strSql . " AND (plantillas_det.CodCliente = '" . $Detalle->CodCliente . "')" . " AND plantillas.IdTerceroPlant  = " . $Plantilla->IdTerceroPlant;
+                                    }
+                                } 
+                            }
+                            if($Tipo == 'D'){
+                                if ($Detalle->DescripcionCliente != '') {
+                                    if ($Detalle->DescripcionCliente != '') {
+                                        $strSql = $strSql . " AND (plantillas_det.DescripcionCliente = '" . $Detalle->DescripcionCliente . "')" . " AND plantillas.IdTerceroPlant  = " . $Plantilla->IdTerceroPlant;
+                                    }
+                                }
                             }
 
                             $strSql = $strSql . " and plantillas.IdPlantilla != ".$Detalle->IdPlantilla." and  plantillas.Tipo <>1 ORDER BY plantillas.IdPlantilla DESC LIMIT 1";
@@ -719,11 +741,24 @@ class PlantillasClientesController extends Controller
                                 $strSql = $strSql . " AND cotizaciones.FechaCotizacion >= '" . $oFechasCot[0] . "' AND cotizaciones.FechaCotizacion <= '" . $oFechasCot[1] . "'
                                                 AND cotizaciones.IdTerceroCotizacion = " . $Plantilla->IdTerceroPlant;
                             }
-                            if ($Detalle->CodCliente != '' || $Detalle->DescripcionCliente != '') {
+
+
+                            if($Tipo == 'C'){
                                 if ($Detalle->CodCliente != '') {
-                                    $strSql = $strSql . " AND (cotizaciones_det.CodCliente = '" . $Detalle->CodCliente . "' OR cotizaciones_det.DescripcionCliente = '" . $Detalle->DescripcionCliente . "')" . "AND cotizaciones.IdTerceroCotizacion = " . $Plantilla->IdTerceroPlant;
+                                    if ($Detalle->CodCliente != '') {
+                                        $strSql = $strSql . " AND (cotizaciones_det.CodCliente = '" . $Detalle->CodCliente . "')" . "AND cotizaciones.IdTerceroCotizacion = " . $Plantilla->IdTerceroPlant;
+                                    }
+                                } 
+                            }
+                            if($Tipo == 'D'){
+                                if ($Detalle->DescripcionCliente != '') {
+                                    if ($Detalle->DescripcionCliente != '') {
+                                        $strSql = $strSql . " AND (cotizaciones_det.DescripcionCliente = '" . $Detalle->DescripcionCliente . "')" . "AND cotizaciones.IdTerceroCotizacion = " . $Plantilla->IdTerceroPlant;
+                                    }
                                 }
                             }
+
+
                             $strSql = $strSql . " ORDER BY cotizaciones.NroCotizacion DESC LIMIT 1";
                             $arBuscarDet = DB::select($strSql);
                         } else if ($IdPlant == '0' || $IdPlant != '') {
@@ -753,10 +788,21 @@ class PlantillasClientesController extends Controller
                                 $strSql = $strSql . " AND FhPlantilla >= '" . $oFechasCot[0] . "' AND FhPlantilla <= '" . $oFechasCot[1] . "' AND  plantillas.IdTerceroPlant = " . $Plantilla->IdTerceroPlant;
                             }
 
-                            
-                            if ($Detalle->CodCliente != '') {
-                                $strSql = $strSql . " AND (plantillas_det.CodCliente = '" . $Detalle->CodCliente . "' OR plantillas_det.DescripcionCliente = '" . $Detalle->DescripcionCliente . "')" . "AND plantillas.IdTerceroPlant  = " . $Plantilla->IdTerceroPlant;                         
+                            if($Tipo == 'C'){
+                                if ($Detalle->CodCliente != '') {
+                                    if ($Detalle->CodCliente != '') {
+                                        $strSql = $strSql . " AND (plantillas_det.CodCliente = '" . $Detalle->CodCliente . "')" . " AND plantillas.IdTerceroPlant  = " . $Plantilla->IdTerceroPlant;
+                                    }
+                                } 
                             }
+                            if($Tipo == 'D'){
+                                if ($Detalle->DescripcionCliente != '') {
+                                    if ($Detalle->DescripcionCliente != '') {
+                                        $strSql = $strSql . " AND (plantillas_det.DescripcionCliente = '" . $Detalle->DescripcionCliente . "')" . " AND plantillas.IdTerceroPlant  = " . $Plantilla->IdTerceroPlant;
+                                    }
+                                }
+                            }
+                            
 
                             $strSql = $strSql . " and plantillas.IdPlantilla != ".$Detalle->IdPlantilla."  ORDER BY plantillas.IdPlantilla DESC LIMIT 1";
                             $arBuscarDet = DB::select($strSql);
